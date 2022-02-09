@@ -1,5 +1,11 @@
 # Capstone-Project
 
+Download Node.js:
+[This is an external link to Node.js download](https://nodejs.org/en/download/)
+
+Download VSCode:
+[This is an external link to VSCode download](https://code.visualstudio.com/download)
+
 Download MongoDB with MongoDB Compass:
 [This is an external link to MongoDb community download](https://www.mongodb.com/try/download/community)
 - Once installed, navagate to your C: drive > Program Files > MongoDB > Server > version# folder (Ex. 5.0) > bin
