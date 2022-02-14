@@ -16,7 +16,7 @@ Download MongoDB with MongoDB Compass:
 - In System Variables select "Path" and press the "Edit" button
 - Click on the  "New" button and paste in the path
 - Click "Ok" to save on all of the System Properties windows until they are closed
-- Open a new command prompt and type in the following and press enter to run Mongo Daemon on your pc
+- Open a new command prompt and type in the following and press enter to run Mongo Daemon on your pc:
 ```console
 mongod
 ```
@@ -26,8 +26,23 @@ mongod
 To run the program:
 - Download MongoDB (steps above)
 - Open another new command prompt at '/capstone-project/server'
-- Type the following into the prompt and press enter
+- Set the JWT Private Key:
+- Type the following into the prompt and press enter (windows):
+```console
+set capstone-project_jwtPrivateKey=privateKeyHere
+```
+- Type the following into the prompt and press enter (mac):
+```console
+export capstone-project_jwtPrivateKey=privateKeyHere
+```
+To run server:
+- Type the following into the prompt and press enter:
 ```console
 npm start
+```
+To run tests:
+- Type the following into the prompt and press enter:
+```console
+npm test
 ```
 - Ctrl + c to stop running 
