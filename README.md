@@ -30,4 +30,4 @@ To run the program:
 ```console
 npm start
 ```
-- Ctrl + c to stop running 
+- Ctrl + c to stop running
