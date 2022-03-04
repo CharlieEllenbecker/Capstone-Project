@@ -214,4 +214,45 @@ describe('/api/users', () => {
             expect(res.header).toHaveProperty('x-auth-token');
         });
     });
+
+    describe('DELETE /delete', () => {
+        let user;
+        let email;
+        let password;
+    
+        beforeEach(async () => {
+            email = 'joe.buck@gmail.com';
+            password = 'password123';
+
+            user = await new User({
+                email: email,
+                password: password
+            }).save();
+
+        });
+
+        const exec = async () => {
+            return await request(server)
+                .delete('/api/users/delete')
+                .send({
+                    email: email
+                });
+        }
+        //if the user doesnt exist - 404
+        it('should return 404 if user does not exist', async () => {
+
+            email = 'joe.deer@gmail.com';
+
+            const res = await exec();
+
+            expect(res.status).toBe(404);
+        });
+
+        it('should return 200 if successful', async () => {
+            const res = await exec();
+            expect(res.status).toBe(200);
+            const user = User.findOne(email);
+            expect(!user);
+        });
+    });
 });
