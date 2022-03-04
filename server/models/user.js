@@ -32,6 +32,14 @@ function validateUser(user) {
 
     return schema.validate(user);
 }
+function validateEmail(user){
+    const schema = Joi.object({
+    email: Joi.string().min(5).max(256).email().required()
+});
+
+    return schema.validate(user);
+}
 
 module.exports.User = User;
 module.exports.validate = validateUser;
+module.exports.validateEmail = validateEmail;
