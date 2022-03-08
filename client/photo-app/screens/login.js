@@ -30,9 +30,9 @@ import {
 import axios from 'axios';
 
 //colors
-const {darkBrick, brick, primary, lightBrick} = Colors;
+const { darkBrick, brick, primary, lightBrick } = Colors;
 
-const Login = ({navigation}) => {
+const Login = ({ navigation }) => {
   const [hidePassword, setHidePassword] = useState(true);
   const [message, setMessage] = useState();
   const [messageType, setMessageType] = useState();
@@ -40,22 +40,22 @@ const Login = ({navigation}) => {
   const handleLogin = (credentials) => {
     handleMessage(null);
     const url = '/api/users';
-    
-    axios
-    .post(url, credentials)
-    .then((response) => {
-      const result = response.data;
-      const {message, status, data} = result;
 
-      if (status !== 'Success') {
-        handleMessage(message, status);
-      } else {
-        navigation.navigate('Homepage', {...data[0]});
-      }
-    })
-    .catch(error => {
-      handleMessage("Failed to login");
-    })
+    axios
+      .post(url, credentials)
+      .then((response) => {
+        const result = response.data;
+        const { message, status, data } = result;
+
+        if (status !== 'Success') {
+          handleMessage(message, status);
+        } else {
+          navigation.navigate('HomeScreen', { ...data[0] });
+        }
+      })
+      .catch((error) => {
+        handleMessage('Failed to login');
+      });
   };
 
   const handleMessage = (message, type = 'Failed') => {
@@ -63,72 +63,67 @@ const Login = ({navigation}) => {
     setMessageType(type);
   };
 
-
   return (
     <KeyboardAvoidingWrapper>
-    <LoginBackground source={require('./../assets/loginBackground.jpg')}>
-      <InnerContainer>
-        <PageLogo resizeMode="contain" source={require('./../assets/logo1.png')}></PageLogo>
-        <PageTitle type='login'>Phocate</PageTitle>
-        
-        <Formik
-          initialValues={{email: '', password: ''}}
-          onSubmit={(values) => {
-            if (values.email == '' && values.password == '') {
-              handleMessage('Please enter a username and password');
-            } else {
-              handleLogin(values);
-            }
-          }}
-        >{({ handleChange, handleBlur, handleSubmit, values }) => (
-            <StyledFormArea>
-              <MyTextInput 
-                label="Email Address" 
-                icon="mail" 
-                onChangeText={handleChange('email')}
-                onBlur={handleBlur('email')}
-                value={values.email}
-                keyboardType="email-address"
-              />
+      <LoginBackground source={require('./../assets/loginBackground.jpg')}>
+        <InnerContainer>
+          <PageLogo resizeMode="contain" source={require('./../assets/logo1.png')}></PageLogo>
+          <PageTitle type="login">Phocate</PageTitle>
 
-              <MyTextInput 
-                label="Password" 
-                icon="lock"
-                onChangeText={handleChange('password')}
-                onBlur={handleBlur('password')}
-                value={values.password}
-                secureTextEntry={hidePassword}
-                isPassword={true}
-                hidePassword={hidePassword}
-                setHidePassword={setHidePassword}
-              />
+          <Formik
+            initialValues={{ email: '', password: '' }}
+            onSubmit={(values) => {
+              if (values.email == '' && values.password == '') {
+                handleMessage('Please enter a username and password');
+              } else {
+                handleLogin(values);
+              }
+            }}
+          >
+            {({ handleChange, handleBlur, handleSubmit, values }) => (
+              <StyledFormArea>
+                <MyTextInput
+                  label="Email Address"
+                  icon="mail"
+                  onChangeText={handleChange('email')}
+                  onBlur={handleBlur('email')}
+                  value={values.email}
+                  keyboardType="email-address"
+                />
 
-              <ErrorMsg type={messageType}>{message}</ErrorMsg>
+                <MyTextInput
+                  label="Password"
+                  icon="lock"
+                  onChangeText={handleChange('password')}
+                  onBlur={handleBlur('password')}
+                  value={values.password}
+                  secureTextEntry={hidePassword}
+                  isPassword={true}
+                  hidePassword={hidePassword}
+                  setHidePassword={setHidePassword}
+                />
 
-              <LoginButton onPress={handleLogin}>
-                <ButtonText>Login</ButtonText>
-              </LoginButton>
-              
-              <Line />
+                <ErrorMsg type={messageType}>{message}</ErrorMsg>
 
-              <SignupButton onPress={() => navigation.navigate("Signup")}>
-                <ButtonText>Create new account</ButtonText>
-              </SignupButton>
-            </StyledFormArea>
-        )
+                <LoginButton onPress={handleLogin}>
+                  <ButtonText>Login</ButtonText>
+                </LoginButton>
 
-        }
+                <Line />
 
-        </Formik>
-      </InnerContainer>
-    </LoginBackground>
+                <SignupButton onPress={() => navigation.navigate('Signup')}>
+                  <ButtonText>Create new account</ButtonText>
+                </SignupButton>
+              </StyledFormArea>
+            )}
+          </Formik>
+        </InnerContainer>
+      </LoginBackground>
     </KeyboardAvoidingWrapper>
   );
-}
+};
 
-
-const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, ...props}) => {
-
+const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, ...props }) => {
   return (
     <View>
       <LeftIcon>
@@ -138,11 +133,11 @@ const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, .
       <StyledTextInput {...props} />
       {isPassword && (
         <RightIcon>
-          <Ionicons name={hidePassword ? 'md-eye-off' : 'md-eye'} size={25} color={brick}/>
+          <Ionicons name={hidePassword ? 'md-eye-off' : 'md-eye'} size={25} color={brick} />
         </RightIcon>
       )}
     </View>
   );
-}
+};
 
 export default Login;
