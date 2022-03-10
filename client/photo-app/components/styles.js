@@ -1,8 +1,5 @@
 import styled from 'styled-components';
-import {View, Text, Image, ImageBackground, TextInput, TouchableOpacity, KeyboardAvoidingView} from 'react-native';
-import Constants from 'expo-constants';
-import loginBackground from './../assets/loginBackground.jpg';
-import { reportLogBoxError } from 'react-native/Libraries/LogBox/Data/LogBoxData';
+import Constants from 'expo-constants';;
 const StatusBarHeight = Constants.statusBarHeight;
 
 export const Colors = {
@@ -19,7 +16,7 @@ export const Colors = {
     purp: '#474251',
 }
 
-const { primary, secondary, secondaryLight, tetriary, lightBrick, brick, darkBrick, green, red, lighterPurp, purp } = Colors;
+const { primary, secondary, secondaryLight, tetriary, lightBrick, brick, darkBrick, green, red } = Colors;
 
 export const StyledContainer = styled.View`
     flex: 1;
@@ -92,7 +89,7 @@ export const StyledTextInput = styled.TextInput`
 `;
 
 export const StyledTextLabel = styled.Text`
-    color: ${primary};
+    color: ${tetriary};
     font-size: 13px;
     text-align: left;
 `;
