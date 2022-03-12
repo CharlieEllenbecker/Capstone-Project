@@ -4,11 +4,17 @@ const config = require('config');
 const Joi = require('joi');
 
 const userSchema = new mongoose.Schema({
+    username: {
+        type: String,
+        required: true,
+        minLength: 5,
+        maxLength: 256
+    },
     email: {
         type: String,
         required: true,
         minlength: 5,
-        maxlength: 256,
+        maxlength: 256
     },
     password: {
         type: String,
@@ -24,8 +30,9 @@ userSchema.methods.generateAuthToken = function() {
 
 const User = mongoose.model('User', userSchema);
 
-function validateUser(user) {
+function validateFullUser(user) {
     const schema = Joi.object({
+        username: Joi.string().min(5).max(256).required(),
         email: Joi.string().min(5).max(256).email().required(),
         password: Joi.string().min(5).max(1024).required()  // TODO: utilize joi-password-conplexity module?
     });
@@ -33,5 +40,15 @@ function validateUser(user) {
     return schema.validate(user);
 }
 
+function validateEmailPassword(user) {
+    const schema = Joi.object({
+        email: Joi.string().min(5).max(256).email().required(),
+        password: Joi.string().min(5).max(1024).required()
+    });
+
+    return schema.validate(user);
+}
+
 module.exports.User = User;
-module.exports.validate = validateUser;
+module.exports.validate = validateFullUser;
+module.exports.validateEmailPassword = validateEmailPassword;
