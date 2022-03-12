@@ -49,12 +49,10 @@ const Login = ({navigation}) => {
       
     })
     .catch(error => {
-      console.error(error);
       handleMessage("Failed to login.");
-      console.log(values.email);
-      console.log(values.password)
-    })
-    }
+      console.error(error);
+    });
+  }
 //handling messages
     const handleMessage = (message, type = 'Failed') => {
       setMessage(message);

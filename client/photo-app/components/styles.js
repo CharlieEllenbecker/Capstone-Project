@@ -1,5 +1,6 @@
-import styled from 'styled-components';
-import Constants from 'expo-constants';;
+import styled from 'styled-components/native'
+// import styled from 'styled-components';
+import Constants from 'expo-constants';
 const StatusBarHeight = Constants.statusBarHeight;
 
 export const Colors = {
