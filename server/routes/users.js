@@ -23,12 +23,12 @@ router.post('/', async (req, res) => {
         return res.status(400).send(error.details[0].message)
     }
 
-    let userByEmail = await User.findOne({ email: req.body.email });
+    const userByEmail = await User.findOne({ email: req.body.email });
     if(userByEmail) {
         return res.status(400).send('User already registered with that email.');
     }
 
-    let userByUsername = await User.findOne({ username: req.body.username });
+    const userByUsername = await User.findOne({ username: req.body.username });
     if(userByUsername) {
         return res.status(400).send('User already registered with that username.');
     }
@@ -40,7 +40,10 @@ router.post('/', async (req, res) => {
 
     const token = user.generateAuthToken();
 
-    return res.status(200).header('x-auth-token', token).send(_.pick(user, ['username', 'email']));
+    return res.status(200).header({
+        'Access-Control-Expose-Headers': 'x-auth-token',
+        'x-auth-token': token
+    }).send(_.pick(user, ['username', 'email']));
 });
 
 /*
@@ -64,7 +67,10 @@ router.post('/login', async (req, res) => { // TODO: Do we want to allow the use
 
     const token = user.generateAuthToken();
 
-    return res.status(200).header('x-auth-token', token).send(_.pick(user, ['email']));
+    return res.status(200).header({
+        'Access-Control-Expose-Headers': 'x-auth-token',
+        'x-auth-token': token
+    }).send(_.pick(user, ['username', 'email']));
 });
 
 /*

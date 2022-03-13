@@ -40,8 +40,6 @@ const Login = ({navigation}) => {
       password: values.password
     })
     .then((response) => {
-        console.log(values.email);
-
         const result = response.headers['x-auth-token'];
         localStorage.setItem('x-auth-token', result);
         
