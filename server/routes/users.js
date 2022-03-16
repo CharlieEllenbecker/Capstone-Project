@@ -1,4 +1,4 @@
-const { User, validate, validateEmailPassword} = require('../models/user');
+const { User, validate, validateEmailPassword, validateEmail } = require('../models/user');
 const auth = require('../middleware/auth');
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
@@ -50,7 +50,7 @@ router.post('/', async (req, res) => {
 /*
     DELETE - Delete a user
 */
-router.delete('/delete', async (req, res) => { 
+router.delete('/delete', auth, async (req, res) => { 
 
     const { error } = validateEmail(req.body);
     if(error) {
@@ -60,11 +60,11 @@ router.delete('/delete', async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
     
     if(!user) {
-        return res.status(404).send('User doesnt exist');
+        return res.status(404).send('User does not exist.');
     }
     await User.findOneAndDelete(user.email);
-    return res.status(200).send('User deleted.');
 
+    return res.status(200).send('User deleted.');
 });
 
 /*

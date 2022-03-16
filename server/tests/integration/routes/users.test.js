@@ -116,7 +116,7 @@ describe('/api/users', () => {
         });
 
         it('should return 400 if password is more than 1024 characters', async () => {
-            email = new Array(1026).join('a');
+            password = new Array(1026).join('a');
 
             const res = await exec();
 
@@ -156,7 +156,6 @@ describe('/api/users', () => {
     });
 
     describe('POST /login', () => {
-        let user;
         let username;
         let email;
         let password;
@@ -169,7 +168,7 @@ describe('/api/users', () => {
             const salt = await bcrypt.genSalt(10);
             const hash = await bcrypt.hash(password, salt);
 
-            user = await new User({
+            await new User({
                 username: username,
                 email: email,
                 password: hash
@@ -218,7 +217,7 @@ describe('/api/users', () => {
         });
 
         it('should return 400 if password is more than 1024 characters', async () => {
-            email = new Array(1026).join('a');
+            password = new Array(1026).join('a');
 
             const res = await exec();
 
@@ -233,7 +232,7 @@ describe('/api/users', () => {
             expect(res.status).toBe(400);
         });
 
-        it('should return 400 if password id incorrect', async () => {
+        it('should return 400 if password is incorrect', async () => {
             password = 'incorrectpassword';
 
             const res = await exec();
@@ -251,30 +250,42 @@ describe('/api/users', () => {
 
     describe('DELETE /delete', () => {
         let user;
+        let username;
         let email;
         let password;
+        let token;
     
         beforeEach(async () => {
+            username = 'JohnSmith';
             email = 'joe.buck@gmail.com';
             password = 'password123';
 
             user = await new User({
+                username: username,
                 email: email,
                 password: password
             }).save();
-
+            token = new User(user).generateAuthToken();
         });
 
         const exec = async () => {
             return await request(server)
                 .delete('/api/users/delete')
+                .set('x-auth-token', token)
                 .send({
                     email: email
                 });
         }
-        //if the user doesnt exist - 404
-        it('should return 404 if user does not exist', async () => {
 
+        it('should return 401 if client is not logged in', async () => {
+            token = '';
+
+            const res = await exec();
+
+            expect(res.status).toBe(401);
+        });
+
+        it('should return 404 if user does not exist', async () => {
             email = 'joe.deer@gmail.com';
 
             const res = await exec();
@@ -284,8 +295,9 @@ describe('/api/users', () => {
 
         it('should return 200 if successful', async () => {
             const res = await exec();
-            expect(res.status).toBe(200);
+
             const user = User.findOne(email);
+            expect(res.status).toBe(200);
             expect(!user);
         });
     });
