@@ -1,20 +1,17 @@
-import { StatusBar } from 'expo-status-bar';
+//import react/formik/icons/keyboardAvoidingView
 import React, { useState, ImageBackground } from 'react';
 import { Formik } from 'formik';
-import { View, ActivityIndicator } from 'react-native';
+import { View } from 'react-native';
 import { Octicons, Ionicons } from '@expo/vector-icons';
-
-//components
 import KeyboardAvoidingWrapper from './../components/keyboardAvoidingWrapper';
+//components
 import {
   Colors,
-  StyledContainer,
   InnerContainer,
   PageLogo,
   PageTitle,
   LoginBackground,
   StyledFormArea,
-  SubTitle,
   LeftIcon,
   RightIcon,
   LoginButton,
@@ -25,103 +22,107 @@ import {
   ErrorMsg,
   Line,
 } from './../components/styles';
-
 //axios
 import axios from 'axios';
-
 //colors
-const { darkBrick, brick, primary, lightBrick } = Colors;
+const { brick } = Colors;
 
 const Login = ({ navigation }) => {
   const [hidePassword, setHidePassword] = useState(true);
   const [message, setMessage] = useState();
   const [messageType, setMessageType] = useState();
-
-  const handleLogin = (credentials) => {
+ //handling login
+  const handleLogin = async (values)  => {
     handleMessage(null);
-    const url = '/api/users';
-
-    axios
-      .post(url, credentials)
-      .then((response) => {
-        const result = response.data;
-        const { message, status, data } = result;
-
-        if (status !== 'Success') {
-          handleMessage(message, status);
-        } else {
-          navigation.navigate('HomeScreen', { ...data[0] });
-        }
-      })
-      .catch((error) => {
-        handleMessage('Failed to login');
-      });
-  };
-
-  const handleMessage = (message, type = 'Failed') => {
-    setMessage(message);
-    setMessageType(type);
-  };
-
+    await axios
+    .post('http://localhost:3001/api/users/login', {
+      email: values.email,
+      password: values.password
+    })
+    .then((response) => {
+        const result = response.headers['x-auth-token'];
+        localStorage.setItem('x-auth-token', result);
+        
+        navigation.navigate('HomeScreen');
+      
+    })
+    .catch(error => {
+      handleMessage("Failed to login.");
+      console.error(error);
+    });
+  }
+//handling messages
+    const handleMessage = (message, type = 'Failed') => {
+      setMessage(message);
+      setMessageType(type);
+    };
+//Load view
   return (
     <KeyboardAvoidingWrapper>
-      <LoginBackground source={require('./../assets/loginBackground.jpg')}>
-        <InnerContainer>
-          <PageLogo resizeMode="contain" source={require('./../assets/logo1.png')}></PageLogo>
-          <PageTitle type="login">Phocate</PageTitle>
-
-          <Formik
-            initialValues={{ email: '', password: '' }}
-            onSubmit={(values) => {
-              if (values.email == '' && values.password == '') {
-                handleMessage('Please enter a username and password');
-              } else {
+    <LoginBackground source={require('./../assets/loginBackground1.jpg')}>
+      <InnerContainer>
+        <PageLogo resizeMode="contain" source={require('./../assets/logo1.png')}></PageLogo>
+        <PageTitle type='login'>Phocate</PageTitle>
+        
+        <Formik
+          initialValues={{ password: '', email: '' }}
+          onSubmit={(values) => {
+              if (values.password == '' || values.email == '') {
+               handleMessage("Please fill out all fields."); 
+              }
+              else {
                 handleLogin(values);
               }
-            }}
-          >
-            {({ handleChange, handleBlur, handleSubmit, values }) => (
-              <StyledFormArea>
-                <MyTextInput
-                  label="Email Address"
-                  icon="mail"
-                  onChangeText={handleChange('email')}
-                  onBlur={handleBlur('email')}
-                  value={values.email}
-                  keyboardType="email-address"
-                />
+          }}
+        >{({ handleChange, handleBlur, handleSubmit, values }) => {
+          return (
+            <StyledFormArea>
+              <MyTextInput 
+                label="Email Address" 
+                icon="mail" 
+                onChangeText={handleChange('email')}
+                onBlur={handleBlur('email')}
+                value={values.email}
+                keyboardType="email-address"
+              />
 
-                <MyTextInput
-                  label="Password"
-                  icon="lock"
-                  onChangeText={handleChange('password')}
-                  onBlur={handleBlur('password')}
-                  value={values.password}
-                  secureTextEntry={hidePassword}
-                  isPassword={true}
-                  hidePassword={hidePassword}
-                  setHidePassword={setHidePassword}
-                />
+              <MyTextInput 
+                label="Password" 
+                icon="lock"
+                onChangeText={handleChange('password')}
+                onBlur={handleBlur('password')}
+                value={values.password}
+                secureTextEntry={hidePassword}
+                isPassword={true}
+                hidePassword={hidePassword}
+                setHidePassword={setHidePassword}
+              />
 
-                <ErrorMsg type={messageType}>{message}</ErrorMsg>
+              <ErrorMsg type={messageType}>{message}</ErrorMsg>
 
-                <LoginButton onPress={handleLogin}>
-                  <ButtonText>Login</ButtonText>
-                </LoginButton>
+              <LoginButton onPress={handleSubmit}>
+                <ButtonText>Login</ButtonText>
+              </LoginButton>
+              
+              <Line />
 
-                <Line />
+              <SignupButton onPress={() => navigation.navigate("Signup")}>
+                <ButtonText>Create new account</ButtonText>
+              </SignupButton>
+            </StyledFormArea>
+        );
 
-                <SignupButton onPress={() => navigation.navigate('Signup')}>
-                  <ButtonText>Create new account</ButtonText>
-                </SignupButton>
-              </StyledFormArea>
-            )}
-          </Formik>
-        </InnerContainer>
-      </LoginBackground>
+        }
+      }
+        </Formik>
+      </InnerContainer>
+    </LoginBackground>
     </KeyboardAvoidingWrapper>
   );
 };
+
+//Hide or view password
+const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, ...props}) => {
 
 const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, ...props }) => {
   return (
@@ -132,12 +133,13 @@ const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, .
       <StyledTextLabel>{label}</StyledTextLabel>
       <StyledTextInput {...props} />
       {isPassword && (
-        <RightIcon>
-          <Ionicons name={hidePassword ? 'md-eye-off' : 'md-eye'} size={25} color={brick} />
+        <RightIcon onPress={() => setHidePassword(!hidePassword)}>
+          <Ionicons name={hidePassword ? 'md-eye-off' : 'md-eye'} size={25} color={brick}/>
         </RightIcon>
       )}
     </View>
   );
 };
-
+}
+//export signup screen
 export default Login;

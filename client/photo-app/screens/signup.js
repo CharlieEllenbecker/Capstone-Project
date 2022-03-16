@@ -1,14 +1,14 @@
-import { StatusBar } from 'expo-status-bar';
+//import react/formik/icons/keyboardAvoidingView
 import React, { useState, ImageBackground } from 'react';
 import { Formik } from 'formik';
-import { View, KeyboardAvoidingView } from 'react-native';
+import { View } from 'react-native';
 import { Octicons, Ionicons } from '@expo/vector-icons';
 import KeyboardAvoidingWrapper from './../components/keyboardAvoidingWrapper';
+
+//components
 import {
   Colors,
-  StyledContainer,
   InnerContainer,
-  PageLogo,
   PageTitle,
   SignupBackground,
   StyledFormArea,
@@ -24,38 +24,45 @@ import {
   Line,
 } from './../components/styles';
 
-const { darkBrick, brick, primary, lightBrick } = Colors;
+//colors
+const { brick } = Colors;
 
-const Signup = ({ navigation }) => {
+//axios
+import axios from 'axios';
+
+//Handling Signup
+const Signup = ({navigation}) => {
   const [hidePassword, setHidePassword] = useState(true);
   const [message, setMessage] = useState();
   const [messageType, setMessageType] = useState();
 
-  const handleSignup = (credentials) => {
+  const handleSignup = async (values) => {
     handleMessage(null);
-    const url = '/api/users';
-
-    axios
-      .post(url, credentials)
-      .then((response) => {
-        const result = response.data;
-        const { message, status, data } = result;
-
-        if (status !== 'Success') {
-          handleMessage(message, status);
-        } else {
-          navigation.navigate('HomeScreen', { ...data });
-        }
-      })
-      .catch((error) => {
-        handleMessage('Failed to signup.');
-      });
+    const url = 'http://localhost:3001/api/users/';
+    
+    await axios
+    .post(url, {
+      username: values.username,
+      email: values.email,
+      password: values.password
+    })
+    .then((response) => {
+      const result = response.headers['x-auth-token'];
+      localStorage.setItem('x-auth-token', result);
+      
+      navigation.navigate('HomeScreen');
+    })
+    .catch(error => {
+      handleMessage("Failed to signup.");
+      console.log(error);
+    })
   };
-
+//Handling messages
   const handleMessage = (message, type = 'Failed') => {
     setMessage(message);
     setMessageType(type);
   };
+  //Load view
   return (
     <KeyboardAvoidingWrapper>
       <SignupBackground source={require('./../assets/signupBackground.jpg')}>
@@ -140,6 +147,9 @@ const Signup = ({ navigation }) => {
   );
 };
 
+//Hide or view password/confirmPassword
+const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, ...props}) => {
+
 const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, ...props }) => {
   return (
     <View>
@@ -149,12 +159,14 @@ const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, .
       <StyledTextLabel>{label}</StyledTextLabel>
       <StyledTextInput {...props} />
       {isPassword && (
-        <RightIcon>
-          <Ionicons name={hidePassword ? 'md-eye-off' : 'md-eye'} size={25} color={brick} />
+        <RightIcon onPress={() => setHidePassword(!hidePassword)}>
+          <Ionicons name={hidePassword ? 'md-eye-off' : 'md-eye'} size={25} color={brick}/>
         </RightIcon>
       )}
     </View>
   );
+  }
 };
 
+//export signup screen
 export default Signup;

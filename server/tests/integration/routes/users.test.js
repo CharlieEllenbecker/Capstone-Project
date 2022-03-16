@@ -14,11 +14,11 @@ describe('/api/users', () => {
     describe('GET /me', () => {
         let user;
         let token;
-        let email = 'john.smith@gmail.com';
 
         beforeEach(async () => {
             user = await new User({
-                email: email,
+                username: 'johnSmith',
+                email: 'john.smith@gmail.com',
                 password: 'password123'
             }).save();
             token = new User(user).generateAuthToken();
@@ -43,15 +43,16 @@ describe('/api/users', () => {
             const res = await exec();
 
             expect(res.status).toBe(200);
-            expect(res.body).toHaveProperty('email', email);
         });
     });
 
     describe('POST /', () => {
+        let username;
         let email;
         let password;
 
         beforeEach(async () => {
+            username = 'johnSmith';
             email = 'john.smith@gmail.com';
             password = 'password123';
         });
@@ -60,10 +61,27 @@ describe('/api/users', () => {
             return await request(server)
                 .post('/api/users')
                 .send({
+                    username: username,
                     email: email,
                     password: password
                 });
         }
+
+        it('should return 400 if username is less than 5 characters', async () => {
+            username = '1234';
+
+            const res = await exec();
+
+            expect(res.status).toBe(400);
+        });
+
+        it('should return 400 if username is more than 256 characters', async () => {
+            username = new Array(258).join('a');
+
+            const res = await exec();
+
+            expect(res.status).toBe(400);
+        });
 
         it('should return 400 if email is not valid', async () => {
             email = 'invalid email';
@@ -105,9 +123,22 @@ describe('/api/users', () => {
             expect(res.status).toBe(400);
         });
 
-        it('should return 400 if user already exist', async () => {
-            const user = await new User({
+        it('should return 400 if user already exist with that email', async () => {
+            await new User({
+                username: 'randomUsername',
                 email: email,
+                password: password
+            }).save();
+
+            const res = await exec();
+
+            expect(res.status).toBe(400);
+        });
+
+        it('should return 400 if user already exist with that username', async () => {
+            await new User({
+                username: username,
+                email: 'random@gmail.com',
                 password: password
             }).save();
 
@@ -126,20 +157,23 @@ describe('/api/users', () => {
 
     describe('POST /login', () => {
         let user;
+        let username;
         let email;
         let password;
 
         beforeEach(async () => {
-            const salt = await bcrypt.genSalt(10);
-            const hash = await bcrypt.hash('password123', salt);
-
-            user = await new User({
-                email: 'john.smith@gmail.com',
-                password: hash
-            }).save();
-            
+            username = 'johnSmith';
             email = 'john.smith@gmail.com';
             password = 'password123';
+
+            const salt = await bcrypt.genSalt(10);
+            const hash = await bcrypt.hash(password, salt);
+
+            user = await new User({
+                username: username,
+                email: email,
+                password: hash
+            }).save();
         });
 
         const exec = async () => {
