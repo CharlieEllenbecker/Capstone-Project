@@ -37,25 +37,28 @@ const Signup = ({navigation}) => {
   const [messageType, setMessageType] = useState();
 
   const handleSignup = async (values) => {
-    handleMessage(null);
-    const url = 'http://localhost:3001/api/users/';
+    {/* TODO: Just for the presentation */}
+    navigation.navigate('DrawerNavigator', { screen: 'HomeScreen' });
+
+    // handleMessage(null);
+    // const url = 'http://localhost:3001/api/users/';
     
-    await axios
-    .post(url, {
-      username: values.username,
-      email: values.email,
-      password: values.password
-    })
-    .then((response) => {
-      const result = response.headers['x-auth-token'];
-      localStorage.setItem('x-auth-token', result);
+    // await axios
+    // .post(url, {
+    //   username: values.username,
+    //   email: values.email,
+    //   password: values.password
+    // })
+    // .then((response) => {
+    //   const result = response.headers['x-auth-token'];
+    //   localStorage.setItem('x-auth-token', result);
       
-      navigation.navigate('HomeScreen');
-    })
-    .catch(error => {
-      handleMessage("Failed to signup.");
-      console.log(error);
-    })
+    //   navigation.navigate('DrawerNavigator', { screen: 'HomeScreen' });
+    // })
+    // .catch(error => {
+    //   handleMessage("Failed to signup.");
+    //   console.log(error);
+    // })
   };
 //Handling messages
   const handleMessage = (message, type = 'Failed') => {
@@ -149,8 +152,6 @@ const Signup = ({navigation}) => {
 
 //Hide or view password/confirmPassword
 const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, ...props}) => {
-
-const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, ...props }) => {
   return (
     <View>
       <LeftIcon>
@@ -165,8 +166,7 @@ const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, .
       )}
     </View>
   );
-  }
-};
+}
 
 //export signup screen
 export default Signup;

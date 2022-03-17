@@ -4,6 +4,7 @@ import { Formik } from 'formik';
 import { View } from 'react-native';
 import { Octicons, Ionicons } from '@expo/vector-icons';
 import KeyboardAvoidingWrapper from './../components/keyboardAvoidingWrapper';
+
 //components
 import {
   Colors,
@@ -33,23 +34,26 @@ const Login = ({ navigation }) => {
   const [messageType, setMessageType] = useState();
  //handling login
   const handleLogin = async (values)  => {
-    handleMessage(null);
-    await axios
-    .post('http://localhost:3001/api/users/login', {
-      email: values.email,
-      password: values.password
-    })
-    .then((response) => {
-        const result = response.headers['x-auth-token'];
-        localStorage.setItem('x-auth-token', result);
+    {/* TODO: Just for the presentation */}
+    navigation.navigate('DrawerNavigator', { screen: 'HomeScreen' });
+
+    // handleMessage(null);
+    // await axios
+    // .post('http://localhost:3001/api/users/login', {
+    //   email: values.email,
+    //   password: values.password
+    // })
+    // .then((response) => {
+    //     const result = response.headers['x-auth-token'];
+    //     localStorage.setItem('x-auth-token', result);
         
-        navigation.navigate('HomeScreen');
+    //     navigation.navigate('DrawerNavigator', { screen: 'HomeScreen' });
       
-    })
-    .catch(error => {
-      handleMessage("Failed to login.");
-      console.error(error);
-    });
+    // })
+    // .catch(error => {
+    //   handleMessage("Failed to login.");
+    //   console.error(error);
+    // });
   }
 //handling messages
     const handleMessage = (message, type = 'Failed') => {
@@ -100,13 +104,13 @@ const Login = ({ navigation }) => {
 
               <ErrorMsg type={messageType}>{message}</ErrorMsg>
 
-              <LoginButton onPress={handleSubmit}>
+              <LoginButton onPress={handleSubmit}>  
                 <ButtonText>Login</ButtonText>
               </LoginButton>
               
               <Line />
 
-              <SignupButton onPress={() => navigation.navigate("Signup")}>
+              <SignupButton onPress={() => navigation.navigate('Signup')}>
                 <ButtonText>Create new account</ButtonText>
               </SignupButton>
             </StyledFormArea>
@@ -123,8 +127,6 @@ const Login = ({ navigation }) => {
 
 //Hide or view password
 const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, ...props}) => {
-
-const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, ...props }) => {
   return (
     <View>
       <LeftIcon>
@@ -139,7 +141,6 @@ const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, .
       )}
     </View>
   );
-};
 }
-//export signup screen
+//export login screen
 export default Login;
