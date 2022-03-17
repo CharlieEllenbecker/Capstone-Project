@@ -1,4 +1,19 @@
 {
     "jwtPrivateKey" : "",
-    "db": "mongodb://localhost/capstone-project"
+    "db": "mongodb://localhost/capstone-project",
+    "tags": [
+        "Portrait",
+        "Landscape",
+        "Astrophotography",
+        "Street Photography",
+        "Abstract",
+        "Real Estate",
+        "Nature",
+        "Wildlife",
+        "Food",
+        "Concert Photography",
+        "Sports",
+        "Architecture",
+        "Instagram"
+    ]
 }

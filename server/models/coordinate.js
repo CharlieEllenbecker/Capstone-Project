@@ -2,12 +2,27 @@ const mongoose = require('mongoose');
 const Joi = require('joi');
 
 const coordinateSchema = new mongoose.Schema({
-    
+    latitude: {
+        type: Number,
+        required: true
+    },
+    longitude: {
+        type: Number,
+        required: true
+    }
 }, { versionKey: false });
 
-module.exports.coordinateSchema = coordinateSchema;
+const Coordinate = mongoose.model('Coordinate', coordinateSchema);
 
-//     coordinate: {
-//       latitude: 43.03725,
-//       longitude: -87.91891,
-//     },
+function validate(coordinate) {
+    const schema = Joi.object({
+        latitude: Joi.number().required(),
+        longitude: Joi.number().required()
+    });
+
+    return schema.validate(coordinate);
+}
+
+module.exports.Coordinate = Coordinate;
+module.exports.coordinateSchema = coordinateSchema;
+module.exports.validate = validate;
