@@ -19,11 +19,6 @@ const pinSchema = new mongoose.Schema({
         default: ''
     },
     tags: [tagSchema],
-    rating: {
-        type: Number,
-        required: false,
-        default: 0
-    },
     reviews: {
         type: Number,
         required: false,
@@ -40,12 +35,11 @@ function validate(pin) {
         tags: Joi.array().items(Joi.object({
             name: Joi.string().min(3).max(64).required()
         })).required(),
-        rating: Joi.number().optional(),
         reviews: Joi.number().optional()
     });
 
     return schema.validate(pin);
 }
 
-mondule.exports.Pin = Pin;
+module.exports.Pin = Pin;
 module.exports.validate = validate;

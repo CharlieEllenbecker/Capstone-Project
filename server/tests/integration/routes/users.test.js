@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 let server;
 
 describe('/api/users', () => {
-    beforeEach(() => { server  = require('../../../index'); });
+    beforeEach(() => { server = require('../../../index'); });
     afterEach(async () => {
         await User.deleteMany({});
         server.close();
