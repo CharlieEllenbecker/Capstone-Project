@@ -25,7 +25,7 @@ const Review = mongoose.model('Review', reviewSchema);
 function validate(review) {
     const schema = Joi.object({
         userId: Joi.objectId(),
-        description: Joi.string().min(5).max(1024).optional().allow(''),
+        description: Joi.string().min(5).max(1024).allow(''),
         rating: Joi.number().required()
     });
 
@@ -34,4 +34,4 @@ function validate(review) {
 
 module.exports.Review = Review;
 module.exports.reviewSchema = reviewSchema;
-module.exports.validate = validate;
+module.exports.validateReview = validate;

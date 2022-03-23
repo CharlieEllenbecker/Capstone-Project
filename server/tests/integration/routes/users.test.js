@@ -43,6 +43,10 @@ describe('/api/users', () => {
             const res = await exec();
 
             expect(res.status).toBe(200);
+            expect(res.body).toHaveProperty('_id');
+            expect(res.body).toHaveProperty('username');
+            expect(res.body).toHaveProperty('email');
+            
         });
     });
 

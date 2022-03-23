@@ -25,25 +25,35 @@ const pinSchema = new mongoose.Schema({
         default: null
     },
     tags: [tagSchema],
-    reviews: [reviewSchema]  // TODO: implement image reference? name of image stored in another local bucket or something?
+    reviews: [reviewSchema],  // TODO: implement image reference? name of image stored in another local bucket or something?
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: false // userId is generated from token
+    },
 }, { versionKey: false });
 
 const Pin = mongoose.model('Pin', pinSchema);
 
 function validate(pin) {
     const schema = Joi.object({
+        coordinate: Joi.object({
+            latitude: Joi.number().required(),
+            longitude: Joi.number().required()
+        }),
         title: Joi.string().min(5).max(256).required(),
-        description: Joi.string().min(5).max(1024).optional().allow(''),
-        rating: Joi.number().optional(),
+        description: Joi.string().min(5).max(1024).allow(''),
+        rating: Joi.number(),
         tags: Joi.array().items(Joi.object({
             name: Joi.string().min(3).max(64).required()
         })).required(),
         reviews: Joi.array().items(Joi.object({
             pinId: Joi.objectId(),
             userId: Joi.objectId(),
-            description: Joi.string().min(5).max(1024).optional().allow(''),
+            description: Joi.string().min(5).max(1024).allow(''),
             rating: Joi.number().required()
-        })).optional(),
+        })),
+        userId: Joi.objectId()
     });
 
     return schema.validate(pin);

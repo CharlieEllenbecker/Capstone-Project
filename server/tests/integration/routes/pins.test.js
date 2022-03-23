@@ -39,7 +39,8 @@ describe('/api/tags', () => {
                             description: 'Cool!',
                             rating: 4.5
                         }
-                    ]
+                    ],
+                    userId: userId
                 },
                 {
                     coordinate: {
@@ -47,7 +48,8 @@ describe('/api/tags', () => {
                         longitude: -87.92809,
                     },
                     title: 'Second Amazing Food Place',
-                    description: 'This is the second best food place'
+                    description: 'This is the second best food place',
+                    userId: userId
                 },
                 {
                     coordinate: {
@@ -55,7 +57,8 @@ describe('/api/tags', () => {
                         longitude: -87.91511,
                     },
                     title: 'Third Amazing Food Place',
-                    description: 'This is the third best food place'
+                    description: 'This is the third best food place',
+                    userId: userId
                 },
                 {
                     coordinate: {
@@ -63,7 +66,8 @@ describe('/api/tags', () => {
                         longitude: -87.90602,
                     },
                     title: 'Fourth Amazing Food Place',
-                    description: 'This is the fourth best food place'
+                    description: 'This is the fourth best food place',
+                    userId: userId
                 },
                 {
                     coordinate: {
@@ -71,7 +75,8 @@ describe('/api/tags', () => {
                         longitude: -87.904921,
                     },
                     title: 'Fifth Amazing Food Place',
-                    description: 'This is the fifth best food place'
+                    description: 'This is the fifth best food place',
+                    userId: userId
                 }
             ]);
         });
