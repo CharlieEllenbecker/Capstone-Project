@@ -32,7 +32,7 @@ router.post('/', auth, async (req, res) => {
         return res.status(400).send('Pin already exists using that location.'); // TODO: might want to make it within a certain range? => "A pin already exists near by."
     }
 
-    const pin = await new Pin(_.pick(req.body, ['coordinate', 'title', 'description', 'tags', 'reviews'])).save();
+    const pin = await new Pin(_.pick(req.body, ['coordinate', 'title', 'description', 'rating', 'tags', 'reviews'])).save();
 
     return req.status(200).send(pin);
 });
