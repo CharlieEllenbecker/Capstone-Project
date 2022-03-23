@@ -1,6 +1,5 @@
 const { User } = require('../../../models/user');
 const { Pin } = require('../../../models/Pin');
-const config = require('config');
 const request = require('supertest');
 
 let server;
@@ -15,6 +14,7 @@ describe('/api/tags', () => {
 
     describe('GET /', () => {
         let token;
+        let userId;
 
         beforeEach(async () => {
             const user = await new User({
@@ -23,6 +23,7 @@ describe('/api/tags', () => {
                 password: 'password123'
             }).save();
             token = new User(user).generateAuthToken();
+            userId = user._id;
 
             await Pin.collection.insertMany([
                 {
@@ -32,7 +33,13 @@ describe('/api/tags', () => {
                     },
                     title: 'Amazing Food Place',
                     description: 'This is the best food place',
-                    reviews: 99
+                    reviews: [
+                        {
+                            userId: userId,
+                            description: 'Cool!',
+                            rating: 4.5
+                        }
+                    ]
                 },
                 {
                     coordinate: {
@@ -40,8 +47,7 @@ describe('/api/tags', () => {
                         longitude: -87.92809,
                     },
                     title: 'Second Amazing Food Place',
-                    description: 'This is the second best food place',
-                    reviews: 102
+                    description: 'This is the second best food place'
                 },
                 {
                     coordinate: {
@@ -49,8 +55,7 @@ describe('/api/tags', () => {
                         longitude: -87.91511,
                     },
                     title: 'Third Amazing Food Place',
-                    description: 'This is the third best food place',
-                    reviews: 220
+                    description: 'This is the third best food place'
                 },
                 {
                     coordinate: {
@@ -58,8 +63,7 @@ describe('/api/tags', () => {
                         longitude: -87.90602,
                     },
                     title: 'Fourth Amazing Food Place',
-                    description: 'This is the fourth best food place',
-                    reviews: 48
+                    description: 'This is the fourth best food place'
                 },
                 {
                     coordinate: {
@@ -67,8 +71,7 @@ describe('/api/tags', () => {
                         longitude: -87.904921,
                     },
                     title: 'Fifth Amazing Food Place',
-                    description: 'This is the fifth best food place',
-                    reviews: 178
+                    description: 'This is the fifth best food place'
                 }
             ]);
         });
