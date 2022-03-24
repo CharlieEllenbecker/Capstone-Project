@@ -47,7 +47,7 @@ router.post('/', auth, async (req, res) => {
     req.body.username = decodeJwt(req.header('x-auth-token')).username;
     const pin = await new Pin(_.pick(req.body, ['coordinate', 'title', 'description', 'rating', 'tags', 'reviews', 'username'])).save();
 
-    return req.status(200).send(pin);
+    return res.status(200).send(pin);
 });
 
 /*

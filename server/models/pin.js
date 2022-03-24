@@ -16,8 +16,7 @@ const pinSchema = new mongoose.Schema({
         type: String,
         required: false,
         minlength: 5,
-        maxlength: 1024,
-        default: ''
+        maxlength: 1024
     },
     rating: {
         type: Number,
@@ -43,15 +42,15 @@ function validate(pin) {
             longitude: Joi.number().required()
         }),
         title: Joi.string().min(5).max(256).required(),
-        description: Joi.string().min(5).max(1024).allow(''),
+        description: Joi.string().min(5).max(1024),
         rating: Joi.number(),
         tags: Joi.array().items(Joi.object({
             name: Joi.string().min(3).max(64).required()
-        })).required(),
+        })),
         reviews: Joi.array().items(Joi.object({
             pinId: Joi.objectId(),
             userId: Joi.objectId(),
-            description: Joi.string().min(5).max(1024).allow(''),
+            description: Joi.string().min(5).max(1024),
             rating: Joi.number().required()
         })),
         username: Joi.string().min(5).max(256)
