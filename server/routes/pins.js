@@ -19,8 +19,8 @@ router.get('/', auth, async (req, res) => {
     GET - Get all user specific pins
 */
 router.get('/my', auth, async (req, res) => {
-    const userId = decodeJwt(req.header('x-auth-token'))._id;
-    const pins = await Pin.find({ userId: userId }).select(['-userId']).sort('title');
+    const username = decodeJwt(req.header('x-auth-token')).username;
+    const pins = await Pin.find({ username: username }).sort('title');
 
     return res.status(200).send(pins);
 });
@@ -44,10 +44,8 @@ router.post('/', auth, async (req, res) => {
         return res.status(400).send('Pin already exists using that location.'); // TODO: might want to make it within a certain range? => "A pin already exists near by."
     }
 
-    req.body.userId = decodeJwt(req.header('x-auth-token'))._id;
-    const pin = await new Pin(_.pick(req.body, ['coordinate', 'title', 'description', 'rating', 'tags', 'reviews', 'userId'])).save().select(['-userId']);  // TODO: test that this select is working...
-
-    console.log('Select: ' + pin);  // TEST...
+    req.body.username = decodeJwt(req.header('x-auth-token')).username;
+    const pin = await new Pin(_.pick(req.body, ['coordinate', 'title', 'description', 'rating', 'tags', 'reviews', 'username'])).save();
 
     return req.status(200).send(pin);
 });
@@ -61,14 +59,14 @@ router.put('/:id', auth, async (req, res) => {
         return res.status(400).send(error.details[0].message);
     }
 
-    const userId = decodeJwt(req.header('x-auth-token'))._id;
-    const pin = await Pin.findByIdAndUpdate({ _id: req.params.id, userId: userId }, _.pick(req.body, ['coordinate', 'title', 'description', 'rating', 'tags', 'reviews', 'userId']), { new: true }).select(['-userId']);
+    const username = decodeJwt(req.header('x-auth-token')).username;
+    const pin = await Pin.findByIdAndUpdate({ _id: req.params.id, username: username }, _.pick(req.body, ['coordinate', 'title', 'description', 'rating', 'tags', 'reviews', 'username']), { new: true });
 
     if(!pin) {
         return res.status(404).send(`The pin with the given id ${req.params.id} does not exist or the pin can not be edited by this user.`)
     }
 
-    return res.status(200).send(folder);
+    return res.status(200).send(pin);
 });
 
 /*
@@ -85,13 +83,15 @@ router.post('/review/:pinId', auth, async (req, res) => {
         return res.status(404).send(`The pin with the given id ${req.params.pinId} does not exist.`);
     }
 
-    const userId = decodeJwt(req.header('x-auth-token'))._id;
-    if(pin.reviews.some(r => r.userId === userId)) {
+    const username = decodeJwt(req.header('x-auth-token')).username;
+    if(pin.reviews.some(r => r.username === username)) {
         return res.status(400).send(`The pin with the given id ${req.params.pinId} already contains a review from that user.`);
     }
 
+    pin.rating = (pin.rating + req.body.rating) / pin.reviews.length + 1;
+    req.body.username = username;
     pin.reviews.push(req.body);
-    pin = pin.save().select(['-userId']);
+    pin = pin.save();
 
     return res.status(200).send(pin);
 });
@@ -99,11 +99,50 @@ router.post('/review/:pinId', auth, async (req, res) => {
 /*
     PUT - Update a review on a pin
 */
-// TODO
+router.put('/review/:pinId', auth, async (req, res) => {
+    const { error } = validateReview(req.body);
+    if(error) {
+        return res.status(400).send(error.details[0].message);
+    }
+
+    let pin = await Pin.findById(req.params.pinId);
+    if(!pin) {
+        return res.status(404).send(`The pin with the given id ${req.params.pinId} does not exist.`);
+    }
+
+    const username = decodeJwt(req.header('x-auth-token')).username;
+    if(pin.reviews.every(r => r.username !== username)) {
+        return res.status(400).send(`The pin with the given id ${req.params.pinId} does not contain a review from that user.`);
+    }
+
+    req.body.username = username;
+    pin.reviews = pin.reviews.map(r => r.username === username ? req.body : r); // Assuming that there will only be one review per person on a pin
+    pin = pin.save();
+
+    return res.status(200).send(pin);
+});
 
 /*
     DELETE - Delete a review from a pin
 */
-// TODO
+router.delete('/review/:pinId', auth, async (req, res) => {
+    let pin = await Pin.findById(req.params.pinId);
+    if(!pin) {
+        return res.status(404).send(`The pin with the given id ${req.params.pinId} does not exist.`);
+    }
+
+    const username = decodeJwt(req.header('x-auth-token')).username;
+    if(pin.reviews.every(r => r.username !== username)) {
+        return res.status(400).send(`The pin with the given id ${req.params.pinId} does not contain a review from that user.`);
+    }
+
+    const index = pin.reviews.findIndex(r => r.username === username);
+
+    const updatedReviews = [...pin.reviews.slice(0, index), ...pin.reviews.slice(index + 1)];
+    pin.reviews = updatedReviews;
+    pin = pin.save();
+
+    return res.status(200).send(pin)
+});
 
 module.exports = router;

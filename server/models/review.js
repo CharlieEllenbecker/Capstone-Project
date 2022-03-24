@@ -2,10 +2,11 @@ const mongoose = require('mongoose');
 const Joi = require('joi');
 
 const reviewSchema = new mongoose.Schema({
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+    username: {
+        type: String,
+        required: false,    // gets added on review creation
+        minLength: 5,
+        maxLength: 256
     },
     description: {
         type: String,
@@ -24,7 +25,7 @@ const Review = mongoose.model('Review', reviewSchema);
 
 function validate(review) {
     const schema = Joi.object({
-        userId: Joi.objectId(),
+        username: Joi.string().min(5).max(256),
         description: Joi.string().min(5).max(1024).allow(''),
         rating: Joi.number().required()
     });

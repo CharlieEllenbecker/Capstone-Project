@@ -10,7 +10,7 @@ const router = express.Router();
     GET - Get user info
 */
 router.get('/me', auth, async (req, res) => {
-    const user = await User.findById(req.user._id).select(['-password']);   // Allowing to give the front-end the userId (not the most secure)
+    const user = await User.findById(req.user._id).select(['-_id', '-password']);
     return res.status(200).send(user);
 });
 

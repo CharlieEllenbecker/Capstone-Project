@@ -15,10 +15,13 @@ describe('/api/tags', () => {
     describe('GET /', () => {
         let token;
         let userId;
+        let username;
 
         beforeEach(async () => {
+            username = 'johnSmith';
+
             const user = await new User({
-                username: 'johnSmith',
+                username: username,
                 email: 'john.smith@gmail.com',
                 password: 'password123'
             }).save();
@@ -40,7 +43,7 @@ describe('/api/tags', () => {
                             rating: 4.5
                         }
                     ],
-                    userId: userId
+                    username: username
                 },
                 {
                     coordinate: {
@@ -49,7 +52,7 @@ describe('/api/tags', () => {
                     },
                     title: 'Second Amazing Food Place',
                     description: 'This is the second best food place',
-                    userId: userId
+                    username: username
                 },
                 {
                     coordinate: {
@@ -58,7 +61,7 @@ describe('/api/tags', () => {
                     },
                     title: 'Third Amazing Food Place',
                     description: 'This is the third best food place',
-                    userId: userId
+                    username: username
                 },
                 {
                     coordinate: {
@@ -67,7 +70,7 @@ describe('/api/tags', () => {
                     },
                     title: 'Fourth Amazing Food Place',
                     description: 'This is the fourth best food place',
-                    userId: userId
+                    username: username
                 },
                 {
                     coordinate: {
@@ -76,7 +79,7 @@ describe('/api/tags', () => {
                     },
                     title: 'Fifth Amazing Food Place',
                     description: 'This is the fifth best food place',
-                    userId: userId
+                    username: username
                 }
             ]);
         });
