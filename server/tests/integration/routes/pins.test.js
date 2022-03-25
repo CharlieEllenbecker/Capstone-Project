@@ -1,6 +1,7 @@
 const { User } = require('../../../models/user');
 const { Pin } = require('../../../models/Pin');
 const request = require('supertest');
+const mongoose = require('mongoose');
 
 let server;
 
@@ -211,7 +212,6 @@ describe('/api/tags', () => {
     describe('POST /', () => {
         let token;
         let username;
-        const title = 'Second Amazing Food Place';
 
         beforeEach(async () => {
             username = 'johnSmith';
@@ -226,16 +226,18 @@ describe('/api/tags', () => {
 
         const exec = async () => {
             return await request(server)
-                    .post('/api/pins')
-                    .set('x-auth-token', token)
-                    .send({
-                        coordinate: {
-                            latitude: 43.04199,
-                            longitude: -87.92809,
-                        },
-                        title: title,
-                        description: 'This is the second best food place'
-                    });
+                .post('/api/pins')
+                .set('x-auth-token', token)
+                .send({
+                    coordinate: {
+                        latitude: 43.04199,
+                        longitude: -87.92809,
+                    },
+                    title: 'Second Amazing Food Place',
+                    description: 'This is the second best food place',
+                    tags: [{ name: 'Food' }],
+                    username: username
+                });
         }
 
         it('should return 401 if client is not logged in', async () => {
@@ -250,13 +252,102 @@ describe('/api/tags', () => {
             const res = await exec();
 
             expect(res.status).toBe(200);
-            expect(res.body).toHaveProperty('title', title);
+            expect(res.body).toHaveProperty('title');
         });
     });
 
-    // describe('PUT /:id', () => {
+    describe('PUT /:id', () => {
+        let pin;
+        let pinId;
+        let token;
+        let tokenOne;
+        let tokenTwo;
+        let username;
+        let oldCoordinate = {
+            latitude: 43.04199,
+            longitude: -87.92809,
+        };
+        let newCoordinate = {
+            latitude: 45.04199,
+            longitude: -90.92809,
+        };
+        let newTitle = 'New Title';
 
-    // });
+        beforeEach(async () => {
+            username = 'johnSmith';
+
+            const userOne = await new User({
+                username: username,
+                email: 'john.smith@gmail.com',
+                password: 'password123'
+            }).save();
+            tokenOne = new User(userOne).generateAuthToken();
+
+            const userTwo = await new User({
+                username: 'otherUsername',
+                email: 'john.smith@gmail.com',
+                password: 'password123'
+            }).save();
+            tokenTwo = new User(userTwo).generateAuthToken();
+
+            pin = await new Pin({
+                    coordinate: oldCoordinate,
+                    title: 'Second Amazing Food Place',
+                    description: 'This is the second best food place',
+                    tags: [{ name: 'Food' }],
+                    username: username
+                }).save();
+            pinId = pin._id;
+
+            token = tokenOne
+        });
+
+        const exec = async () => {
+            return await request(server)
+                .put(`/api/pins/${pinId}`)
+                .set('x-auth-token', token)
+                .send({
+                    coordinate: newCoordinate,
+                    title: newTitle,
+                    description: 'This is the second best food place',
+                    tags: [{ name: 'Food' }],
+                    username: username
+                });
+        }
+
+        it('should return 401 if client is not logged in', async () => {
+            token = '';
+
+            const res = await exec();
+
+            expect(res.status).toBe(401);
+        });
+
+        it('should return 404 if the pin with the given id does not exist', async () => {
+            pinId = mongoose.Types.ObjectId();;
+
+            const res = await exec();
+
+            expect(res.status).toBe(404);
+        });
+
+        it('should return 404 if the pin with the given id and username does not exist', async () => {
+            token = tokenTwo;
+
+            const res = await exec();
+
+            expect(res.status).toBe(404);
+        });
+
+        it('should return the updated pin', async () => {
+            const res = await exec();
+            
+            expect(res.status).toBe(200);
+            expect(res.body).toHaveProperty('title', newTitle);
+            expect(res.body.coordinate).toHaveProperty('latitude', oldCoordinate.latitude);   // can't change the location
+            expect(res.body.coordinate).toHaveProperty('longitude', oldCoordinate.longitude);
+        });
+    });
 
     // describe('PUT /review/:pinId', () => {
         

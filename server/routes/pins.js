@@ -59,12 +59,17 @@ router.put('/:id', auth, async (req, res) => {
         return res.status(400).send(error.details[0].message);
     }
 
-    const username = decodeJwt(req.header('x-auth-token')).username;
-    const pin = await Pin.findByIdAndUpdate({ _id: req.params.id, username: username }, _.pick(req.body, ['coordinate', 'title', 'description', 'rating', 'tags', 'reviews', 'username']), { new: true });
-
+    let pin = await Pin.findById(req.params.id);
     if(!pin) {
-        return res.status(404).send(`The pin with the given id ${req.params.id} does not exist or the pin can not be edited by this user.`)
+        return res.status(404).send(`The pin with the given id ${req.params.id} does not exist or the pin can not be edited by this user.`);
     }
+
+    const username = decodeJwt(req.header('x-auth-token')).username;
+    if(pin.username !== username) {
+        return res.status(404).send(`The pin with can not be edited by this user.`);
+    }
+
+    pin = await Pin.findByIdAndUpdate(req.params.id, _.pick(req.body, ['title', 'description', 'tags']), { new: true });
 
     return res.status(200).send(pin);
 });
