@@ -299,7 +299,7 @@ describe('/api/tags', () => {
                 }).save();
             pinId = pin._id;
 
-            token = tokenOne
+            token = tokenOne;
         });
 
         const exec = async () => {
@@ -341,7 +341,7 @@ describe('/api/tags', () => {
 
         it('should return the updated pin', async () => {
             const res = await exec();
-            
+
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('title', newTitle);
             expect(res.body.coordinate).toHaveProperty('latitude', oldCoordinate.latitude);   // can't change the location
@@ -349,8 +349,113 @@ describe('/api/tags', () => {
         });
     });
 
+    describe('POST /review/:pinId', () => {
+        let pin;
+        let pinId;
+        let token;
+        let username;
+
+        beforeEach(async () => {
+            username = 'johnSmith';
+
+            const user = await new User({
+                username: username,
+                email: 'john.smith@gmail.com',
+                password: 'password123'
+            }).save();
+            token = new User(user).generateAuthToken();
+
+            pin = await new Pin({
+                    coordinate: {
+                        latitude: 43.03725,
+                        longitude: -87.91891,
+                    },
+                    title: 'Second Amazing Food Place',
+                    description: 'This is the second best food place',
+                    tags: [{ name: 'Food' }],
+                    username: username
+                }).save();
+            pinId = pin._id;
+        });
+
+        const exec = async () => {
+            return await request(server)
+            .post(`/api/pins/review/${pinId}`)
+            .set('x-auth-token', token)
+            .send({
+                description: 'Good pin!',
+                rating: 5
+            });
+        }
+
+        it('should return 401 if client is not logged in', async () => {
+            token = '';
+
+            const res = await exec();
+
+            expect(res.status).toBe(401);
+        });
+
+        it('should return 404 if the pin with the given id does not exist', async () => {
+            pinId = mongoose.Types.ObjectId();;
+
+            const res = await exec();
+
+            expect(res.status).toBe(404);
+        });
+
+        it('should return 200 for valid request and 400 if the pin already has a review from the same user.', async () => {
+            const resOne = await exec();
+            const resTwo = await exec();
+
+            expect(resOne.status).toBe(200);
+            expect(resTwo.status).toBe(400);
+
+            console.log(resOne.body);
+
+            expect(resOne.body.reviews).toHaveLength(1);
+            expect(resOne.body).toHaveProperty('rating', 5);
+        });
+    });
+
     // describe('PUT /review/:pinId', () => {
-        
+    //     let pin;
+    //     let pinId;
+    //     let token;
+    //     let username;
+
+    //     beforeEach(async () => {
+    //         username = 'johnSmith';
+
+    //         const user = await new User({
+    //             username: username,
+    //             email: 'john.smith@gmail.com',
+    //             password: 'password123'
+    //         }).save();
+    //         token = new User(user).generateAuthToken();
+
+    //         pin = await new Pin({
+    //                 coordinate: {
+    //                     latitude: 43.03725,
+    //                     longitude: -87.91891,
+    //                 },
+    //                 title: 'Second Amazing Food Place',
+    //                 description: 'This is the second best food place',
+    //                 tags: [{ name: 'Food' }],
+    //                 username: username
+    //             }).save();
+    //         pinId = pin._id;
+    //     });
+
+    //     const exec = async () => {
+    //         return await request(server)
+    //         .post(`/api/pins/review/${pinId}`)
+    //         .set('x-auth-token', token)
+    //         .send({
+    //             description: 'Good pin!',
+    //             rating: 5
+    //         });
+    //     }
     // });
 
     // describe('DELETE /review/:pinId', () => {

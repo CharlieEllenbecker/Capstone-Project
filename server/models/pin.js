@@ -16,12 +16,13 @@ const pinSchema = new mongoose.Schema({
         type: String,
         required: false,
         minlength: 5,
-        maxlength: 1024
+        maxlength: 1024,
+        default: null
     },
     rating: {
         type: Number,
         required: false,
-        default: null
+        default: 0
     },
     tags: [tagSchema],
     reviews: [reviewSchema],  // TODO: implement image reference? name of image stored in another local bucket or something?
