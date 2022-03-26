@@ -35,10 +35,10 @@ ipconfig /all
 
 - Under 'Ethernet adapter Ethernet' find 'IPv4 Address'
 - Copy the value => Ex. '123.456.7.89'
-- Open the folder 'config at '/capstone-project/client/config'
+- Open the folder 'client' folder at '/capstone-project/client' in VSCode
 - Make a new file in this folder using the following name:
 
-```name
+```file name
 ip.json
 ```
 

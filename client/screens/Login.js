@@ -4,7 +4,7 @@ import { Formik } from 'formik';
 import { View } from 'react-native';
 import { Octicons, Ionicons } from '@expo/vector-icons';
 import KeyboardAvoidingWrapper from '../components/keyboardAvoidingWrapper';
-import config from '../config/ip.json';
+import config from '../ip.json';
 
 //components
 import {
