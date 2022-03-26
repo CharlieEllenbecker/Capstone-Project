@@ -26,6 +26,29 @@ mongod
 
 - Ctrl + c to stop running Mongo Daemon
 
+Fix network error:
+- Download Notepad++ (Windows): https://notepad-plus-plus.org/downloads/
+- Run Notepad++ as an administrator
+- In Notepad++ navigate to File > Open...  and navigate to 'C:\Windows\System32\drivers\etc' folder
+- In this folder select and open the 'hosts' file
+- Type the following into a command prompt and press enter
+
+```console
+ipconfig /all
+```
+
+- Under 'Ethernet adapter Ethernet' find 'IPv4 Address'
+- Copy the value => Ex. '123.456.7.89'
+- In Notepad++ add the following line to the bottom of the 'hosts' file
+
+```console
+photo-app   123.456.7.89
+```
+
+- Where **inbetween** photo-app and your IPv4 Address is a **tab**
+- **Remember to replace the example IPv4 Address with your own!**
+- Save the file before running the program
+
 # Running the Server
 
 To run the program:

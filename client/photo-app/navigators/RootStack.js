@@ -6,8 +6,8 @@ import { Colors } from './../components/styles';
 const {primary, darkBrick, brick, lightBrick, secondary, tetriary} = Colors;
 
 
-import Login from './../screens/login';
-import Signup from './../screens/signup';
+import Login from './../screens/Login';
+import Signup from '../screens/Signup';
 import DrawerNavigator from './DrawerNavigator.js';
 
 const Stack = createNativeStackNavigator();

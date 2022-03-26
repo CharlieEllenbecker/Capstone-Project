@@ -3,7 +3,7 @@ import React, { useState, ImageBackground } from 'react';
 import { Formik } from 'formik';
 import { View } from 'react-native';
 import { Octicons, Ionicons } from '@expo/vector-icons';
-import KeyboardAvoidingWrapper from './../components/keyboardAvoidingWrapper';
+import KeyboardAvoidingWrapper from '../components/keyboardAvoidingWrapper';
 
 //components
 import {
@@ -22,7 +22,7 @@ import {
   ButtonText,
   ErrorMsg,
   Line,
-} from './../components/styles';
+} from '../components/styles';
 //axios
 import axios from 'axios';
 //colors
@@ -32,28 +32,31 @@ const Login = ({ navigation }) => {
   const [hidePassword, setHidePassword] = useState(true);
   const [message, setMessage] = useState();
   const [messageType, setMessageType] = useState();
+  const [jwt, setJwt] = useState();
+  
  //handling login
   const handleLogin = async (values)  => {
     {/* TODO: Just for the presentation */}
-    navigation.navigate('DrawerNavigator', { screen: 'HomeScreen' });
+    // navigation.navigate('DrawerNavigator', { screen: 'HomeScreen' });
 
-    // handleMessage(null);
-    // await axios
-    // .post('http://localhost:3001/api/users/login', {
-    //   email: values.email,
-    //   password: values.password
-    // })
-    // .then((response) => {
-    //     const result = response.headers['x-auth-token'];
-    //     localStorage.setItem('x-auth-token', result);
-        
-    //     navigation.navigate('DrawerNavigator', { screen: 'HomeScreen' });
-      
-    // })
-    // .catch(error => {
-    //   handleMessage("Failed to login.");
-    //   console.error(error);
-    // });
+    console.log('client login');
+
+    handleMessage(null);
+    await axios.post('http://192.168.1.78:3001/api/users/login', {  // TODO: host file updated... with http request
+      email: values.email,
+      password: values.password
+    })
+    .then((response) => {
+      console.log('1');
+      const result = response.headers['x-auth-token'];
+      setJwt(result);
+      navigation.navigate('DrawerNavigator', { screen: 'HomeScreen' });
+    })
+    .catch(error => {
+      console.log('2');
+      handleMessage("Failed to login.");
+      console.error(error);
+    });
   }
 //handling messages
     const handleMessage = (message, type = 'Failed') => {

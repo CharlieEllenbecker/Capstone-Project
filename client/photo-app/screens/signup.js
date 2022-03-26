@@ -3,7 +3,7 @@ import React, { useState, ImageBackground } from 'react';
 import { Formik } from 'formik';
 import { View } from 'react-native';
 import { Octicons, Ionicons } from '@expo/vector-icons';
-import KeyboardAvoidingWrapper from './../components/keyboardAvoidingWrapper';
+import KeyboardAvoidingWrapper from '../components/keyboardAvoidingWrapper';
 
 //components
 import {
@@ -22,7 +22,7 @@ import {
   ButtonText,
   ErrorMsg,
   Line,
-} from './../components/styles';
+} from '../components/styles';
 
 //colors
 const { brick } = Colors;
@@ -35,30 +35,32 @@ const Signup = ({navigation}) => {
   const [hidePassword, setHidePassword] = useState(true);
   const [message, setMessage] = useState();
   const [messageType, setMessageType] = useState();
+  const [jwt, setJwt] = useState();
 
   const handleSignup = async (values) => {
     {/* TODO: Just for the presentation */}
-    navigation.navigate('DrawerNavigator', { screen: 'HomeScreen' });
+    // navigation.navigate('DrawerNavigator', { screen: 'HomeScreen' });
 
-    // handleMessage(null);
-    // const url = 'http://localhost:3001/api/users/';
-    
-    // await axios
-    // .post(url, {
-    //   username: values.username,
-    //   email: values.email,
-    //   password: values.password
-    // })
-    // .then((response) => {
-    //   const result = response.headers['x-auth-token'];
-    //   localStorage.setItem('x-auth-token', result);
+    console.log('client signup');
+
+    handleMessage(null);
+    await axios.post('http://192.168.1.78:3001/api/users', {
+      username: values.username,
+      email: values.email,
+      password: values.password
+    })
+    .then((response) => {
+      console.log('1');
+      const result = response.headers['x-auth-token'];
+      setJwt(result);
       
-    //   navigation.navigate('DrawerNavigator', { screen: 'HomeScreen' });
-    // })
-    // .catch(error => {
-    //   handleMessage("Failed to signup.");
-    //   console.log(error);
-    // })
+      navigation.navigate('DrawerNavigator', { screen: 'HomeScreen' });
+    })
+    .catch(error => {
+      console.log('2');
+      handleMessage("Failed to signup.");
+      console.log(error);
+    })
   };
 //Handling messages
   const handleMessage = (message, type = 'Failed') => {
