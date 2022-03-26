@@ -26,11 +26,7 @@ mongod
 
 - Ctrl + c to stop running Mongo Daemon
 
-Fix network error:
-- Download Notepad++ (Windows): https://notepad-plus-plus.org/downloads/
-- Run Notepad++ as an administrator
-- In Notepad++ navigate to File > Open...  and navigate to 'C:\Windows\System32\drivers\etc' folder
-- In this folder select and open the 'hosts' file
+# Fix network error
 - Type the following into a command prompt and press enter
 
 ```console
@@ -39,15 +35,23 @@ ipconfig /all
 
 - Under 'Ethernet adapter Ethernet' find 'IPv4 Address'
 - Copy the value => Ex. '123.456.7.89'
-- In Notepad++ add the following line to the bottom of the 'hosts' file
+- Open the folder 'config at '/capstone-project/client/config'
+- Make a new file in this folder using the following name:
 
-```console
-photo-app   123.456.7.89
+```name
+ip.json
 ```
 
-- Where **inbetween** photo-app and your IPv4 Address is a **tab**
+- Populate the file with the following json:
+
+```json
+{
+    "ip": "123.456.7.89"
+}
+```
+
 - **Remember to replace the example IPv4 Address with your own!**
-- Save the file before running the program
+- Save the file
 
 # Running the Server
 
@@ -92,10 +96,11 @@ To run program:
 
 - To download Android Studio (Windows): https://developer.android.com/studio?authuser=1
 - To download xCode (MacOS): https://developer.apple.com/documentation/xcode/running-your-app-in-the-simulator-or-on-a-device
+- Open another new command prompt at '/capstone-project/client'
 - Type the following into the prompt and press enter:
 
 ```console
-npm start
+expo start
 ```
 
 - Open android emulator if using one
