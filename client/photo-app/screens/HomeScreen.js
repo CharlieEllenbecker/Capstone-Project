@@ -27,31 +27,31 @@ const CARD_HEIGHT = 220;
 const CARD_WIDTH = width * 0.8;
 const SPACING_FOR_CARD_INSET = width * 0.1 - 10;
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
   const theme = useTheme();
 
   const initialMapState = {
     markers,
     categories: [
       {
-        name: 'Fastfood Center',
-        icon: <MaterialCommunityIcons style={styles.chipsIcon} name="food-fork-drink" size={18} />,
+        name: 'Portrait',
+      //  icon: <MaterialCommunityIcons style={styles.chipsIcon} name="food-fork-drink" size={18} />,
       },
       {
-        name: 'Restaurant',
-        icon: <Ionicons name="ios-restaurant" style={styles.chipsIcon} size={18} />,
+        name: 'Landscape',
+      //  icon: <Ionicons name="ios-restaurant" style={styles.chipsIcon} size={18} />,
       },
       {
-        name: 'Dineouts',
-        icon: <Ionicons name="md-restaurant" style={styles.chipsIcon} size={18} />,
+        name: 'Street',
+      //  icon: <Ionicons name="md-restaurant" style={styles.chipsIcon} size={18} />,
       },
       {
-        name: 'Snacks Corner',
-        icon: <MaterialCommunityIcons name="food" style={styles.chipsIcon} size={18} />,
+        name: 'Abstract',
+      //  icon: <MaterialCommunityIcons name="food" style={styles.chipsIcon} size={18} />,
       },
       {
-        name: 'Hotel',
-        icon: <Fontisto name="hotel" style={styles.chipsIcon} size={15} />,
+        name: 'Architectural',
+       // icon: <Fontisto name="hotel" style={styles.chipsIcon} size={15} />,
       },
     ],
     region: {
@@ -229,7 +229,7 @@ const HomeScreen = () => {
               </Text>
               <View style={styles.button}>
                 <TouchableOpacity
-                  onPress={() => {}}
+                  onPress={() => {navigation.navigate('LocationScreen', { title: marker.title, description: marker.description, image: marker.image, rating: marker.rating, reviews: marker.reviews})}}
                   style={[
                     styles.signIn,
                     {
@@ -246,7 +246,7 @@ const HomeScreen = () => {
                       },
                     ]}
                   >
-                    Order Now
+                    Visit
                   </Text>
                 </TouchableOpacity>
               </View>

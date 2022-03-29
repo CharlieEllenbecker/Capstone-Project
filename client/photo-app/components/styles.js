@@ -15,15 +15,16 @@ export const Colors = {
     red: '#FF0000',
     lighterPurp: '#8e84a3',
     purp: '#474251',
+    lightGrey: '#D3D3D3'
 }
 
-const { primary, secondary, secondaryLight, tetriary, lightBrick, brick, darkBrick, green, red } = Colors;
+const { primary, secondary, secondaryLight, tetriary, lightBrick, brick, darkBrick, green, red, lightGrey } = Colors;
 
 export const StyledContainer = styled.View`
     flex: 1;
     padding: 25px;
     padding-top: ${StatusBarHeight + 10}px;
-    background-color: ${primary};
+    background-color: #FFFFFF;
 `;
 
 export const InnerContainer = styled.KeyboardAvoidingView`
@@ -146,4 +147,65 @@ export const Line = styled.View`
     width: 100%;
     background-color: ${darkBrick};
     margin-vertical: 10px;
+`;
+
+//export const LocationImageBorder = styled.
+export const LocationImage = styled.Image`
+    max-height: 200px;
+    width: 350px;
+    padding: 25px;
+    border-width: 2px;
+    border-radius: 10px;
+    border-color: #000000;
+`;
+export const LocationTitle = styled.Text`
+    font-size: 25px;
+    font-weight: bold;
+    color: #000000;
+    padding: 1px;
+`;
+export const LocationDescription = styled.Text`
+    text-align: center;
+    font-size: 15px;
+    color: #000000;
+    padding: 25px;
+`;
+export const LocationReviewContainer = styled.View`
+    padding: 20px;
+    width: 95%;
+    height: 20px;
+    align-items: flex-end;
+`;
+export const LocationLine = styled.View`
+    height: 1px;
+    width: 100%;
+    background-color: #000000;
+    margin-vertical: 10px;
+`;
+export const LocationReviewButton = styled.TouchableOpacity`
+    width: 50%;
+    background-color: ${darkBrick};
+    justify-content: center;
+    align-content: center;
+    border-radius: 15px;
+    border-color: #000000;
+    border-width: 0.4px;
+    height: 25px;
+    margin-vertical: 5px;
+`;
+export const SubmitReviewButton = styled.TouchableOpacity`
+    width: 50%;
+    background-color: ${darkBrick};
+    justify-content: center;
+    align-content: center;
+    border-radius: 15px;
+    border-color: #000000;
+    border-width: 0.4px;
+    height: 40px;
+    margin-vertical: 5px;
+`;
+export const ReviewButtonText = styled.Text`
+    text-align: center;
+    font-size: 15px;
+    color: ${lightBrick};
 `;
