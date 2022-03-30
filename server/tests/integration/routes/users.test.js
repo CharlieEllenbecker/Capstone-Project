@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 let server;
 
 describe('/api/users', () => {
-    beforeEach(() => { server  = require('../../../index'); });
+    beforeEach(() => { server = require('../../../index'); });
     afterEach(async () => {
         await User.deleteMany({});
         server.close();
@@ -43,6 +43,9 @@ describe('/api/users', () => {
             const res = await exec();
 
             expect(res.status).toBe(200);
+            expect(res.body).toHaveProperty('username');
+            expect(res.body).toHaveProperty('email');
+            
         });
     });
 

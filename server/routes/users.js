@@ -3,12 +3,11 @@ const auth = require('../middleware/auth');
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
 const express = require('express');
-const db = require('../startup/db');
 require('express-async-errors');
 const router = express.Router();
 
 /*
-    Get - Get user info
+    GET - Get user info
 */
 router.get('/me', auth, async (req, res) => {
     const user = await User.findById(req.user._id).select(['-_id', '-password']);
@@ -51,7 +50,6 @@ router.post('/', async (req, res) => {
     DELETE - Delete a user
 */
 router.delete('/delete', auth, async (req, res) => { 
-
     const { error } = validateEmail(req.body);
     if(error) {
         return res.status(400).send(error.details[0].message);

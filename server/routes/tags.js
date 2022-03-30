@@ -1,0 +1,15 @@
+const { tagOptions } = require('../models/tag');
+const auth = require('../middleware/auth');
+const config = require('config');
+const express = require('express');
+require('express-async-errors');
+const router = express.Router();
+
+/*
+    GET - Get tags
+*/
+router.get('/', auth, (req, res) => {
+    return res.status(200).send(config.get('tags'));
+});
+
+module.exports = router;

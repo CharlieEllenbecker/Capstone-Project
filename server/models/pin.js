@@ -1,21 +1,64 @@
 const { coordinateSchema } = require('./coordinate');
+const { reviewSchema } = require('./review');
+const { tagSchema } = require('./tag');
 const mongoose = require('mongoose');
 const Joi = require('joi');
 
 const pinSchema = new mongoose.Schema({
-    coordinate
+    coordinate: coordinateSchema,
+    title: {
+        type: String,
+        required: true,
+        minLength: 5,
+        maxLength: 256
+    },
+    description: {
+        type: String,
+        required: false,
+        minlength: 5,
+        maxlength: 1024,
+        default: null
+    },
+    rating: {
+        type: Number,
+        required: false,
+        default: 0
+    },
+    tags: [tagSchema],
+    reviews: [reviewSchema],  // TODO: implement image reference? name of image stored in another local bucket or something?
+    username: {
+        type: String,
+        required: false,    // added when pin is created
+        minLength: 5,
+        maxLength: 256
+    }
 }, { versionKey: false });
 
+const Pin = mongoose.model('Pin', pinSchema);
 
+function validate(pin) {
+    const schema = Joi.object({
+        coordinate: Joi.object({
+            latitude: Joi.number().required(),
+            longitude: Joi.number().required()
+        }),
+        title: Joi.string().min(5).max(256).required(),
+        description: Joi.string().min(5).max(1024),
+        rating: Joi.number(),
+        tags: Joi.array().items(Joi.object({
+            name: Joi.string().min(3).max(64).required()
+        })),
+        reviews: Joi.array().items(Joi.object({
+            pinId: Joi.objectId(),
+            userId: Joi.objectId(),
+            description: Joi.string().min(5).max(1024),
+            rating: Joi.number().required()
+        })),
+        username: Joi.string().min(5).max(256)
+    });
 
-// {
-//     coordinate: {
-//       latitude: 43.03725,
-//       longitude: -87.91891,
-//     },
-//     title: 'Amazing Food Place',
-//     description: 'This is the best food place',
-//     image: Images[0].image,
-//     rating: 4,
-//     reviews: 99,
-// }
+    return schema.validate(pin);
+}
+
+module.exports.Pin = Pin;
+module.exports.validate = validate;
