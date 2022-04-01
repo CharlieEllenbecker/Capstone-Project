@@ -26,11 +26,10 @@ const pinSchema = new mongoose.Schema({
     },
     tags: [tagSchema],
     reviews: [reviewSchema],  // TODO: implement image reference? name of image stored in another local bucket or something?
-    username: {
-        type: String,
-        required: false,    // added when pin is created
-        minLength: 5,
-        maxLength: 256
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: false // userId is generated from token
     }
 }, { versionKey: false });
 
@@ -54,7 +53,7 @@ function validate(pin) {
             description: Joi.string().min(5).max(1024),
             rating: Joi.number().required()
         })),
-        username: Joi.string().min(5).max(256)
+        userId: Joi.objectId()
     });
 
     return schema.validate(pin);

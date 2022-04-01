@@ -2,12 +2,6 @@ const mongoose = require('mongoose');
 const Joi = require('joi');
 
 const reviewSchema = new mongoose.Schema({
-    username: {
-        type: String,
-        required: false,    // gets added on review creation
-        minLength: 5,
-        maxLength: 256
-    },
     description: {
         type: String,
         required: false,
@@ -18,6 +12,11 @@ const reviewSchema = new mongoose.Schema({
     rating: {
         type: Number,
         required: true
+    },
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: false // userId is generated from token
     }
 }, { versionKey: false });
 
@@ -25,9 +24,9 @@ const Review = mongoose.model('Review', reviewSchema);
 
 function validate(review) {
     const schema = Joi.object({
-        username: Joi.string().min(5).max(256),
         description: Joi.string().min(5).max(1024),
-        rating: Joi.number().required()
+        rating: Joi.number().required(),
+        userId: Joi.objectId()
     });
 
     return schema.validate(review);
@@ -35,4 +34,4 @@ function validate(review) {
 
 module.exports.Review = Review;
 module.exports.reviewSchema = reviewSchema;
-module.exports.validateReview = validate;
+module.exports.validate = validate;
