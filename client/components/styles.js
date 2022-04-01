@@ -270,11 +270,13 @@ export const UsernameText = styled.Text`
     font-weight: bold;
     text-align: center;
 `;
+
 export const BioText = styled.Text`
     font-size: 15px;
     font-weight: bold;
     text-align: center;
 `;
+
 export const GridView = styled.View`
     flex-direction: row;
     flex-wrap: wrap;
@@ -287,6 +289,7 @@ export const NumberOfPinsContainer = styled.View`
     justify-content: space-around;
     margin: auto;
 `;
+
 export const HorizontalContainer = styled.View`
     flex-direction: row;
     padding: 5px;
