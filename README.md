@@ -39,15 +39,17 @@ ipconfig /all
 - Make a new file in this folder using the following name:
 
 ```file name
-ip.json
+ip.js
 ```
 
-- Populate the file with the following json:
+- Populate the file with the following js:
 
-```json
-{
-    "ip": "123.456.7.89"
-}
+```js
+const ip = {
+    ip: "123.456.7.89"
+};
+
+export default ip;
 ```
 
 - **Remember to replace the example IPv4 Address with your own!**

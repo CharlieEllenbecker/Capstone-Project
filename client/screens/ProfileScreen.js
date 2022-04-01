@@ -1,6 +1,6 @@
 import { View, Text, Button, StyleSheet, Image, Dimensions } from 'react-native';
 import React, { useState, useEffect } from 'react';
-import config from '../ip.json';
+import getIp from '../ip';
 import { Octicons, Ionicons } from '@expo/vector-icons';
 import {
   HeaderContainer,
@@ -52,8 +52,9 @@ const renderImages = (images, width, height) => {
 const ProfileScreen = ({ route, navigation }) => {
     const [user, setUser] = useState('');
     var {width, height} = Dimensions.get('screen');
+    const ip = getIp();
+
     const getUser = async () => {
-      const ip = config.ip;
       const data = await axios.get(`http://${ip}:3001/api/users/me/`, { headers: { 'x-auth-token': jwt } })
       .catch(error => {
         console.log(error);
@@ -63,7 +64,6 @@ const ProfileScreen = ({ route, navigation }) => {
     getUser();
   // TODO: handle the logout by not sending jwt token?
   const handleLogout = async () => {
-    const ip = config.ip;
     await axios(`http://${ip}:3001/`);
   };
 

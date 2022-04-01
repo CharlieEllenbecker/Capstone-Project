@@ -13,12 +13,10 @@ import {
   Platform,
 } from 'react-native';
 
-import config from '../ip.json';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import Animated from 'react-native-reanimated';
 import BottomSheet from 'reanimated-bottom-sheet';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import * as ImagePicker from 'expo-image-picker';
