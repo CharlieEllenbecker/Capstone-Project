@@ -26,6 +26,14 @@ router.get('/my', auth, async (req, res) => {
 });
 
 /*
+    GET - Get a specific pin by id
+*/
+router.get('/:id', auth, async (req, res) => {
+    const pin = await Pin.find(req.params.id);
+    return res.status(200).send(pin);
+});
+
+/*
     POST - Add a new pin
 */
 router.post('/', auth, async (req, res) => {

@@ -44,7 +44,7 @@ const Signup = ({navigation}) => {
     const ip = config.ip;
 
     handleMessage(null);
-    await axios.post(`http://${ip}:3001/api/users`, {
+    await axios.post(`http://${ip}:3001/api/users/`, {
       username: values.username,
       email: values.email,
       password: values.password
@@ -53,12 +53,12 @@ const Signup = ({navigation}) => {
       const result = response.headers['x-auth-token'];
       setJwt(result);
       
-      navigation.navigate('DrawerNavigator', { screen: 'HomeScreen' });
+      navigation.navigate('HomeScreen', { jwt: jwt });
     })
     .catch(error => {
       handleMessage("Failed to signup.");
       console.log(error);
-    })
+    });
   };
 //Handling messages
   const handleMessage = (message, type = 'Failed') => {

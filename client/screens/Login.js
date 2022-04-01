@@ -4,7 +4,6 @@ import { View } from 'react-native';
 import { Octicons, Ionicons } from '@expo/vector-icons';
 import KeyboardAvoidingWrapper from '../components/keyboardAvoidingWrapper';
 import config from '../ip.json';
-
 //components
 import {
   Colors,
@@ -27,12 +26,11 @@ import {
 import axios from 'axios';
 //colors
 const { brick } = Colors;
-
 const Login = ({ navigation }) => {
   const [hidePassword, setHidePassword] = useState(true);
   const [message, setMessage] = useState();
   const [messageType, setMessageType] = useState();
-  const [jwt, setJwt] = useState();
+  const [jwt, setJwt] = useState('');
 
  //handling login
   const handleLogin = async (values)  => {
@@ -49,7 +47,8 @@ const Login = ({ navigation }) => {
     .then((response) => {
       const result = response.headers['x-auth-token'];
       setJwt(result);
-      navigation.navigate('DrawerNavigator', { screen: 'HomeScreen' });
+      console.log(jwt);
+      navigation.navigate('HomeScreen', { jwt: jwt });
     })
     .catch(error => {
       handleMessage("Failed to login.");

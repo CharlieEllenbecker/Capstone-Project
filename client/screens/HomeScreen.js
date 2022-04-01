@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import {
   StyleSheet,
   Text,
@@ -12,12 +13,10 @@ import {
   Platform,
 } from 'react-native';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
-
+import config from '../ip.json';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Fontisto from 'react-native-vector-icons/Fontisto';
 
-import { markers, mapDarkStyle, mapStandardStyle } from '../model/mapData';
+import { mapDarkStyle, mapStandardStyle } from '../model/mapData';
 import StarRating from '../components/StarRating';
 
 import { useTheme } from '@react-navigation/native';
@@ -27,33 +26,38 @@ const CARD_HEIGHT = 220;
 const CARD_WIDTH = width * 0.8;
 const SPACING_FOR_CARD_INSET = width * 0.1 - 10;
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = ({ route, navigation }) => {
   const theme = useTheme();
-
+  //get the markers from the backend
+  const [markers, setMarkers] = useState([]);
+  const jwt = route.param;
+  const getMarkers = async () => {
+    const ip = config.ip;
+    const data = await axios.get(`http://${ip}:3001/api/pins/`, { headers: { 'x-auth-token': jwt } })
+    .catch(error => {
+      console.log(error);
+    });
+    setMarkers(data);
+  };
+  getMarkers();
+  //get tags from the backend
+const [categories, setCategories] = useState([]);
+const getCategories = async () => {
+  const ip = config.ip;
+  const data = await axios.get(`http://${ip}:3001/api/tags/`, { headers: { 'x-auth-token': jwt } })
+  .then(response => {
+    const result = response.headers['x-auth-token'];
+    setJwt(result);
+  })
+  .catch(error => {
+    console.log(error);
+  });
+  setCategories(data);
+};
+getCategories();
   const initialMapState = {
     markers,
-    categories: [
-      {
-        name: 'Portrait',
-      //  icon: <MaterialCommunityIcons style={styles.chipsIcon} name="food-fork-drink" size={18} />,
-      },
-      {
-        name: 'Landscape',
-      //  icon: <Ionicons name="ios-restaurant" style={styles.chipsIcon} size={18} />,
-      },
-      {
-        name: 'Street',
-      //  icon: <Ionicons name="md-restaurant" style={styles.chipsIcon} size={18} />,
-      },
-      {
-        name: 'Abstract',
-      //  icon: <MaterialCommunityIcons name="food" style={styles.chipsIcon} size={18} />,
-      },
-      {
-        name: 'Architectural',
-       // icon: <Fontisto name="hotel" style={styles.chipsIcon} size={15} />,
-      },
-    ],
+    categories,
     region: {
       latitude: 43.041,
       longitude: -87.909,
@@ -62,8 +66,8 @@ const HomeScreen = ({ navigation }) => {
     },
   };
 
-  const [state, setState] = React.useState(initialMapState);
 
+  const [state, setState] = React.useState(initialMapState);
   let mapIndex = 0;
   let mapAnimation = new Animated.Value(0);
 
@@ -218,7 +222,7 @@ const HomeScreen = ({ navigation }) => {
       >
         {state.markers.map((marker, index) => (
           <View style={styles.card} key={index}>
-            <Image source={marker.image} style={styles.cardImage} resizeMode="cover" />
+            {/* <Image source={marker.image} style={styles.cardImage} resizeMode="cover" /> */}
             <View style={styles.textContent}>
               <Text numberOfLines={1} style={styles.cardtitle}>
                 {marker.title}
@@ -229,7 +233,7 @@ const HomeScreen = ({ navigation }) => {
               </Text>
               <View style={styles.button}>
                 <TouchableOpacity
-                  onPress={() => {navigation.navigate('LocationScreen', { title: marker.title, description: marker.description, image: marker.image, rating: marker.rating, reviews: marker.reviews})}}
+                  onPress={() => {navigation.navigate('LocationScreen', { image: marker.image, title: marker.title, rating: marker.rating })}}
                   style={[
                     styles.signIn,
                     {

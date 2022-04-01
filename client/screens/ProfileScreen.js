@@ -1,24 +1,111 @@
-import { NavigationContainer } from '@react-navigation/native';
-import React from 'react';
-import { View, Text, Button, StyleSheet, Image } from 'react-native';
-import { Svg, Image as ImageSvg } from 'react-native-svg';
+import { View, Text, Button, StyleSheet, Image, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import config from '../ip.json';
+import { Octicons, Ionicons } from '@expo/vector-icons';
+import {
+  HeaderContainer,
+  SettingsButton,
+  LogoutButton,
+  ProfileContainer,
+  UserContainer,
+  ProfilePictureContainer,
+  NumberOfPinsContainer,
+  NumberOfPinsText,
+  EditProfileButton,
+  EditButtonText,
+  UsernameText,
+  BioText,
+  NumberOfPinsNumber,
+  VerticalContainer,
+  HorizontalContainer,
+  LocationLine,
+} from '../components/styles';
+import axios from 'axios';
+// import gridView from "../components/Gridview";
 
-const ProfileScreen = ({ navigation }) => {
+
+const images = [
+  require('../assets/banners/food-banner1.jpg'),
+  require('../assets/banners/food-banner4.jpg'),
+  require('../assets/banners/food-banner3.jpg'),
+  require('../assets/banners/food-banner2.jpg'),
+  require('../assets/banners/food-banner5.jpg')
+]
+
+
+export const gridView = (images, width, height) => {
   return (
-    <View style={styles.container}>
-      <Text>Profile Screen</Text>
-      <Button title="Logout" onPress={() => navigation.navigate('Login')} />
-      <Image style={{ height: 50, width: 50 }} source={require('../assets/signupBackground.jpg')} />
-    </View>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+          {renderImages(images, width, height)}
+      </View>
+  );
+}
+
+const renderImages = (images, width, height) => {
+  return images.map((image) => {
+      return <View style={[{ width: (width) / 3 }, { height: (width) / 3 }]}>
+          <Image style={{ flex: 1, width: undefined, height: undefined, borderColor: '#FFFFFF', borderWidth: 1 }} source={image}/>
+      </View>
+  });
+}
+
+const ProfileScreen = ({ route, navigation }) => {
+    const [user, setUser] = useState('');
+    var {width, height} = Dimensions.get('screen');
+    const getUser = async () => {
+      const ip = config.ip;
+      const data = await axios.get(`http://${ip}:3001/api/users/me/`, { headers: { 'x-auth-token': jwt } })
+      .catch(error => {
+        console.log(error);
+      });
+
+    };
+    getUser();
+  // TODO: handle the logout by not sending jwt token?
+  const handleLogout = async () => {
+    const ip = config.ip;
+    await axios(`http://${ip}:3001/`);
+  };
+
+  return (
+    
+    <ProfileContainer>
+      <HeaderContainer>
+        <SettingsButton><Ionicons name='ios-settings-outline' size={25}/></SettingsButton>
+        <UsernameText>Username</UsernameText>
+        <LogoutButton onPress={() => navigation.navigate('Login')}><Ionicons name='ios-exit-outline' size={25}/></LogoutButton>
+      </HeaderContainer>
+      
+      <UserContainer>
+        <VerticalContainer>
+        <ProfilePictureContainer></ProfilePictureContainer>
+        </VerticalContainer>
+        <VerticalContainer>
+        <NumberOfPinsContainer>
+          <VerticalContainer>
+          <HorizontalContainer>
+          <NumberOfPinsText>Pins</NumberOfPinsText>
+          <NumberOfPinsText>Posts</NumberOfPinsText>
+          </HorizontalContainer>
+          <HorizontalContainer>
+          <NumberOfPinsNumber>40</NumberOfPinsNumber>
+          <NumberOfPinsNumber>40</NumberOfPinsNumber>
+          </HorizontalContainer>
+          </VerticalContainer>
+        </NumberOfPinsContainer>
+        <EditProfileButton>
+          <EditButtonText>Edit profile</EditButtonText>
+        </EditProfileButton>
+        </VerticalContainer>
+        
+      </UserContainer>
+      <BioText>This is my bio.</BioText>
+      <LocationLine/>
+      {/* When images are working gridview will appear */}
+      {gridView(images, width, height)}
+    </ProfileContainer>
   );
 };
 
 export default ProfileScreen;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

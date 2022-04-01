@@ -1,23 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, Text } from 'react-native';
 
 import HomeScreen from '../screens/HomeScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
 import ExploreScreen from '../screens/ExploreScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import { DrawerActions } from '@react-navigation/native';
 
-const HomeStack = createNativeStackNavigator();
-const ExploreStack = createNativeStackNavigator();
+import LocationScreen from '../screens/LocationScreen';
 
 const Tab = createMaterialBottomTabNavigator();
 
-const MainTabScreen = () => {
+const MainTabScreen = ({ route, navigation }) => {
   return (
     <Tab.Navigator initialRouteName="Home" activeColor="#fff" style={{ flex: 1 }}>
       <Tab.Screen
@@ -34,12 +32,12 @@ const MainTabScreen = () => {
 
       <Tab.Screen
         name="Explore"
-        component={ExploreScreen}
+        component={LocationScreen}
         options={{
           tabBarLabel: 'Explore',
           tabBarLabel: <Text style={{ fontSize: 11 }}>Search</Text>,
           tabBarColor: '#ffffff',
-          tabBarIcon: ({ color }) => <Ionicons name="search-outline" color="#000000" size={26} />,
+          tabBarIcon: ({ color }) => <Ionicons name="ios-camera" color="#000000" size={26} />,
         }}
       />
       <Tab.Screen
@@ -54,7 +52,7 @@ const MainTabScreen = () => {
             </Text>
           ),
           tabBarColor: '#ffffff',
-          tabBarIcon: ({ color }) => <Ionicons name="notifications" color="#000000" size={26} />,
+          tabBarIcon: ({ color }) => <Ionicons name="ios-bookmark" color="#000000" size={26} />,
         }}
       />
       <Tab.Screen
@@ -72,65 +70,6 @@ const MainTabScreen = () => {
 
 export default MainTabScreen;
 
-const HomeStackScreen = ({ navigation }) => (
-  <HomeStack.Navigator
-    screenOptions={{
-      headerStyle: {
-        backgroundColor: '#009387',
-        headerShown: false,
-      },
-      headerTintColor: '#fff',
-      headerTitleStyle: {
-        fontWeight: 'bold',
-      },
-    }}
-  >
-    <HomeStack.Screen
-      name="Home"
-      component={HomeScreen}
-      options={{
-        title: 'Overview',
-        headerLeft: () => (
-          <Ionicons.Button
-            name="ios-menu"
-            size={25}
-            backgroundColor="#009387"
-            onPress={() => navigation.openDrawer()}
-          ></Ionicons.Button>
-        ),
-      }}
-    />
-  </HomeStack.Navigator>
-);
-
-const ExploreStackScreen = ({ navigation }) => (
-  <ExploreStack.Navigator
-    screenOptions={{
-      headerStyle: {
-        backgroundColor: '#1f65ff',
-      },
-      headerTintColor: '#fff',
-      headerTitleStyle: {
-        fontWeight: 'bold',
-      },
-    }}
-  >
-    <ExploreStack.Screen
-      name="Explore"
-      component={ExploreScreen}
-      options={{
-        headerLeft: () => (
-          <Ionicons.Button
-            name="ios-menu"
-            size={25}
-            backgroundColor="#1f65ff"
-            onPress={() => navigation.openDrawer()}
-          ></Ionicons.Button>
-        ),
-      }}
-    />
-  </ExploreStack.Navigator>
-);
 
 const styles = StyleSheet.create({
   names: {

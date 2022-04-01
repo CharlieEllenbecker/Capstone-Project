@@ -8,6 +8,10 @@ const {primary, darkBrick, brick, lightBrick, secondary, tetriary} = Colors;
 
 import Login from '../screens/Login';
 import Signup from '../screens/Signup';
+import MainTabScreen from './MainTabScreen';
+import SettingsScreen from '../screens/SettingsScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import HomeScreen from '../screens/HomeScreen';
 import DrawerNavigator from './DrawerNavigator.js';
 import LocationScreen from '../screens/LocationScreen';
 
@@ -26,7 +30,8 @@ const RootStack = () => {
                     headerTitle: '',
                     headerLeftContainerStyle: {
                         paddingLeft: 20
-                    } 
+                    },
+                    headerBackVisible: false
                 }}
                 initialRouteName="Login"
                 >
@@ -34,6 +39,10 @@ const RootStack = () => {
                 <Stack.Screen name="Signup" component={Signup}/>
                 <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} options = {{ headerShown: false }}/>
                 <Stack.Screen name="LocationScreen" component={LocationScreen}/>
+                <Stack.Screen name="ProfileScreen" component={ProfileScreen}/>
+                <Stack.Screen name="HomeScreen" component={MainTabScreen}/>
+                <Stack.Screen name="SettingsScreen" component={SettingsScreen}/>
+                <Stack.Screen name="Home" component={HomeScreen}/>
             </Stack.Navigator>
         </NavigationContainer>
     );

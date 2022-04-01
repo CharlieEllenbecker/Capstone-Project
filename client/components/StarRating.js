@@ -16,13 +16,13 @@ const StarRating = (props) => {
       name = 'ios-star-outline';
     }
 
-    stars.push(<Ionicons name={name} size={15} style={styles.star} key={i} />);
+    stars.push(<Ionicons name={name} size={20} style={styles.star} key={i} />);
   }
 
   return (
     <View style={styles.container}>
       {stars}
-      <Text style={styles.text}>({props.reviews})</Text>
+      {/* <Text style={styles.text}>({props.reviews})</Text> */}
     </View>
   );
 };

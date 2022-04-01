@@ -18,34 +18,33 @@ const { darkBrick } = Colors;
 const DrawerNavigator = () => {
   const { colors } = useTheme();
 
-  return (
-    <Drawer.Navigator
-      drawerContent={(props) => <DrawerContent {...props} />}
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: 'transparent',
-        },
-        headerTintColor: '#000000',
-        headerTransparent: true,
-        headerTitle: '',
-        headerLeftContainerStyle: {
-          paddingLeft: 20,
-        },
-      }}
-    >
-      <Drawer.Screen
-        options={{ headerShown: false }}
-        name="HomeDrawer"
-        component={MainTabScreen}
-        //options={{ headerShown: false }}
-      />
-      <Drawer.Screen name="HomeScreen" component={MainTabScreen} />
-      <Drawer.Screen name="Settings" component={SettingsScreen} />
-      <Drawer.Screen name="Bookmarks" component={BookmarkScreen} />
-      <Drawer.Screen name="Profile" component={ProfileScreen} />
-      <Drawer.Screen name="Home" component={HomeScreen} />
-    </Drawer.Navigator>
-    );
-};
+//   return (
+//     <Drawer.Navigator
+//       // drawerContent={(props) => <DrawerContent {...props} />}
+//       // screenOptions={{
+//       //   headerStyle: {
+//       //     backgroundColor: 'transparent',
+//       //   },
+//       //   headerTintColor: '#000000',
+//       //   headerTransparent: true,
+//       //   headerTitle: '',
+//       //   headerLeftContainerStyle: {
+//       //     paddingLeft: 20,
+//       //   },
+//       // }}
+//     >
+//       <Drawer.Screen
+//         options={{ headerShown: false }}
+//         name="HomeDrawer"
+//         component={MainTabScreen}
+//       />
+//       <Drawer.Screen name="HomeScreen" component={MainTabScreen} />
+//       <Drawer.Screen name="Settings" component={SettingsScreen} />
+//       <Drawer.Screen name="Bookmarks" component={BookmarkScreen} />
+//       <Drawer.Screen name="Profile" component={ProfileScreen} />
+//       <Drawer.Screen name="Home" component={HomeScreen} />
+//     </Drawer.Navigator>
+//     );
+ };
 
 export default DrawerNavigator;
