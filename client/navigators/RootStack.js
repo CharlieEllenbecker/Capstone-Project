@@ -3,8 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { Colors } from '../components/styles';
-const {primary, darkBrick, brick, lightBrick, secondary, tetriary} = Colors;
-
+const { primary, darkBrick, brick, lightBrick, secondary, tetriary } = Colors;
 
 import Login from '../screens/Login';
 import Signup from '../screens/Signup';

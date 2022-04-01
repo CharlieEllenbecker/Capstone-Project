@@ -31,14 +31,16 @@ const { brick } = Colors;
 import axios from 'axios';
 
 //Handling Signup
-const Signup = ({navigation}) => {
+const Signup = ({ navigation }) => {
   const [hidePassword, setHidePassword] = useState(true);
   const [message, setMessage] = useState();
   const [messageType, setMessageType] = useState();
   const [jwt, setJwt] = useState();
 
   const handleSignup = async (values) => {
-    {/* TODO: Just for the presentation */}
+    {
+      /* TODO: Just for the presentation */
+    }
     // navigation.navigate('DrawerNavigator', { screen: 'HomeScreen' });
 
     const ip = config.ip;
@@ -60,7 +62,7 @@ const Signup = ({navigation}) => {
       console.log(error);
     });
   };
-//Handling messages
+  //Handling messages
   const handleMessage = (message, type = 'Failed') => {
     setMessage(message);
     setMessageType(type);
@@ -151,7 +153,7 @@ const Signup = ({navigation}) => {
 };
 
 //Hide or view password/confirmPassword
-const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, ...props}) => {
+const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, ...props }) => {
   return (
     <View>
       <LeftIcon>
@@ -161,12 +163,12 @@ const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, .
       <StyledTextInput {...props} />
       {isPassword && (
         <RightIcon onPress={() => setHidePassword(!hidePassword)}>
-          <Ionicons name={hidePassword ? 'md-eye-off' : 'md-eye'} size={25} color={brick}/>
+          <Ionicons name={hidePassword ? 'md-eye-off' : 'md-eye'} size={25} color={brick} />
         </RightIcon>
       )}
     </View>
   );
-}
+};
 
 //export signup screen
 
