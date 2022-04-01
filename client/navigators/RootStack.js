@@ -2,13 +2,13 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { Colors } from './../components/styles';
-import MainTabScreen from './MainTabScreen';
+import { Colors } from '../components/styles';
 const { primary, darkBrick, brick, lightBrick, secondary, tetriary } = Colors;
 
-// import Login from './../screens/Login';
-// import Signup from '../screens/Signup';
-// import DrawerNavigator from './DrawerNavigator.js';
+import Login from '../screens/Login';
+import Signup from '../screens/Signup';
+import DrawerNavigator from './DrawerNavigator.js';
+import LocationScreen from '../screens/LocationScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -20,18 +20,19 @@ const RootStack = () => {
           headerStyle: {
             backgroundColor: 'transparent',
           },
-          headerTintColor: darkBrick,
+          headerTintColor: '#000000',
           headerTransparent: true,
           headerTitle: '',
           headerLeftContainerStyle: {
             paddingLeft: 20,
           },
         }}
-        initialRouteName="MainTabScreen"
+        initialRouteName="Login"
       >
-        {/* <Stack.Screen name="Login" component={Login}/>
-                <Stack.Screen name="Signup" component={Signup}/> */}
-        <Stack.Screen name="MainTabScreen" component={MainTabScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Signup" component={Signup} />
+        <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} options={{ headerShown: false }} />
+        <Stack.Screen name="LocationScreen" component={LocationScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

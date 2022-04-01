@@ -1,4 +1,3 @@
-//import react/formik/icons/keyboardAvoidingView
 import React, { useState, ImageBackground } from 'react';
 import { Formik } from 'formik';
 import { View } from 'react-native';
@@ -146,4 +145,5 @@ const MyTextInput = ({ label, icon, isPassword, hidePassword, setHidePassword, .
   );
 };
 //export login screen
+
 export default Login;

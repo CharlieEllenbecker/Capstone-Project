@@ -25,7 +25,7 @@ const DrawerNavigator = () => {
         headerStyle: {
           backgroundColor: 'transparent',
         },
-        headerTintColor: darkBrick,
+        headerTintColor: '#000000',
         headerTransparent: true,
         headerTitle: '',
         headerLeftContainerStyle: {
