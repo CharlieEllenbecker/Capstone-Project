@@ -45,11 +45,9 @@ ip.js
 - Populate the file with the following js:
 
 ```js
-const ip = {
-    ip: "123.456.7.89"
-};
-
-export default ip;
+export default function getIp() {
+    return '123.456.7.89'
+}
 ```
 
 - **Remember to replace the example IPv4 Address with your own!**
