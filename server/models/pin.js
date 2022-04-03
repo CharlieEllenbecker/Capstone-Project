@@ -25,7 +25,7 @@ const pinSchema = new mongoose.Schema({
         default: 0
     },
     tags: [tagSchema],
-    reviews: [reviewSchema],  // TODO: implement image reference? name of image stored in another local bucket or something?
+    reviews: [reviewSchema],
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
