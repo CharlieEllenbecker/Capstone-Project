@@ -56,21 +56,6 @@ router.post('/', async (req, res) => {
 });
 
 /*
-    DELETE - Delete a user
-*/
-router.delete('/delete', auth, async (req, res) => { 
-    const userId = decodeJwt(req.header('x-auth-token'))._id;
-
-    const user = await User.findById(userId);
-    if(!user) {
-        return res.status(404).send('User does not exist.');
-    }
-    await User.findByIdAndDelete(userId);
-
-    return res.status(200).send('User deleted.');
-});
-
-/*
     POST - Login user - Logout by not sending the token
 */
 router.post('/login', async (req, res) => { // TODO: Do we want to allow the user to login with a username instead of an email in the future?
@@ -113,6 +98,28 @@ router.post('/profile-picture', auth, async (req, res) => {
     user = await user.save();
 
     return res.status(200).send(user);
+});
+
+/*
+    PUT - Update profile picture
+*/
+router.put('/profile-picture', auth, async (req, res) => {
+    // TODO
+});
+
+/*
+    DELETE - Delete a user
+*/
+router.delete('/delete', auth, async (req, res) => { 
+    const userId = decodeJwt(req.header('x-auth-token'))._id;
+
+    const user = await User.findById(userId);
+    if(!user) {
+        return res.status(404).send('User does not exist.');
+    }
+    await User.findByIdAndDelete(userId);
+
+    return res.status(200).send('User deleted.');
 });
 
 module.exports = router;

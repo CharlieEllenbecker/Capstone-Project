@@ -1,6 +1,7 @@
 const { coordinateSchema } = require('./coordinate');
 const { reviewSchema } = require('./review');
 const { tagSchema } = require('./tag');
+const { postSchema } = require('./post');
 const mongoose = require('mongoose');
 const Joi = require('joi');
 
@@ -26,6 +27,7 @@ const pinSchema = new mongoose.Schema({
     },
     tags: [tagSchema],
     reviews: [reviewSchema],
+    posts: [postSchema],
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -52,6 +54,10 @@ function validate(pin) {
             userId: Joi.objectId(),
             description: Joi.string().min(5).max(1024),
             rating: Joi.number().required()
+        })),
+        posts: Joi.array().items(Joi.object({
+            description: Joi.string().min(5).max(1024),
+            postPicture: Joi.objectId()
         })),
         userId: Joi.objectId()
     });

@@ -5,7 +5,7 @@ const profilePictureSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: false // userId is generated from token
+        required: false
     }
 }, { versionKey: false });
 
