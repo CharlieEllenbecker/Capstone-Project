@@ -1,11 +1,11 @@
 const { User } = require('../../../models/user');
-const { Pin } = require('../../../models/Pin');
+const { Pin } = require('../../../models/pin');
 const { Post } = require('../../../models/post');
 const request = require('supertest');
 
 let server;
 
-describe('/api/pins', () => {
+describe('/api/posts', () => {
     beforeEach(() => { server  = require('../../../index'); });
     afterEach(async () => {
         await User.deleteMany({});
@@ -18,8 +18,11 @@ describe('/api/pins', () => {
         let token;
         let userId;
         let pinId;
+        let description;
 
         beforeEach(async () => {
+            description = 'New Post'
+
             const user = await new User({
                 username: 'johnSmith',
                 email: 'john.smith@gmail.com',
@@ -46,7 +49,7 @@ describe('/api/pins', () => {
                 .post(`/api/posts/${pinId}`)
                 .set('x-auth-token', token)
                 .send({
-                    description: 'New Post'
+                    description: description
                 });
         }
 

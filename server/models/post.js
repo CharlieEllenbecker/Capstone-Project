@@ -14,7 +14,7 @@ const postSchema = new mongoose.Schema({
         ref: 'PostPicture',
         required: false // added after creating the post
     }
-});
+}, { versionKey: false });
 
 const Post = new mongoose.model('Post', postSchema);
 

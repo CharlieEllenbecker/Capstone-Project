@@ -14,12 +14,8 @@ module.exports = function(app) {
     app.use(express.json());
     app.use('/api/users', users);
     app.use('/api/tags', tags);
-    console.log('1');
     app.use('/api/pins', pins);
-    console.log('2');
     app.use('/api/reviews', reviews);
-    console.log('3');
     app.use('/api/posts', posts);
-    console.log('4');
     app.use(error);
 }

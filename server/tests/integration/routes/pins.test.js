@@ -1,5 +1,5 @@
 const { User } = require('../../../models/user');
-const { Pin } = require('../../../models/Pin');
+const { Pin } = require('../../../models/pin');
 const request = require('supertest');
 const mongoose = require('mongoose');
 

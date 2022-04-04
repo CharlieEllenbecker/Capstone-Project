@@ -1,5 +1,5 @@
 const { Pin } = require('../models/pin');
-const { PostPicture } = require('./models/postPicture')
+const { PostPicture } = require('../models/postPicture')
 const { Post, validate } = require('../models/post');
 const auth = require('../middleware/auth');
 const _ = require('lodash');
@@ -11,7 +11,6 @@ const router = express.Router();
     POST - Post a post to a pin
 */
 router.post('/:pinId', auth, async (req, res) => {
-    console.log('1');
     const { error } = validate(req.body);
     if(error) {
         return res.status(400).send(error.details[0].message);
