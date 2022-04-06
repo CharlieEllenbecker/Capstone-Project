@@ -39,7 +39,7 @@ const Login = ({ navigation }) => {
 
   const handleLogin = async (values) => {
     handleMessage(null);
-    await axios.post(`http://${ip}:3001/api/users/login`, {
+    await axios.post(`http://${ip}:3001/api/users/login/`, {
       email: values.email,
       password: values.password
     })

@@ -291,8 +291,11 @@ describe('/api/users', () => {
     describe('POST /profile-picture', () => {
         let user;
         let token;
+        let fileExtension;
     
         beforeEach(async () => {
+            fileExtension = 'image/jpg';
+
             user = await new User({
                 username: 'JohnSmith',
                 email: 'joe.buck@gmail.com',
@@ -305,7 +308,9 @@ describe('/api/users', () => {
             return await request(server)
                 .post('/api/users/profile-picture')
                 .set('x-auth-token', token)
-                .send();
+                .send({
+                    fileExtension: fileExtension    // assuming the period is not included
+                });
         }
 
         it('should return 401 if client is not logged in', async () => {
@@ -320,7 +325,7 @@ describe('/api/users', () => {
             const res = await exec();
 
             expect(res.status).toBe(200);
-            expect(res.body).toHaveProperty('profilePictureId');
+            expect(res.body).toHaveProperty('profilePicture');
         });
     });
 });

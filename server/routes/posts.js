@@ -1,6 +1,6 @@
 const { Pin } = require('../models/pin');
 const { PostPicture } = require('../models/postPicture')
-const { Post, validate } = require('../models/post');
+const { Post, validate, validateDescriptionFileExtension } = require('../models/post');
 const auth = require('../middleware/auth');
 const _ = require('lodash');
 const express = require('express');
@@ -11,7 +11,7 @@ const router = express.Router();
     POST - Post a post to a pin
 */
 router.post('/:pinId', auth, async (req, res) => {
-    const { error } = validate(req.body);
+    const { error } = validateDescriptionFileExtension(req.body);
     if(error) {
         return res.status(400).send(error.details[0].message);
     }
@@ -22,8 +22,9 @@ router.post('/:pinId', auth, async (req, res) => {
     }
 
     let post = await new Post(_.pick(req.body, ['description'])).save();
-    const postPicture = await new PostPicture({ postId: post._id }).save();
-    post.postPictureId = postPicture._id;
+    console.log(post);
+    const postPicture = await new PostPicture({ postId: post._id, fileExtension: req.body.fileExtension }).save();
+    post.postPicture = postPicture;
     post = await post.save();
 
     pin.posts.push(post);

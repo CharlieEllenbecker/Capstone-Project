@@ -7,12 +7,13 @@ const _ = require('lodash');
 const express = require('express');
 require('express-async-errors');
 const router = express.Router();
+const multer = require('multer');   // TODO
 
 /*
     GET - Get user info
 */
 router.get('/me', auth, async (req, res) => {
-    const user = await User.findById(req.user._id).select(['-_id', '-password']);
+    const user = await User.findById(req.user._id).select(['-_id', '-password']);   // TODO                             ***********
     return res.status(200).send(user);
 });
 
@@ -82,6 +83,50 @@ router.post('/login', async (req, res) => { // TODO: Do we want to allow the use
     }).send(_.pick(user, ['username', 'email']));
 });
 
+// const fileFilter = (req, file, cb) => {
+//     if(file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
+//         cb(null, true);
+//     } else {
+//         cb(null, false);
+//     }
+// }
+
+// const postPictureUpload = multer({
+//     storage: postPictureStorage,
+//     fileFilter: fileFilter
+// });
+
+// const postPictureStorage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//         cb(null, './images/postPictures')
+//     },
+//     filename: function (req, file, cb) {
+//         cb(null, 'thisName!')   // needs the file extension
+//     }
+// });
+
+const profilePictureStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './images/profilePictures')
+    },
+    filename: function (req, file, cb) {
+        cb(null, 'thisName!')   // needs the file extension (instead, just store the image as the Date.now()+file.originalname), next take that name and then store it in the user...
+    }
+});
+
+const profilePictureUpload = multer({
+    storage: profilePictureStorage,
+    fileFilter: fileFilter
+});
+
+const fileFilter = (req, file, cb) => {
+    if(file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
+        cb(null, true);
+    } else {
+        cb(null, false);
+    }
+}
+
 /*
     POST - Profile Picture
 */
@@ -93,8 +138,9 @@ router.post('/profile-picture', auth, async (req, res) => {
         return res.status(400).send('User not found.');
     }
 
-    const profilePicture = await new ProfilePicture({ userId: userId }).save();
-    user.profilePictureId = profilePicture._id;
+    req.body.userId = userId;
+    const profilePicture = await new ProfilePicture(_.pick(req.body, ['userId', 'fileExtension'])).save();  // file extension should be found on the front-end first
+    user.profilePicture = profilePicture;
     user = await user.save();
 
     return res.status(200).send(user);

@@ -19,9 +19,11 @@ describe('/api/posts', () => {
         let userId;
         let pinId;
         let description;
+        let fileExtension;
 
         beforeEach(async () => {
             description = 'New Post'
+            fileExtension = 'image/jpg';
 
             const user = await new User({
                 username: 'johnSmith',
@@ -49,7 +51,8 @@ describe('/api/posts', () => {
                 .post(`/api/posts/${pinId}`)
                 .set('x-auth-token', token)
                 .send({
-                    description: description
+                    description: description,
+                    fileExtension: fileExtension
                 });
         }
 
@@ -84,7 +87,7 @@ describe('/api/posts', () => {
 
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('description');
-            expect(res.body).toHaveProperty('postPictureId');
+            expect(res.body).toHaveProperty('postPicture');
             expect(pin.posts).toHaveLength(1);
         });
     });
