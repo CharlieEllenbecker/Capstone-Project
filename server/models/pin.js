@@ -57,7 +57,7 @@ function validate(pin) {
         })),
         posts: Joi.array().items(Joi.object({
             description: Joi.string().min(5).max(1024),
-            postPicture: Joi.objectId()
+            postPictureFileName: Joi.string()
         })),
         userId: Joi.objectId()
     });

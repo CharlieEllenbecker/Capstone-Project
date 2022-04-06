@@ -1,4 +1,3 @@
-const { profilePictureSchema } = require('../models/profilePicture')
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const config = require('config');
@@ -23,7 +22,11 @@ const userSchema = new mongoose.Schema({
         minlength: 5,
         maxlength: 1024
     },
-    profilePicture: profilePictureSchema
+    profilePictureFileName: {
+        type: String,
+        required: false,
+        default: 'default-profile-picture.jpg'
+    }
 }, { versionKey: false });
 
 userSchema.methods.generateAuthToken = function() {
@@ -37,10 +40,7 @@ function validateFullUser(user) {
         username: Joi.string().min(5).max(256).required(),
         email: Joi.string().min(5).max(256).email().required(),
         password: Joi.string().min(5).max(1024).required(), // TODO: utilize joi-password-conplexity module?
-        profilePicture: Joi.object({
-            userId: Joi.object(),
-            fileExtension: Joi.string().required()
-        })
+        profilePictureFileName: Joi.string()
     });
 
     return schema.validate(user);

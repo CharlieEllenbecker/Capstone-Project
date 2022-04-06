@@ -1,5 +1,5 @@
 const { User, validate, validateEmailPassword } = require('../models/user');
-const { ProfilePicture } = require('../models/profilePicture');
+const { upload } = require('../helpers/imageHelper');
 const auth = require('../middleware/auth');
 const decodeJwt = require('jwt-decode');
 const bcrypt = require('bcrypt');
@@ -7,13 +7,12 @@ const _ = require('lodash');
 const express = require('express');
 require('express-async-errors');
 const router = express.Router();
-const multer = require('multer');   // TODO
 
 /*
     GET - Get user info
 */
 router.get('/me', auth, async (req, res) => {
-    const user = await User.findById(req.user._id).select(['-_id', '-password']);   // TODO                             ***********
+    const user = await User.findById(req.user._id).select(['-_id', '-password']);
     return res.status(200).send(user);
 });
 
@@ -83,38 +82,10 @@ router.post('/login', async (req, res) => { // TODO: Do we want to allow the use
     }).send(_.pick(user, ['username', 'email']));
 });
 
-const storage = multer.diskStorage({
-    destination: 'images',
-    filename: function (req, file, cb) {
-        cb(null, `${Date.now()}-${file.originalname}`)
-    }
-});
-
-const fileFilter = (req, file, cb) => {
-    if(file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
-        cb(null, true);
-    } else {
-        cb(null, false);
-    }
-}
-
-const upload = multer({
-    storage: storage,
-    fileFilter: fileFilter
-});
-
 /*
-    POST - Profile Picture (test)
+    POST - Upload/Update Profile Picture
 */
-router.post('/test', upload.single('image'), async (req, res) => {
-    console.log(`File Name: ${req.file.filename}`); // this is the new file name
-    return res.status(200).send('Image Uploaded.');
-});
-
-/*
-    POST - Profile Picture
-*/
-router.post('/profile-picture', auth, async (req, res) => {
+router.post('/profile-picture', [auth, upload.single('image')], async (req, res) => {
     const userId = decodeJwt(req.header('x-auth-token'))._id;
 
     let user = await User.findById(userId);
@@ -122,19 +93,10 @@ router.post('/profile-picture', auth, async (req, res) => {
         return res.status(400).send('User not found.');
     }
 
-    req.body.userId = userId;
-    const profilePicture = await new ProfilePicture(_.pick(req.body, ['userId', 'fileExtension'])).save();  // file extension should be found on the front-end first
-    user.profilePicture = profilePicture;
+    user.profilePictureFileName = req.file.filename;
     user = await user.save();
 
     return res.status(200).send(user);
-});
-
-/*
-    PUT - Update profile picture
-*/
-router.put('/profile-picture', auth, async (req, res) => {
-    // TODO
 });
 
 /*

@@ -1,6 +1,5 @@
 const { Pin } = require('../models/pin');
-const { PostPicture } = require('../models/postPicture')
-const { Post, validateDescriptionFileExtension } = require('../models/post');
+const { Post } = require('../models/post');
 const auth = require('../middleware/auth');
 const _ = require('lodash');
 const express = require('express');
