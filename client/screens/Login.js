@@ -3,7 +3,9 @@ import { Formik } from 'formik';
 import { View } from 'react-native';
 import { Octicons, Ionicons } from '@expo/vector-icons';
 import KeyboardAvoidingWrapper from '../components/keyboardAvoidingWrapper';
-import config from '../ip.json';
+import { useSelector, useDispatch } from 'react-redux';
+import { setJWT } from '../state/actions/jwtActions';
+import getIp from '../ip';
 //components
 import {
   Colors,
@@ -30,16 +32,12 @@ const Login = ({ navigation }) => {
   const [hidePassword, setHidePassword] = useState(true);
   const [message, setMessage] = useState();
   const [messageType, setMessageType] = useState();
-  const [jwt, setJwt] = useState('');
-  //handling login
+
+  const ip = getIp();
+  const { jwt } = useSelector((state) => state.jwtReducer);
+  const dispatch = useDispatch();
+
   const handleLogin = async (values) => {
-    {
-      /* TODO: Just for the presentation */
-    }
-    // navigation.navigate('DrawerNavigator', { screen: 'HomeScreen' });
-
-    const ip = config.ip;
-
     handleMessage(null);
     await axios.post(`http://${ip}:3001/api/users/login`, {
       email: values.email,
@@ -47,9 +45,8 @@ const Login = ({ navigation }) => {
     })
     .then((response) => {
       const result = response.headers['x-auth-token'];
-      setJwt(result);
-      console.log(jwt);
-      navigation.navigate('HomeScreen', { jwt: jwt });
+      dispatch(setJWT(result));
+      navigation.navigate('HomeScreen');
     })
     .catch(error => {
       handleMessage("Failed to login.");
@@ -61,6 +58,7 @@ const Login = ({ navigation }) => {
       setMessage(message);
       setMessageType(type);
     };
+
 //Load view
   return (
     <KeyboardAvoidingWrapper>

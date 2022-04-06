@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import StarRating from '../components/StarRating';
 import { Ionicons } from '@expo/vector-icons';
-import config from '../ip.json';
+
 //components
 import {
   Colors,

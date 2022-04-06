@@ -1,4 +1,5 @@
 import styled from 'styled-components/native';
+import { StyleSheet, Dimensions } from 'react-native';
 import { createGlobalStyle } from 'styled-components';
 import Constants from 'expo-constants';
 import { StyleSheet, Dimensions, TouchableOpacity} from 'react-native';

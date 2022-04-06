@@ -15,6 +15,13 @@ router.get('/me', auth, async (req, res) => {
 });
 
 /*
+    GET - Verify the user is authenticated
+*/
+router.get('/is-auth', auth, (req, res) => {
+    return res.status(200).send();
+});
+
+/*
     POST - Add a new user
 */
 router.post('/', async (req, res) => {
@@ -90,13 +97,6 @@ router.post('/login', async (req, res) => { // TODO: Do we want to allow the use
         'Access-Control-Expose-Headers': 'x-auth-token',
         'x-auth-token': token
     }).send(_.pick(user, ['username', 'email']));
-});
-
-/*
-    GET - Verify the user is authenticated
-*/
-router.get('/is-auth', auth, (req, res) => {
-    return res.status(200).send();
 });
 
 module.exports = router;

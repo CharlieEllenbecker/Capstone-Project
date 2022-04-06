@@ -4,6 +4,7 @@ const error = require('../middleware/error');
 const users = require('../routes/users');
 const tags = require('../routes/tags');
 const pins = require('../routes/pins');
+const reviews = require('../routes/reviews');
 
 module.exports = function(app) {
     app.use(cors({
@@ -13,5 +14,6 @@ module.exports = function(app) {
     app.use('/api/users', users);
     app.use('/api/tags', tags);
     app.use('/api/pins', pins);
+    app.use('/api/reviews', reviews);
     app.use(error);
 }

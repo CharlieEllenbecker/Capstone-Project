@@ -39,14 +39,14 @@ ipconfig /all
 - Make a new file in this folder using the following name:
 
 ```file name
-ip.json
+ip.js
 ```
 
-- Populate the file with the following json:
+- Populate the file with the following js:
 
-```json
-{
-    "ip": "123.456.7.89"
+```js
+export default function getIp() {
+    return '123.456.7.89'
 }
 ```
 
