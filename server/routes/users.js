@@ -83,40 +83,11 @@ router.post('/login', async (req, res) => { // TODO: Do we want to allow the use
     }).send(_.pick(user, ['username', 'email']));
 });
 
-// const fileFilter = (req, file, cb) => {
-//     if(file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
-//         cb(null, true);
-//     } else {
-//         cb(null, false);
-//     }
-// }
-
-// const postPictureUpload = multer({
-//     storage: postPictureStorage,
-//     fileFilter: fileFilter
-// });
-
-// const postPictureStorage = multer.diskStorage({
-//     destination: function (req, file, cb) {
-//         cb(null, './images/postPictures')
-//     },
-//     filename: function (req, file, cb) {
-//         cb(null, 'thisName!')   // needs the file extension
-//     }
-// });
-
-const profilePictureStorage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, './images/profilePictures')
-    },
+const storage = multer.diskStorage({
+    destination: 'images',
     filename: function (req, file, cb) {
-        cb(null, 'thisName!')   // needs the file extension (instead, just store the image as the Date.now()+file.originalname), next take that name and then store it in the user...
+        cb(null, `${Date.now()}-${file.originalname}`)
     }
-});
-
-const profilePictureUpload = multer({
-    storage: profilePictureStorage,
-    fileFilter: fileFilter
 });
 
 const fileFilter = (req, file, cb) => {
@@ -126,6 +97,19 @@ const fileFilter = (req, file, cb) => {
         cb(null, false);
     }
 }
+
+const upload = multer({
+    storage: storage,
+    fileFilter: fileFilter
+});
+
+/*
+    POST - Profile Picture (test)
+*/
+router.post('/test', upload.single('image'), async (req, res) => {
+    console.log(`File Name: ${req.file.filename}`); // this is the new file name
+    return res.status(200).send('Image Uploaded.');
+});
 
 /*
     POST - Profile Picture
