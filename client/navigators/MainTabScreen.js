@@ -59,7 +59,7 @@ const MainTabScreen = ({ route, navigation }) => {
         name="Profile"
         component={ProfileScreen}
         options={{
-          
+          tabBarLabel: <Text style={{ fontSize: 11 }}>Profile</Text>,
           tabBarColor: '#ffffff',
           tabBarIcon: ({ color }) => <Ionicons name="ios-person" color="#000000" size={26} />,
         }}
