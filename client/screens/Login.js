@@ -20,7 +20,7 @@ import {
   StyledTextInput,
   ButtonText,
   ErrorMsg,
-  Line,
+  Line
 } from '../components/styles';
 //axios
 import axios from 'axios';
@@ -31,7 +31,6 @@ const Login = ({ navigation }) => {
   const [message, setMessage] = useState();
   const [messageType, setMessageType] = useState();
   const [jwt, setJwt] = useState('');
-
   //handling login
   const handleLogin = async (values) => {
     {

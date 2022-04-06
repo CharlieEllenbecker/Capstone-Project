@@ -1,71 +1,70 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 
 
 
-const Images = [
+export const Images = [
   { image: '../assets/banners/food-banner1.jpg' },
   { image: '../assets/banners/food-banner2.jpg' },
   { image: '../assets/banners/food-banner3.jpg' },
   { image: '../assets/banners/food-banner4.jpg' },
 ];
-
-  // {
-  //   coordinate: {
-  //     latitude: 43.03725,
-  //     longitude: -87.91891,
-  //   },
-  //   title: 'Amazing Photo Spot',
-  //   description: 'This is the best photo spot',
-  //   image: Images[0].image,
-  //   rating: 4,
-  //   reviews: 99,
-  // },
-  // {
-  //   coordinate: {
-  //     latitude: 43.04199,
-  //     longitude: -87.92809,
-  //   },
-  //   title: 'Second Amazing Photo Spot',
-  //   description: 'This is the second best photo spot',
-  //   image: Images[1].image,
-  //   rating: 5,
-  //   reviews: 102,
-  // },
-  // {
-  //   coordinate: {
-  //     latitude: 43.02452,
-  //     longitude: -87.91511,
-  //   },
-  //   title: 'Third Amazing Photo Spot',
-  //   description: 'This is the third best photo spot',
-  //   image: Images[2].image,
-  //   rating: 3,
-  //   reviews: 220,
-  // },
-  // {
-  //   coordinate: {
-  //     latitude: 43.04363,
-  //     longitude: -87.90602,
-  //   },
-  //   title: 'Fourth Amazing Photo Spot',
-  //   description: 'This is the fourth best photo spot',
-  //   image: Images[3].image,
-  //   rating: 4,
-  //   reviews: 48,
-  // },
-  // {
-  //   coordinate: {
-  //     latitude: 43.0352,
-  //     longitude: -87.904921,
-  //   },
-  //   title: 'Fifth Amazing Photo Spot',
-  //   description: 'This is the fifth best photo spot',
-  //   image: Images[3].image,
-  //   rating: 4,
-  //   reviews: 178,
-  // },
-
+export const markers = [
+  {
+    coordinate: {
+      latitude: 43.03725,
+      longitude: -87.91891,
+    },
+    title: 'Amazing Photo Spot',
+    description: 'This is the best photo spot',
+    image: Images[0].image,
+    rating: 4,
+    reviews: 99,
+  },
+  {
+    coordinate: {
+      latitude: 43.04199,
+      longitude: -87.92809,
+    },
+    title: 'Second Amazing Photo Spot',
+    description: 'This is the second best photo spot',
+    image: Images[1].image,
+    rating: 5,
+    reviews: 102,
+  },
+  {
+    coordinate: {
+      latitude: 43.02452,
+      longitude: -87.91511,
+    },
+    title: 'Third Amazing Photo Spot',
+    description: 'This is the third best photo spot',
+    image: Images[2].image,
+    rating: 3,
+    reviews: 220,
+  },
+  {
+    coordinate: {
+      latitude: 43.04363,
+      longitude: -87.90602,
+    },
+    title: 'Fourth Amazing Photo Spot',
+    description: 'This is the fourth best photo spot',
+    image: Images[3].image,
+    rating: 4,
+    reviews: 48,
+  },
+  {
+    coordinate: {
+      latitude: 43.0352,
+      longitude: -87.904921,
+    },
+    title: 'Fifth Amazing Photo Spot',
+    description: 'This is the fifth best photo spot',
+    image: Images[3].image,
+    rating: 4,
+    reviews: 178,
+  },
+];
   
 
 
