@@ -6,7 +6,7 @@ const initialState = {
     allPins: null
 };
 
-const pinReducer = (state = initialStatem, { type, payload }) => {
+const pinReducer = (state = initialState, { type, payload }) => {
     switch(type) {
         case pinTypeActions.SET_SELECTED_PIN:
             return {
