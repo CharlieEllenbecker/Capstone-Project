@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema({
     profilePictureFileName: {
         type: String,
         required: false,
-        default: 'default-profile-picture.jpg'
+        default: null
     }
 }, { versionKey: false });
 

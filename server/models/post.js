@@ -12,7 +12,7 @@ const postSchema = new mongoose.Schema({
     postPictureFileName: {
         type: String,
         required: false,
-        default: 'default-post-picture.jpg'
+        default: null
     }
 }, { versionKey: false });
 

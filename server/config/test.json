@@ -1,3 +1,4 @@
 {
-    "db": "mongodb://localhost/capstone-project_tests"
+    "db": "mongodb://localhost/capstone-project_tests",
+    "imageDestination": "./tests/testUploadedImages"
 }

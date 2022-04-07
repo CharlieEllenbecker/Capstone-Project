@@ -1,6 +1,8 @@
 const { User } = require('../../../models/user');
-const request = require('supertest');
+const { cleanupImages } = require('../../cleanupImages');
 const bcrypt = require('bcrypt');
+const fs = require('fs');
+const request = require('supertest');
 
 let server;
 
@@ -10,6 +12,9 @@ describe('/api/users', () => {
         await User.deleteMany({});
         server.close();
     });
+    afterAll(async () => {
+        await cleanupImages();
+    })
 
     describe('GET /me', () => {
         let user;
@@ -291,11 +296,8 @@ describe('/api/users', () => {
     describe('POST /profile-picture', () => {
         let user;
         let token;
-        let fileExtension;
     
         beforeEach(async () => {
-            fileExtension = 'image/jpg';
-
             user = await new User({
                 username: 'JohnSmith',
                 email: 'joe.buck@gmail.com',
@@ -305,12 +307,13 @@ describe('/api/users', () => {
         });
 
         const exec = async () => {
+            const file = fs.createReadStream('./tests/testFormDataImages/default.jpg');
+
             return await request(server)
                 .post('/api/users/profile-picture')
-                .set('x-auth-token', token)
-                .send({
-                    fileExtension: fileExtension    // assuming the period is not included
-                });
+                .attach('image', file)
+                .set('Content-Type', 'multipart/form-data')
+                .set('x-auth-token', token);
         }
 
         it('should return 401 if client is not logged in', async () => {
@@ -325,7 +328,7 @@ describe('/api/users', () => {
             const res = await exec();
 
             expect(res.status).toBe(200);
-            expect(res.body).toHaveProperty('profilePicture');
+            expect(res.body).toHaveProperty('profilePictureFileName');
         });
     });
 });

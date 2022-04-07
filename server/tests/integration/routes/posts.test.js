@@ -1,7 +1,10 @@
 const { User } = require('../../../models/user');
 const { Pin } = require('../../../models/pin');
 const { Post } = require('../../../models/post');
+const { cleanupImages } = require('../../cleanupImages');
+const fs = require('fs');
 const request = require('supertest');
+const { deepStrictEqual } = require('assert');
 
 let server;
 
@@ -13,17 +16,18 @@ describe('/api/posts', () => {
         await Post.deleteMany({});
         server.close();
     });
+    afterAll(async () => {
+        await cleanupImages();
+    })
 
     describe('POST /', () => {
         let token;
         let userId;
         let pinId;
         let description;
-        let fileExtension;
 
         beforeEach(async () => {
             description = 'New Post'
-            fileExtension = 'image/jpg';
 
             const user = await new User({
                 username: 'johnSmith',
@@ -47,13 +51,14 @@ describe('/api/posts', () => {
         });
 
         const exec = async () => {
+            const file = fs.createReadStream('./tests/testFormDataImages/default.jpg');
+
             return await request(server)
                 .post(`/api/posts/${pinId}`)
-                .set('x-auth-token', token)
-                .send({
-                    description: description,
-                    fileExtension: fileExtension
-                });
+                .attach('image', file)
+                .field('description', description)
+                .set('Content-Type', 'multipart/form-data')
+                .set('x-auth-token', token);
         }
 
         it('should return 401 if client is not logged in', async () => {
@@ -87,7 +92,7 @@ describe('/api/posts', () => {
 
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('description');
-            expect(res.body).toHaveProperty('postPicture');
+            expect(res.body).toHaveProperty('postPictureFileName');
             expect(pin.posts).toHaveLength(1);
         });
     });
