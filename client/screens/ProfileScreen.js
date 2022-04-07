@@ -1,7 +1,14 @@
-import { View, Text, Button, StyleSheet, Image, Dimensions } from 'react-native';
-import React, { useState, useEffect } from 'react';
-import getIp from '../ip';
-import { Octicons, Ionicons } from '@expo/vector-icons';
+import {
+  View, 
+  Image, 
+  Dimensions,
+  ScrollView } from 'react-native';
+import React, { 
+  useState, 
+  useEffect } from 'react';
+import config from '../ip.json';
+import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 import {
   HeaderContainer,
   SettingsButton,
@@ -21,7 +28,62 @@ import {
   LocationLine,
 } from '../components/styles';
 import axios from 'axios';
-// import gridView from "../components/Gridview";
+
+
+const ProfileScreen = ({ route, navigation }) => {
+    const [user, setUser] = useState('');
+    var {width, height} = Dimensions.get('screen');
+
+  return (
+    
+    <ProfileContainer>
+      <HeaderContainer>
+        <SettingsButton> 
+          <Ionicons name='ios-settings-outline' size={25}/> 
+        </SettingsButton>
+        <UsernameText>Username</UsernameText> 
+        <LogoutButton onPress={() => navigation.navigate('Login')}>
+          <Ionicons name='ios-exit-outline' size={25}/>
+        </LogoutButton> 
+      </HeaderContainer>
+      
+      <UserContainer>
+        <VerticalContainer>
+          <ProfilePictureContainer onPress={openImagePickerAsync}></ProfilePictureContainer> 
+        </VerticalContainer>
+
+        <VerticalContainer>
+          <NumberOfPinsContainer>
+            <VerticalContainer>
+              <HorizontalContainer>
+                <NumberOfPinsText>Pins</NumberOfPinsText>   
+                <NumberOfPinsText>Posts</NumberOfPinsText>  
+              </HorizontalContainer>
+              <HorizontalContainer>
+                <NumberOfPinsNumber>40</NumberOfPinsNumber> 
+                <NumberOfPinsNumber>40</NumberOfPinsNumber> 
+              </HorizontalContainer>
+            </VerticalContainer>
+          </NumberOfPinsContainer>
+
+          <EditProfileButton>
+            <EditButtonText>Edit profile</EditButtonText> 
+          </EditProfileButton>
+        </VerticalContainer>
+      </UserContainer>
+
+      <BioText>This is my bio.</BioText>  
+
+      <LocationLine/> 
+
+      <ScrollView scrollEventThrottle={16}>
+      {gridView(images, width, height)}
+      </ScrollView>
+    </ProfileContainer>
+  );
+};
+
+export default ProfileScreen;
 
 
 const images = [
@@ -48,63 +110,39 @@ const renderImages = (images, width, height) => {
       </View>
   });
 }
-
-const ProfileScreen = ({ route, navigation }) => {
-    const [user, setUser] = useState('');
-    var {width, height} = Dimensions.get('screen');
-    const ip = getIp();
-
-    const getUser = async () => {
-      const data = await axios.get(`http://${ip}:3001/api/users/me/`, { headers: { 'x-auth-token': jwt } })
-      .catch(error => {
-        console.log(error);
-      });
-
+    // const getUser = async () => {
+    //   const ip = config.ip;
+    //   const data = await axios.get(`http://${ip}:3001/api/users/me/`, { headers: { 'x-auth-token': jwt } })
+    //   .catch(error => {
+    //     console.log(error);
+    //   });
+    // };
+    // getUser();
+  
+    const handleLogout = async () => {
+      const ip = config.ip;
+      await axios(`http://${ip}:3001/`);
     };
-    getUser();
-  // TODO: handle the logout by not sending jwt token?
-  const handleLogout = async () => {
-    await axios(`http://${ip}:3001/`);
-  };
 
-  return (
-    
-    <ProfileContainer>
-      <HeaderContainer>
-        <SettingsButton><Ionicons name='ios-settings-outline' size={25}/></SettingsButton>
-        <UsernameText>Username</UsernameText>
-        <LogoutButton onPress={() => navigation.navigate('Login')}><Ionicons name='ios-exit-outline' size={25}/></LogoutButton>
-      </HeaderContainer>
-      
-      <UserContainer>
-        <VerticalContainer>
-        <ProfilePictureContainer></ProfilePictureContainer>
-        </VerticalContainer>
-        <VerticalContainer>
-        <NumberOfPinsContainer>
-          <VerticalContainer>
-          <HorizontalContainer>
-          <NumberOfPinsText>Pins</NumberOfPinsText>
-          <NumberOfPinsText>Posts</NumberOfPinsText>
-          </HorizontalContainer>
-          <HorizontalContainer>
-          <NumberOfPinsNumber>40</NumberOfPinsNumber>
-          <NumberOfPinsNumber>40</NumberOfPinsNumber>
-          </HorizontalContainer>
-          </VerticalContainer>
-        </NumberOfPinsContainer>
-        <EditProfileButton>
-          <EditButtonText>Edit profile</EditButtonText>
-        </EditProfileButton>
-        </VerticalContainer>
-        
-      </UserContainer>
-      <BioText>This is my bio.</BioText>
-      <LocationLine/>
-      {/* When images are working gridview will appear */}
-      {gridView(images, width, height)}
-    </ProfileContainer>
-  );
-};
-
-export default ProfileScreen;
+    let openImagePickerAsync = async () => {
+      let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  
+      if (permissionResult.granted === false) {
+        alert('Permission to access camera roll is required!');
+        return;
+      }
+  
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+      console.log(result.uri);
+  
+      if (result.cancelled === true) {
+        return;
+      }
+      setSelectedImage(result.uri);
+      //require('../assets/banners/food-banner1.jpg')
+    };

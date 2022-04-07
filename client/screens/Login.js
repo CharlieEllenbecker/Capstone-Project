@@ -22,7 +22,7 @@ import {
   StyledTextInput,
   ButtonText,
   ErrorMsg,
-  Line,
+  Line
 } from '../components/styles';
 //axios
 import axios from 'axios';

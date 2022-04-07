@@ -3,13 +3,16 @@ import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   Modal,
+  Header,
   Text,
   TextInput,
   View,
   ScrollView,
   Platform,
+  TouchableOpacity,
   Image,
   KeyboardAvoidingView,
+  Dimensions
 } from 'react-native';
 import StarRating from '../components/StarRating';
 import { Ionicons } from '@expo/vector-icons';
@@ -19,13 +22,14 @@ import {
   Colors,
   HorizontalContainer,
   HorizontalContainerTwo,
-  StyledContainer,
+  StyledReviewContainer,
   LocationImage,
   LocationReviewContainer,
   LocationReviewButton,
   LocationNavigateButton,
   ReviewButtonText,
   LocationDescription,
+  BackButton,
   LocationTitle,
   LocationLine,
   SubmitReviewButton,
@@ -38,17 +42,62 @@ const { lightBrick } = Colors;
 //axios
 import axios from 'axios';
 
+const images = [
+  require('../assets/banners/food-banner1.jpg'),
+  require('../assets/banners/food-banner4.jpg'),
+  require('../assets/banners/food-banner3.jpg'),
+  require('../assets/banners/food-banner2.jpg'),
+  require('../assets/banners/food-banner5.jpg'),
+  require('../assets/banners/food-banner4.jpg'),
+  require('../assets/banners/food-banner3.jpg'),
+  require('../assets/banners/food-banner2.jpg'),
+  require('../assets/banners/food-banner4.jpg'),
+  require('../assets/banners/food-banner3.jpg'),
+  require('../assets/banners/food-banner2.jpg'),
+  require('../assets/banners/food-banner4.jpg'),
+  require('../assets/banners/food-banner3.jpg'),
+  require('../assets/banners/food-banner2.jpg'),
+  require('../assets/banners/food-banner4.jpg'),
+  require('../assets/banners/food-banner3.jpg'),
+  require('../assets/banners/food-banner2.jpg')
+]
+const gridView = (images, width, height) => {
+  return (
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+          {renderImages(images, width, height)}
+      </View>
+  );
+}
+
+const renderImages = (images, width, height) => {
+  return images.map((image) => {
+      return <View style={[{ width: (width) / 3 }, { height: (width) / 3 }]}>
+          <Image style={{ flex: 1, width: undefined, height: undefined, borderColor: '#FFFFFF', borderWidth: 1 }} source={image}/>
+      </View>
+  });
+}
 const LocationScreen = ({ route, navigation }) => {
   const {image, title, rating} = route.params;
+  var {width, height} = Dimensions.get('screen');
   //grab marker properties from route
   // const { id } = route.params;
 
-
+  const modalVis = false;
+  const reviewVis = null;
   //modalVisible and setModalVisible for writing a review
-  const [modalVisible, setModalVisible] = useState(false);
-  const [review, setReview] = useState(null);
+  const [modalVisible, setModalVisible] = useState(modalVis ? true : false);
+  const [review, setReview] = useState(reviewVis ? '' : null);
   
+  const showModal = (set) => {
+    set ? setModalVisible(true) : setModalVisible(false);
+  };
 
+  const handleReviewSubmit = (set) => {
+    if (set !== '') {
+      setReview(set);
+    }
+    return;
+  }
   //pin properties
   // const [title, setTitle] = useState('');
   // const [description, setDescription] = useState('');
@@ -101,33 +150,33 @@ const LocationScreen = ({ route, navigation }) => {
   //     console.log(error);
   //   });
   // };
-
+  
     return (
-          <StyledContainer>
+          <StyledReviewContainer>
             <LocationReviewContainer></LocationReviewContainer>
-              <LocationImage source= {image}></LocationImage>
-                <LocationTitle>{title}</LocationTitle>
+              <LocationImage style={{paddingLeft: 20}} source= {{ uri: image }}></LocationImage>
+                <LocationTitle style={{paddingLeft: 20}}>{title}</LocationTitle>
                 {/* Navigate to directions - not implemented yet */}
-                <StarRating ratings={rating} />
+                <View style={{paddingLeft: 20}}><StarRating ratings={rating} /></View>
                 
-                <Modal visible={modalVisible} transparent={true} animationType="slide" presentationStyle="overFullScreen" onRequestClose={() => setModalVisible(!modalVisible)}>
+                <Modal visible={modalVisible} transparent={true} animationType="slide" presentationStyle="overFullScreen" onRequestClose={() => showModal(!modalVisible)}>
                   <View style={styles.viewWrapper}>
                     <View style={styles.modalView}>
                       <AddPictureContainer><Ionicons name='ios-camera-outline' size={25}/></AddPictureContainer>
                       <StarRating ratings={rating}/>
-                      <TextInput multiline numberOfLines={4} value={review} onChangeText={(value)=>setReview(value)}style={styles.input} placeholder = "Your review here..."></TextInput>
-                      <SubmitReviewButton onPress={() => {setModalVisible(false)}}>
+                      <TextInput multiline numberOfLines={4} value={review} style={styles.input} placeholder = "Your review here..."></TextInput>
+                      <SubmitReviewButton onPress={() => {showModal(false)}}>
                         <ReviewButtonText>Submit Review</ReviewButtonText>
                       </SubmitReviewButton>
-                      <SubmitReviewButton onPress={() => {setModalVisible(false) }}>
+                      <SubmitReviewButton onPress={() => {showModal(false)}}>
                         <ReviewButtonText>Cancel Review</ReviewButtonText>
                       </SubmitReviewButton>
                     </View>
                   </View>
                 </Modal>
                 {/* Open review window */}
-                <HorizontalContainerTwo>
-                  <LocationReviewButton onPress={() => setModalVisible(true)}>
+                <HorizontalContainerTwo style={{paddingLeft: 20}}>
+                  <LocationReviewButton onPress={() => showModal(true)}>
                     <ReviewButtonText>Write a review</ReviewButtonText>
                   </LocationReviewButton>
                   <LocationNavigateButton>
@@ -138,35 +187,35 @@ const LocationScreen = ({ route, navigation }) => {
                 {/* Displays fancy line :) */}
                 <LocationLine/>
                 {/* Displays all reviews in scrollview for the pin unless there are none */}
-                <Text>No reviews for this location yet. Be the first to add one!</Text>
-                {/* {reviews.length > 0 ? (
-                  <ScrollView
-                    horizontal
-                    scrollEventThrottle={1}
-                    showsHorizontalScrollIndicator={false}
-                    style={styles.reviewsScrollView}
-                    contentInset={{
-                      // iOS only
-                      top: 0,
-                      left: 0,
-                      bottom: 0,
-                      right: 20,
-                    }}
-                  contentContainerStyle={{
-                    paddingRight: Platform.OS === 'android' ? 20 : 0,
-                  }}
-                  >
-                  {reviews.map((review) => (
-                  <ReviewContainer>
-                    <Text>Review</Text>
-                   <StarRating rating={4}/>
-                   <Text>This is the review</Text>
-                  </ReviewContainer>
-                  ))}
-                  </ScrollView>
-                  ) : (<Text>No reviews for this location yet. Be the first to add one!</Text>)
-                } */}
-          </StyledContainer>
+                <ScrollView
+                  scrollEventThrottle={16}
+                >
+                  {/* {reviews.length > 0 ? ( */}
+                  <View style={{ height: 160, marginTop:5, marginBottom: 5}}>
+                    <ScrollView
+                      horizontal={true}
+                    >
+                      <View style={{ height: 160, width: 200, marginLeft: 20, borderWidth: 0.7, borderRadius: 5, borderColor: '#dddddd' }}>
+                        <View style={{flex: 1, paddingLeft: 15, paddingTop: 15 }}>
+                          <Text>This is a review scrollview!</Text>
+                        </View>
+                      </View>
+                      <View style={{ height: 160, width: 200, marginLeft: 20, borderWidth: 0.7, borderRadius: 5, borderColor: '#dddddd' }}>
+                        <View style={{flex: 1, paddingLeft: 15, paddingTop: 15 }}>
+                          <Text>This is a review scrollview 2!</Text>
+                        </View>
+                      </View>
+                      <View style={{ height: 160, width: 200, marginLeft: 20, borderWidth: 0.7, borderRadius: 5, borderColor: '#dddddd' }}>
+                        <View style={{flex: 1, paddingLeft: 15, paddingTop: 15 }}>
+                          <Text>This is a review scrollview 3!</Text>
+                        </View>
+                      </View>
+                    </ScrollView>
+                  </View>
+                  {/*) : (<Text>No reviews for this location yet. Be the first to add one!</Text>) } */}
+                  {gridView(images, width, height)}
+                </ScrollView>
+          </StyledReviewContainer>
           
     );
 };
@@ -187,7 +236,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     position: "absolute",
     elevation: 5,
-    height: "50%",
+    height: 400,
     width: "80%",
     backgroundColor: "#fff",
     borderRadius: 7,
