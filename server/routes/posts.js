@@ -1,6 +1,6 @@
 const { Pin } = require('../models/pin');
 const { Post, validate } = require('../models/post');
-const upload = require('../middleware/imageHelper');
+const { upload } = require('../middleware/imageHelper');
 const auth = require('../middleware/auth');
 const express = require('express');
 require('express-async-errors');
