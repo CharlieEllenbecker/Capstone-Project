@@ -3,7 +3,6 @@ const { User } = require('../models/user');
 const { validate } = require('../models/review');
 const auth = require('../middleware/auth');
 const decodeJwt = require('jwt-decode');
-const _ = require('lodash');
 const express = require('express');
 require('express-async-errors');
 const router = express.Router();

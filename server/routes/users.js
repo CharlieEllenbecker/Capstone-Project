@@ -1,5 +1,5 @@
 const { User, validate, validateEmailPassword } = require('../models/user');
-const { upload } = require('../helpers/imageHelper');
+const upload = require('../middleware/imageHelper');
 const auth = require('../middleware/auth');
 const decodeJwt = require('jwt-decode');
 const bcrypt = require('bcrypt');

@@ -3,7 +3,9 @@ const express = require('express');
 const app = express();
 
 require('./startup/logging')(); // call first to log first
+console.log('1');
 require('./startup/routes')(app);
+console.log('2');
 require('./startup/db')();
 require('./startup/config')();
 require('./startup/validation')();
