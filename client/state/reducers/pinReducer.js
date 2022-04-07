@@ -23,6 +23,7 @@ const pinReducer = (state = initialState, { type, payload }) => {
                 ...state,
                 allPins: payload
             };
+        default: state;
     }
 }
 
