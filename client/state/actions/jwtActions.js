@@ -9,6 +9,6 @@ export const setJWT = (jwt) => {
 export const deleteJWT = () => {
     return {
         type: jwtTypeActions.DELETE_JWT,
-        payload: ''
+        payload: null
     };
 }
