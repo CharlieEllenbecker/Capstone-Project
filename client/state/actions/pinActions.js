@@ -1,6 +1,6 @@
 import pinTypeActions from "./types/pinTypeActions";
 
-export const setSelectedPIn = (pin) => {
+export const setSelectedPin = (pin) => {
     return {
         type: pinTypeActions.SET_SELECTED_PIN,
         payload: pin
