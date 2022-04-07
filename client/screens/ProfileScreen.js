@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import {
   View, 
   Image, 
@@ -10,12 +9,6 @@ import React, {
 import config from '../ip.json';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-=======
-import { View, Text, Button, StyleSheet, Image, Dimensions } from 'react-native';
-import React, { useState, useEffect } from 'react';
-import getIp from '../ip';
-import { Octicons, Ionicons } from '@expo/vector-icons';
->>>>>>> master
 import {
   HeaderContainer,
   SettingsButton,
@@ -123,8 +116,6 @@ const renderImages = (images, width, height) => {
     //   .catch(error => {
     //     console.log(error);
     //   });
-
-<<<<<<< HEAD
     // };
     // getUser();
   
@@ -132,25 +123,6 @@ const renderImages = (images, width, height) => {
       const ip = config.ip;
       await axios(`http://${ip}:3001/`);
     };
-=======
-const ProfileScreen = ({ route, navigation }) => {
-    const [user, setUser] = useState('');
-    var {width, height} = Dimensions.get('screen');
-    const ip = getIp();
-
-    const getUser = async () => {
-      const data = await axios.get(`http://${ip}:3001/api/users/me/`, { headers: { 'x-auth-token': jwt } })
-      .catch(error => {
-        console.log(error);
-      });
-
-    };
-    getUser();
-  // TODO: handle the logout by not sending jwt token?
-  const handleLogout = async () => {
-    await axios(`http://${ip}:3001/`);
-  };
->>>>>>> master
 
     let openImagePickerAsync = async () => {
       let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
