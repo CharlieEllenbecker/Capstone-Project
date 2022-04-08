@@ -1,5 +1,5 @@
 const { User } = require('../../../models/user');
-const { Pin } = require('../../../models/Pin');
+const { Pin } = require('../../../models/pin');
 const request = require('supertest');
 const mongoose = require('mongoose');
 
@@ -212,7 +212,6 @@ describe('/api/pins', () => {
 
     describe('POST /', () => {
         let token;
-        let userId;
         let title;
         let description;
 
@@ -226,7 +225,6 @@ describe('/api/pins', () => {
                 password: 'password123'
             }).save();
             token = new User(user).generateAuthToken();
-            userId = user._id;
         });
 
         const exec = async () => {
@@ -240,8 +238,7 @@ describe('/api/pins', () => {
                     },
                     title: title,
                     description: description,
-                    tags: [{ name: 'Food' }],
-                    userId: userId
+                    tags: [{ name: 'Food' }]
                 });
         }
 

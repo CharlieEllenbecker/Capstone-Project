@@ -585,7 +585,7 @@ const HomeScreen = ({ route, navigation }) => {
                             },
                           ]}
                         >
-                          Order Now
+                          See Location
                         </Text>
                       </TouchableOpacity>
                     </View>

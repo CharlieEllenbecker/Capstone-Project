@@ -21,6 +21,11 @@ const userSchema = new mongoose.Schema({
         required: true,
         minlength: 5,
         maxlength: 1024
+    },
+    profilePictureFileName: {
+        type: String,
+        required: false,
+        default: null
     }
 }, { versionKey: false });
 
@@ -34,7 +39,8 @@ function validateFullUser(user) {
     const schema = Joi.object({
         username: Joi.string().min(5).max(256).required(),
         email: Joi.string().min(5).max(256).email().required(),
-        password: Joi.string().min(5).max(1024).required()  // TODO: utilize joi-password-conplexity module?
+        password: Joi.string().min(5).max(1024).required(), // TODO: utilize joi-password-conplexity module?
+        profilePictureFileName: Joi.string()
     });
 
     return schema.validate(user);
@@ -49,15 +55,6 @@ function validateEmailPassword(user) {
     return schema.validate(user);
 }
 
-function validateEmail(user){
-    const schema = Joi.object({
-        email: Joi.string().min(5).max(256).email().required()
-    });
-
-    return schema.validate(user);
-}
-
 module.exports.User = User;
 module.exports.validate = validateFullUser;
 module.exports.validateEmailPassword = validateEmailPassword;
-module.exports.validateEmail = validateEmail;

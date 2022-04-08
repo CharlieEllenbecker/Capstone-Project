@@ -2,3 +2,4 @@ node_modules/
 *.log
 .expo/
 ip.js
+images/

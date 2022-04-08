@@ -14,11 +14,11 @@ const jwtReducer = (state = initialState, { type, payload }) => {
         case jwtTypeActions.DELETE_JWT:
             return {
                 ...state,
-                jwt: payload
+                jwt: ''
             };
         default:
             return state;
     }
-};
+}
 
 export default jwtReducer;

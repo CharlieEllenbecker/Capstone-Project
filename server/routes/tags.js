@@ -1,4 +1,3 @@
-const { tagOptions } = require('../models/tag');
 const auth = require('../middleware/auth');
 const config = require('config');
 const express = require('express');

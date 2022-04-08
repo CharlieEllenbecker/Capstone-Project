@@ -21,25 +21,27 @@ const RootStack = () => {
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{
-          headerStyle: {
-            backgroundColor: 'transparent',
-          },
-          headerTintColor: '#000000',
-          headerTransparent: true,
-          headerTitle: '',
-          headerLeftContainerStyle: {
-            paddingLeft: 20,
-          },
-          headerBackVisible: false,
+          headerShown: false,
         }}
-        // initialRouteName="Login"
-        initialRouteName="HomeScreen"
+        initialRouteName="Login"
       >
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Signup" component={Signup} />
         <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} options={{ headerShown: false }} />
-        <Stack.Screen name="LocationScreen" component={LocationScreen} />
-        <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+        <Stack.Screen
+          name="LocationScreen"
+          component={LocationScreen}
+          options={{
+            headerShown: true,
+            headerTitle: '',
+            headerStyle: { backgroundColor: 'transparent' },
+            headerLeftContainerStyle: { paddingLeft: 20 },
+            headerTintColor: '#000000',
+            headerTransparent: true,
+            headerBackVisible: true,
+          }}
+        />
+        <Stack.Screen name="ProfileScreen" component={ProfileScreen} options={{ headerShown: false }} />
         <Stack.Screen name="HomeScreen" component={MainTabScreen} />
         <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />

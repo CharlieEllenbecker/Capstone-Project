@@ -2,7 +2,7 @@ import styled from 'styled-components/native';
 import { StyleSheet, Dimensions } from 'react-native';
 import { createGlobalStyle } from 'styled-components';
 import Constants from 'expo-constants';
-import { Font } from 'expo';
+import { StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 const StatusBarHeight = Constants.statusBarHeight;
 
 export const Colors = {
@@ -24,11 +24,16 @@ const { primary, secondary, secondaryLight, tetriary, lightBrick, brick, darkBri
 
 export const StyledContainer = styled.View`
   flex: 1;
-  padding: 25px;
+  padding: 20px;
   padding-top: ${StatusBarHeight + 10}px;
   background-color: #ffffff;
 `;
-
+export const StyledReviewContainer = styled.View`
+  flex: 1;
+  width: 100%;
+  padding-top: ${StatusBarHeight + 10}px;
+  background-color: #ffffff;
+`;
 export const InnerContainer = styled.KeyboardAvoidingView`
     flex: 1;
     width: 100%;
@@ -65,6 +70,7 @@ export const SignupBackground = styled.ImageBackground`
   padding-top: ${StatusBarHeight + 30}px;
   padding: 25px;
   padding-bottom: 110px;
+  height: 100%;
 `;
 
 export const SubTitle = styled.Text`
@@ -171,8 +177,7 @@ export const LocationDescription = styled.Text`
 `;
 export const LocationReviewContainer = styled.View`
   width: 100%;
-  height: 20px;
-  align-items: flex-end;
+  height: 30px;
 `;
 export const LocationLine = styled.View`
   height: 1px;
@@ -190,6 +195,18 @@ export const LocationReviewButton = styled.TouchableOpacity`
   height: 25px;
   margin-vertical: 5px;
   margin-right: 5px;
+`;
+export const BackButton = styled.TouchableOpacity`
+  width: 25px;
+  height: 25px;
+  border-color: #000000;
+  border-width: 0.7px;
+  margin-vertical: 5px;
+  align-content: center;
+  justify-content: center;
+  background-color: ${brick};
+  z-index: 1;
+  position: absolute;
 `;
 export const SubmitReviewButton = styled.TouchableOpacity`
   width: 80%;
@@ -221,7 +238,7 @@ export const LocationNavigateButton = styled.TouchableOpacity`
 `;
 export const ReviewContainer = styled.View`
   padding: 5px;
-  width: 95%;
+  width: 100%;
   background-color: #d3d3d3;
   flex: 1;
   justify-content: center;
@@ -317,7 +334,7 @@ export const VerticalContainer = styled.View`
   padding: 5px;
 `;
 export const HeaderContainer = styled.View`
-  height: 20px;
+  height: 25px;
   flex-direction: row;
   justify-content: space-between;
 `;
@@ -340,7 +357,7 @@ export const AddPictureContainer = styled.TouchableOpacity`
   justify-content: center;
 `;
 
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get('screen');
 const CARD_HEIGHT = 220;
 const CARD_WIDTH = width * 0.8;
 
