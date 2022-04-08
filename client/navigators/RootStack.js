@@ -17,34 +17,35 @@ import LocationScreen from '../screens/LocationScreen';
 const Stack = createNativeStackNavigator();
 
 const RootStack = () => {
-    return(
-        <NavigationContainer>
-            <Stack.Navigator
-                screenOptions={{
-                    headerStyle: {
-                        backgroundColor: 'transparent'
-                    },
-                    headerTintColor: '#000000',
-                    headerTransparent: true,
-                    headerTitle: '',
-                    headerLeftContainerStyle: {
-                        paddingLeft: 20
-                    },
-                    headerBackVisible: false
-                }}
-                initialRouteName="Login"
-                >
-                <Stack.Screen name="Login" component={Login}/>
-                <Stack.Screen name="Signup" component={Signup}/>
-                <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} options = {{ headerShown: false }}/>
-                <Stack.Screen name="LocationScreen" component={LocationScreen}/>
-                <Stack.Screen name="ProfileScreen" component={ProfileScreen}/>
-                <Stack.Screen name="HomeScreen" component={MainTabScreen}/>
-                <Stack.Screen name="SettingsScreen" component={SettingsScreen}/>
-                <Stack.Screen name="Home" component={HomeScreen}/>
-            </Stack.Navigator>
-        </NavigationContainer>
-    );
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: 'transparent',
+          },
+          headerTintColor: '#000000',
+          headerTransparent: true,
+          headerTitle: '',
+          headerLeftContainerStyle: {
+            paddingLeft: 20,
+          },
+          headerBackVisible: false,
+        }}
+        // initialRouteName="Login"
+        initialRouteName="HomeScreen"
+      >
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Signup" component={Signup} />
+        <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} options={{ headerShown: false }} />
+        <Stack.Screen name="LocationScreen" component={LocationScreen} />
+        <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+        <Stack.Screen name="HomeScreen" component={MainTabScreen} />
+        <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
+        <Stack.Screen name="Home" component={HomeScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
 };
 
 export default RootStack;
