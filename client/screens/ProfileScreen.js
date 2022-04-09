@@ -6,7 +6,7 @@ import {
 import React, { 
   useState, 
   useEffect } from 'react';
-import config from '../ip.json';
+import getIp from '../ip';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import {
@@ -33,6 +33,7 @@ import axios from 'axios';
 const ProfileScreen = ({ route, navigation }) => {
     const [user, setUser] = useState('');
     var {width, height} = Dimensions.get('screen');
+    const ip = getIp();
 
   return (
     
@@ -111,7 +112,7 @@ const renderImages = (images, width, height) => {
   });
 }
     // const getUser = async () => {
-    //   const ip = config.ip;
+
     //   const data = await axios.get(`http://${ip}:3001/api/users/me/`, { headers: { 'x-auth-token': jwt } })
     //   .catch(error => {
     //     console.log(error);
@@ -120,7 +121,6 @@ const renderImages = (images, width, height) => {
     // getUser();
   
     const handleLogout = async () => {
-      const ip = config.ip;
       await axios(`http://${ip}:3001/`);
     };
 

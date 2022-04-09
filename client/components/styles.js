@@ -2,7 +2,6 @@ import styled from 'styled-components/native';
 import { StyleSheet, Dimensions } from 'react-native';
 import { createGlobalStyle } from 'styled-components';
 import Constants from 'expo-constants';
-import { StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 const StatusBarHeight = Constants.statusBarHeight;
 
 export const Colors = {
@@ -195,18 +194,6 @@ export const LocationReviewButton = styled.TouchableOpacity`
   height: 25px;
   margin-vertical: 5px;
   margin-right: 5px;
-`;
-export const BackButton = styled.TouchableOpacity`
-  width: 25px;
-  height: 25px;
-  border-color: #000000;
-  border-width: 0.7px;
-  margin-vertical: 5px;
-  align-content: center;
-  justify-content: center;
-  background-color: ${brick};
-  z-index: 1;
-  position: absolute;
 `;
 export const BackButton = styled.TouchableOpacity`
   width: 25px;

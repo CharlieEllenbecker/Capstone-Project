@@ -11,7 +11,8 @@ const tagReducer = (state = initialState, { type, payload }) => {
                 ...state,
                 tags: payload
             };
-        default: state;
+        default:
+            return state;
     }
 }
 
