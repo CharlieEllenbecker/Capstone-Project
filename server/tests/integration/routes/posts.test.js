@@ -4,11 +4,11 @@ const { Post } = require('../../../models/post');
 const { cleanupImages } = require('../../cleanupImages');
 const fs = require('fs');
 const request = require('supertest');
-const { deepStrictEqual } = require('assert');
 
 let server;
 
 describe('/api/posts', () => {
+    console.log('posts: 1');
     beforeEach(() => { server  = require('../../../index'); });
     afterEach(async () => {
         await User.deleteMany({});
@@ -18,7 +18,7 @@ describe('/api/posts', () => {
     });
     afterAll(async () => {
         await cleanupImages();
-    })
+    });
 
     describe('POST /', () => {
         let token;
@@ -55,10 +55,10 @@ describe('/api/posts', () => {
 
             return await request(server)
                 .post(`/api/posts/${pinId}`)
-                .attach('image', file)
                 .field('description', description)
                 .set('Content-Type', 'multipart/form-data')
-                .set('x-auth-token', token);
+                .set('x-auth-token', token)
+                .attach('image', file);
         }
 
         it('should return 401 if client is not logged in', async () => {

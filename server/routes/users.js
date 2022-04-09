@@ -1,6 +1,7 @@
 const { User, validate, validateEmailPassword } = require('../models/user');
 const { upload } = require('../middleware/imageHelper');
 const auth = require('../middleware/auth');
+var fs = require('fs');
 const decodeJwt = require('jwt-decode');
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
@@ -90,10 +91,64 @@ router.post('/profile-picture', [auth, upload.single('image')], async (req, res)
 
     let user = await User.findById(userId);
     if(!user) {
+        fs.unlinkSync(`./images/${req.file.filename}`);
         return res.status(400).send('User not found.');
     }
 
     user.profilePictureFileName = req.file.filename;
+    user = await user.save();
+
+    return res.status(200).send(user);
+});
+
+/*
+    PUT - Update Profile Picture
+*/
+router.put('/profile-picture', [auth, upload.single('image')], async (req, res) => {
+    const userId = decodeJwt(req.header('x-auth-token'))._id;
+
+    let user = await User.findById(userId);
+    if(!user) {
+        fs.unlinkSync(`./images/${req.file.filename}`);
+        return res.status(400).send('User not found.');
+    }
+
+    fs.unlinkSync(`./images/${user.profilePictureFileName}`);
+    user.profilePictureFileName = req.file.filename;
+    user = await user.save();
+
+    return res.status(200).send(user);
+});
+
+/*
+    PUT - Update Username
+*/
+router.put('/username/:username', auth, async (req, res) => {
+    const userId = decodeJwt(req.header('x-auth-token'))._id;
+
+    let user = await User.findById(userId);
+    if(!user) {
+        return res.status(400).send('User not found.');
+    }
+
+    user.username = req.params.username;
+    user = await user.save();
+
+    return res.status(200).send(user);
+});
+
+/*
+    PUT - Update Email
+*/
+router.put('/email/:email', auth, async (req, res) => {
+    const userId = decodeJwt(req.header('x-auth-token'))._id;
+
+    let user = await User.findById(userId);
+    if(!user) {
+        return res.status(400).send('User not found.');
+    }
+
+    user.email = req.params.email;
     user = await user.save();
 
     return res.status(200).send(user);
