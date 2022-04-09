@@ -56,9 +56,9 @@ describe('/api/posts', () => {
             return await request(server)
                 .post(`/api/posts/${pinId}`)
                 .field('description', description)
-                .attach('image', file)
                 .set('Content-Type', 'multipart/form-data')
-                .set('x-auth-token', token);
+                .set('x-auth-token', token)
+                .attach('image', file);
         }
 
         it('should return 401 if client is not logged in', async () => {
