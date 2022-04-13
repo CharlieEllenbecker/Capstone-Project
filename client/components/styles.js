@@ -1,8 +1,6 @@
 import styled from 'styled-components/native';
 import { StyleSheet, Dimensions } from 'react-native';
-import { createGlobalStyle } from 'styled-components';
 import Constants from 'expo-constants';
-import { StyleSheet, Dimensions, TouchableOpacity} from 'react-native';
 const StatusBarHeight = Constants.statusBarHeight;
 
 export const Colors = {
@@ -156,6 +154,8 @@ export const Line = styled.View`
     background-color: ${darkBrick};
     margin-vertical: 10px;
 `;
+
+//Location Screen
 export const LocationImage = styled.Image`
     max-height: 200px;
     width: 350px;
@@ -170,10 +170,8 @@ export const LocationTitle = styled.Text`
     padding: 1px;
 `;
 export const LocationDescription = styled.Text`
-    text-align: center;
     font-size: 15px;
     color: #000000;
-    padding: 25px;
 `;
 export const LocationReviewContainer = styled.View`
     width: 100%;
@@ -244,6 +242,15 @@ export const ReviewContainer = styled.View`
     justify-content: center;
     border-radius: 10px;
 `;
+export const ReviewProfilePic = styled.Image`
+  width: 30px;
+  height: 30px;
+  border-radius: 15px;
+  justify-content: center;
+  align-content: center;
+`;
+
+//Profile Page
 export const ProfileContainer = styled.View`
     flex: 1;
     padding-top: ${StatusBarHeight + 10}px;
@@ -529,13 +536,24 @@ export const styles = StyleSheet.create({
   hideButton: {
     position: 'absolute',
     right: 0,
-    bottom: 300,
+    bottom: 240,
     margin: 5,
     padding: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 100,
-    backgroundColor: '#FF6347',
+    borderRadius: 5,
+    backgroundColor: '#FFFFFF',
+  },
+  showButton: {
+    position: 'absolute',
+    right: 0,
+    bottom: 8,
+    margin: 5,
+    padding: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+    backgroundColor: '#FFFFFF',
   },
   pinDetails: {
     //position: 'absolute',

@@ -6,7 +6,11 @@ import {
 import React, { 
   useState, 
   useEffect } from 'react';
-import config from '../ip.json';
+import ProfileTop from '../components/ProfileTop';
+import GridView from '../components/GridView';
+import getIp from '../ip';
+import { useSelector, useDispatch } from 'react-redux';
+import { deleteJWT } from '../state/actions/jwtActions';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import {
@@ -31,118 +35,35 @@ import axios from 'axios';
 
 
 const ProfileScreen = ({ route, navigation }) => {
-    const [user, setUser] = useState('');
-    var {width, height} = Dimensions.get('screen');
-
+    // const [user, setUser] = useState('');
+    // var {width, height} = Dimensions.get('screen');
+    // const ip = getIp();
+    // const { jwt } = useSelector((state) => state.jwtReducer);
+    // const dispatch = useDispatch();
+    const images = [
+      require('../assets/banners/food-banner1.jpg'),
+      require('../assets/banners/food-banner4.jpg'),
+      require('../assets/banners/food-banner3.jpg'),
+      require('../assets/banners/food-banner2.jpg'),
+      require('../assets/banners/food-banner5.jpg')
+    ]
+        // const getUser = async () => {
+        //   const ip = config.ip;
+        //   const data = await axios.get(`http://${ip}:3001/api/users/me/`, { headers: { 'x-auth-token': jwt } })
+        //   .catch(error => {
+        //     console.log(error);
+        //   });
+        // };
+        // getUser();
+        
   return (
-    
     <ProfileContainer>
-      <HeaderContainer>
-        <SettingsButton> 
-          <Ionicons name='ios-settings-outline' size={25}/> 
-        </SettingsButton>
-        <UsernameText>Username</UsernameText> 
-        <LogoutButton onPress={() => navigation.navigate('Login')}>
-          <Ionicons name='ios-exit-outline' size={25}/>
-        </LogoutButton> 
-      </HeaderContainer>
-      
-      <UserContainer>
-        <VerticalContainer>
-          <ProfilePictureContainer onPress={openImagePickerAsync}></ProfilePictureContainer> 
-        </VerticalContainer>
-
-        <VerticalContainer>
-          <NumberOfPinsContainer>
-            <VerticalContainer>
-              <HorizontalContainer>
-                <NumberOfPinsText>Pins</NumberOfPinsText>   
-                <NumberOfPinsText>Posts</NumberOfPinsText>  
-              </HorizontalContainer>
-              <HorizontalContainer>
-                <NumberOfPinsNumber>40</NumberOfPinsNumber> 
-                <NumberOfPinsNumber>40</NumberOfPinsNumber> 
-              </HorizontalContainer>
-            </VerticalContainer>
-          </NumberOfPinsContainer>
-
-          <EditProfileButton>
-            <EditButtonText>Edit profile</EditButtonText> 
-          </EditProfileButton>
-        </VerticalContainer>
-      </UserContainer>
-
-      <BioText>This is my bio.</BioText>  
-
-      <LocationLine/> 
-
+      <ProfileTop navigation={navigation}/>
       <ScrollView scrollEventThrottle={16}>
-      {gridView(images, width, height)}
+        <GridView images={images}/>
       </ScrollView>
     </ProfileContainer>
   );
 };
 
 export default ProfileScreen;
-
-
-const images = [
-  require('../assets/banners/food-banner1.jpg'),
-  require('../assets/banners/food-banner4.jpg'),
-  require('../assets/banners/food-banner3.jpg'),
-  require('../assets/banners/food-banner2.jpg'),
-  require('../assets/banners/food-banner5.jpg')
-]
-
-
-export const gridView = (images, width, height) => {
-  return (
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-          {renderImages(images, width, height)}
-      </View>
-  );
-}
-
-const renderImages = (images, width, height) => {
-  return images.map((image) => {
-      return <View style={[{ width: (width) / 3 }, { height: (width) / 3 }]}>
-          <Image style={{ flex: 1, width: undefined, height: undefined, borderColor: '#FFFFFF', borderWidth: 1 }} source={image}/>
-      </View>
-  });
-}
-    // const getUser = async () => {
-    //   const ip = config.ip;
-    //   const data = await axios.get(`http://${ip}:3001/api/users/me/`, { headers: { 'x-auth-token': jwt } })
-    //   .catch(error => {
-    //     console.log(error);
-    //   });
-    // };
-    // getUser();
-  
-    const handleLogout = async () => {
-      const ip = config.ip;
-      await axios(`http://${ip}:3001/`);
-    };
-
-    let openImagePickerAsync = async () => {
-      let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-  
-      if (permissionResult.granted === false) {
-        alert('Permission to access camera roll is required!');
-        return;
-      }
-  
-      let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
-      });
-      console.log(result.uri);
-  
-      if (result.cancelled === true) {
-        return;
-      }
-      setSelectedImage(result.uri);
-      //require('../assets/banners/food-banner1.jpg')
-    };
