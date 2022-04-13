@@ -29,6 +29,7 @@ router.get('/my', auth, async (req, res) => {
 */
 router.get('/:id', auth, async (req, res) => {
     const pin = await Pin.findById(req.params.id);
+    
     return res.status(200).send(pin);
 });
 
@@ -52,7 +53,7 @@ router.post('/', auth, async (req, res) => {
     }
 
     req.body.userId = decodeJwt(req.header('x-auth-token'))._id;
-    const pin = await new Pin(_.pick(req.body, ['coordinate', 'title', 'description', 'rating', 'tags', 'reviews', 'userId'])).save();
+    const pin = await new Pin(_.pick(req.body, ['coordinate', 'title', 'description', 'rating', 'tags', 'reviews', 'posts', 'userId'])).save();
 
     return res.status(200).send(pin);
 });

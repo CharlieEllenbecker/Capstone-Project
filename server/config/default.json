@@ -1,6 +1,7 @@
 {
     "jwtPrivateKey" : "",
     "db": "mongodb://localhost/capstone-project",
+    "imageDestination": "images",
     "tags": [
         "Portrait",
         "Landscape",
