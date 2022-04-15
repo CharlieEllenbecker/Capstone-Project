@@ -13,6 +13,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import HomeScreen from '../screens/HomeScreen';
 import DrawerNavigator from './DrawerNavigator.js';
 import LocationScreen from '../screens/LocationScreen';
+import CameraView from '../screens/CameraView';
 
 const Stack = createNativeStackNavigator();
 
@@ -23,7 +24,8 @@ const RootStack = () => {
         screenOptions={{
           headerShown: false,
         }}
-        initialRouteName="Login"
+        initialRouteName="HomeScreen"
+        //initialRouteName="Login"
       >
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Signup" component={Signup} />
@@ -45,6 +47,7 @@ const RootStack = () => {
         <Stack.Screen name="HomeScreen" component={MainTabScreen} />
         <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="CameraView" component={CameraView} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -1,5 +1,4 @@
 import styled from 'styled-components/native';
-import { StyleSheet, Dimensions } from 'react-native';
 import { createGlobalStyle } from 'styled-components';
 import Constants from 'expo-constants';
 import { StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
@@ -208,18 +207,7 @@ export const BackButton = styled.TouchableOpacity`
   z-index: 1;
   position: absolute;
 `;
-export const BackButton = styled.TouchableOpacity`
-  width: 25px;
-  height: 25px;
-  border-color: #000000;
-  border-width: 0.7px;
-  margin-vertical: 5px;
-  align-content: center;
-  justify-content: center;
-  background-color: ${brick};
-  z-index: 1;
-  position: absolute;
-`;
+
 export const SubmitReviewButton = styled.TouchableOpacity`
   width: 80%;
   justify-content: center;
