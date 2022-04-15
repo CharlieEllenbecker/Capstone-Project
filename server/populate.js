@@ -5,8 +5,12 @@ const client = new MongoClient('mongodb://localhost/');
 
 const populate = async () => {
     await client.connect();
-    console.log('Connected successfully to server');
+
+    const existingDb = client.db('capstone-project');
+    existingDb.dropDatabase();
+    
     const db = client.db('capstone-project');
+
     const userCollection = db.collection('users');
     const pinCollection = db.collection('pins');
 
@@ -51,7 +55,8 @@ const populate = async () => {
             posts: [
                 {
                     description: 'Good 1',
-                    postPictureFileName: 'food-banner1.jpg'
+                    postPictureFileName: 'food-banner1.jpg',
+                    userId: userTwoId
                 }
             ],
             userId: userOneId
@@ -73,7 +78,8 @@ const populate = async () => {
             posts: [
                 {
                     description: 'Good 2',
-                    postPictureFileName: 'food-banner2.jpg'
+                    postPictureFileName: 'food-banner2.jpg',
+                    userId: userOneId
                 }
             ],
             userId: userOneId
@@ -95,7 +101,8 @@ const populate = async () => {
             posts: [
                 {
                     description: 'Good 3',
-                    postPictureFileName: 'food-banner3.jpg'
+                    postPictureFileName: 'food-banner3.jpg',
+                    userId: userTwoId
                 }
             ],
             userId: userOneId
@@ -117,7 +124,8 @@ const populate = async () => {
             posts: [
                 {
                     description: 'Good 4',
-                    postPictureFileName: 'food-banner4.jpg'
+                    postPictureFileName: 'food-banner4.jpg',
+                    userId: userTwoId
                 }
             ],
             userId: userOneId
@@ -139,7 +147,8 @@ const populate = async () => {
             posts: [
                 {
                     description: 'Good 5',
-                    postPictureFileName: 'food-banner5.jpg'
+                    postPictureFileName: 'food-banner5.jpg',
+                    userId: userOneId
                 }
             ],
             userId: userOneId
@@ -148,6 +157,6 @@ const populate = async () => {
 }
 
 populate()
-    .then(console.log('good'))
+    .then(console.log('The database has been populated.'))
     .catch(console.error)
     .finally(() => client.close());

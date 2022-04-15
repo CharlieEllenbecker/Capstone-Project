@@ -20,9 +20,39 @@ router.post('/:pinId', [auth, upload.single('image')], async (req, res) => {
         return res.status(404).send(`The pin with the given id ${req.params.pinId} does not exist.`);
     }
 
-    const post = await new Post({ description: req.body.description, postPictureFileName: req.file.filename }).save();
+    const userId = decodeJwt(req.header('x-auth-token'))._id;
+    const post = await new Post({
+        description: req.body.description,
+        postPictureFileName: req.file.filename,
+        useId: userId
+    }).save();
+    
     pin.posts.push(post);
     await pin.save();
+
+    return res.status(200).send(post);
+});
+
+/*
+    PUT - Update the description
+*/
+router.put('/:id', auth, async (req, res) => {
+    const { error } = validate(req.body);
+    if(error) {
+        return res.status(400).send(error.details[0].message);
+    }
+
+    let post = await Post.findById(req.params.id);
+    if(!post) {
+        return res.status(404).send(`The post with the given id ${req.params.id} does not exist.`);
+    }
+
+    const userId = decodeJwt(req.header('x-auth-token'))._id;
+    if(post.userId.toString() !== userId) {
+        return res.status(404).send(`The post can not be edited by this user.`);
+    }
+
+    post = await post.findByIdAndUpdate(req.params.id, _.pick(req.body, ['description']), { new: true });
 
     return res.status(200).send(post);
 });

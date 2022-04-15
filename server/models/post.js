@@ -13,6 +13,11 @@ const postSchema = new mongoose.Schema({
         type: String,
         required: false,
         default: null
+    },
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: false // userId is generated from token
     }
 }, { versionKey: false });
 
@@ -21,7 +26,8 @@ const Post = new mongoose.model('Post', postSchema);
 function validate(post) {
     const schema = Joi.object({
         description: Joi.string().min(5).max(1024),
-        postPictureFileName: Joi.string()
+        postPictureFileName: Joi.string(),
+        userId: Joi.objectId()
     });
 
     return schema.validate(post);
