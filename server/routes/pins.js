@@ -27,9 +27,9 @@ router.get('/my', auth, async (req, res) => {
 /*
     GET - Get a specific pin by id
 */
-router.get('/:id', auth, async (req, res) => {  // TODO: does not check if this pin belongs to this user
+router.get('/:id', auth, async (req, res) => {
     const pin = await Pin.findById(req.params.id);
-
+    
     return res.status(200).send(pin);
 });
 

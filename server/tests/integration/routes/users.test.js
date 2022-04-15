@@ -14,7 +14,7 @@ describe('/api/users', () => {
     });
     afterAll(async () => {
         await cleanupImages();
-    })
+    });
 
     describe('GET /me', () => {
         let user;
@@ -311,9 +311,9 @@ describe('/api/users', () => {
 
             return await request(server)
                 .post('/api/users/profile-picture')
-                .attach('image', file)
                 .set('Content-Type', 'multipart/form-data')
-                .set('x-auth-token', token);
+                .set('x-auth-token', token)
+                .attach('image', file);
         }
 
         it('should return 401 if client is not logged in', async () => {
@@ -329,6 +329,84 @@ describe('/api/users', () => {
 
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('profilePictureFileName');
+        });
+    });
+
+    describe('PUT /username/:username', () => {
+        let user;
+        let token;
+        let newUsername;
+    
+        beforeEach(async () => {
+            newUsername = 'newUsername';
+
+            user = await new User({
+                username: 'JohnSmith',
+                email: 'joe.buck@gmail.com',
+                password: 'password123'
+            }).save();
+            token = new User(user).generateAuthToken();
+        });
+
+        const exec = async () => {
+            return await request(server)
+                .put(`/api/users/username/${newUsername}`)
+                .set('x-auth-token', token)
+                .send();
+        }
+
+        it('should return 401 if client is not logged in', async () => {
+            token = '';
+
+            const res = await exec();
+
+            expect(res.status).toBe(401);
+        });
+
+        it('should return 200 if successful', async () => {
+            const res = await exec();
+
+            expect(res.status).toBe(200);
+            expect(res.body).toHaveProperty('username', newUsername);
+        });
+    });
+
+    describe('PUT /email/:email', () => {
+        let user;
+        let token;
+        let newEmail;
+    
+        beforeEach(async () => {
+            newEmail = 'new.email@gmail.com';
+
+            user = await new User({
+                username: 'JohnSmith',
+                email: 'joe.buck@gmail.com',
+                password: 'password123'
+            }).save();
+            token = new User(user).generateAuthToken();
+        });
+
+        const exec = async () => {
+            return await request(server)
+                .put(`/api/users/email/${newEmail}`)
+                .set('x-auth-token', token)
+                .send();
+        }
+
+        it('should return 401 if client is not logged in', async () => {
+            token = '';
+
+            const res = await exec();
+
+            expect(res.status).toBe(401);
+        });
+
+        it('should return 200 if successful', async () => {
+            const res = await exec();
+
+            expect(res.status).toBe(200);
+            expect(res.body).toHaveProperty('email', newEmail);
         });
     });
 });

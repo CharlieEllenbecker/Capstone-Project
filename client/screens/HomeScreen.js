@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Camera } from 'expo-camera';
 import axios from 'axios';
+import getIp from '../ip';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   StyleSheet,
   Text,
@@ -25,11 +27,12 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import * as ImagePicker from 'expo-image-picker';
-import { markers, mapDarkStyle, mapStandardStyle } from '../model/mapData';
+import { mapDarkStyle, mapStandardStyle } from '../model/mapData';
 
 import StarRating from '../components/StarRating';
 import { useTheme } from '@react-navigation/native';
 import { styles } from '../components/styles';
+
 const { width, height } = Dimensions.get('window');
 const CARD_HEIGHT = 220;
 const CARD_WIDTH = width * 0.8;
@@ -45,30 +48,8 @@ const HomeScreen = ({ navigation, route }) => {
   }, [route.params?.image]);
 
   const theme = useTheme();
+
   const initialMapState = {
-    markers,
-    categories: [
-      {
-        name: 'Portrait',
-        //  icon: <MaterialCommunityIcons style={styles.chipsIcon} name="food-fork-drink" size={18} />,
-      },
-      {
-        name: 'Landscape',
-        //  icon: <Ionicons name="ios-restaurant" style={styles.chipsIcon} size={18} />,
-      },
-      {
-        name: 'Street',
-        //  icon: <Ionicons name="md-restaurant" style={styles.chipsIcon} size={18} />,
-      },
-      {
-        name: 'Abstract',
-        //  icon: <MaterialCommunityIcons name="food" style={styles.chipsIcon} size={18} />,
-      },
-      {
-        name: 'Architectural',
-        // icon: <Fontisto name="hotel" style={styles.chipsIcon} size={15} />,
-      },
-    ],
     region: {
       latitude: 43.041,
       longitude: -87.909,
@@ -76,8 +57,10 @@ const HomeScreen = ({ navigation, route }) => {
       longitudeDelta: 0.0421,
     },
   };
+  const [markers, setMarkers] = React.useState([]);
+  const [categories, setCategories] = React.useState([]);
   const [state, setState] = React.useState(initialMapState);
-  const [cardVisible, setCardVisible] = React.useState(false);
+  const [cardVisible, setCardVisible] = React.useState(true);
   const [title, setTitle] = React.useState('');
   const [description, setDescription] = React.useState('');
   const [selectedImage, setSelectedImage] = React.useState(null);
@@ -86,14 +69,45 @@ const HomeScreen = ({ navigation, route }) => {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
 
   const [coordinate, setCoordinate] = React.useState({});
+  const { jwt } = useSelector((state) => state.jwtReducer);
+
+  // Get all the pins
+  const getAllPins = async () => {
+    const ip = getIp();
+    await axios
+      .get(`http://${ip}:3001/api/pins/`, { headers: { 'x-auth-token': jwt } })
+      .then((response) => {
+        setMarkers(response.data);
+        console.log(response.data.length);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  //Get all the tags
+  const getAllCategories = async () => {
+    const ip = getIp();
+    await axios
+      .get(`http://${ip}:3001/api/tags/`, { headers: { 'x-auth-token': jwt } })
+      .then((response) => {
+        setCategories(response.data);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   let mapIndex = 0;
   let mapAnimation = new OldAnimated.Value(0);
   useEffect(() => {
+    getAllPins();
+    getAllCategories();
     mapAnimation.addListener(({ value }) => {
       let index = Math.floor(value / CARD_WIDTH + 0.3); // animate 30% away from landing on the next item
-      if (index >= state.markers.length) {
-        index = state.markers.length - 1;
+      if (index >= markers.length) {
+        index = markers.length - 1;
       }
       if (index <= 0) {
         index = 0;
@@ -102,7 +116,7 @@ const HomeScreen = ({ navigation, route }) => {
       const regionTimeout = setTimeout(() => {
         if (mapIndex !== index) {
           mapIndex = index;
-          const { coordinate } = state.markers[index];
+          const { coordinate } = markers[index];
           _map.current.animateToRegion(
             {
               ...coordinate,
@@ -114,8 +128,8 @@ const HomeScreen = ({ navigation, route }) => {
         }
       }, 10);
     });
-  });
-  const interpolations = state.markers.map((marker, index) => {
+  }, []);
+  const interpolations = markers.map((marker, index) => {
     const inputRange = [(index - 1) * CARD_WIDTH, index * CARD_WIDTH, (index + 1) * CARD_WIDTH];
     const scale = mapAnimation.interpolate({
       inputRange,
@@ -156,10 +170,9 @@ const HomeScreen = ({ navigation, route }) => {
     //console.log(image);
     //console.log('Before the if');
     if (title.length > 0 && description.length > 0 && selectedImage != null) {
-      //console.log('addMarker!!! made it');
-      setState({
+      setMarkers({
         markers: [
-          ...state.markers,
+          ...markers,
           {
             coordinate: {
               latitude: coordinate.latitude,
@@ -173,7 +186,6 @@ const HomeScreen = ({ navigation, route }) => {
             //image: image,
           },
         ],
-        categories: [...state.categories],
       });
       // setTitle('');
       // setDescription('');
@@ -197,10 +209,10 @@ const HomeScreen = ({ navigation, route }) => {
     });
     console.log(result.uri);
     setSelectedImage(result.uri);
-    if (result.cancelled === true) {
-      startCamera ? setStartCamera(false) : null;
-      return;
-    }
+    // if (result.cancelled === true) {
+    //   startCamera ? setStartCamera(false) : null;
+    //   return;
+    // }
     //require('../assets/banners/food-banner1.jpg')
   };
 
@@ -213,6 +225,7 @@ const HomeScreen = ({ navigation, route }) => {
         style={styles.pinDetails}
         onChangeText={(newText) => {
           setTitle(newText);
+          console.log('Image: ', selectedImage);
         }}
       />
       <TextInput
@@ -278,7 +291,7 @@ const HomeScreen = ({ navigation, route }) => {
           onLongPress={handleLongPress}
           //onLongPress={<addMarker state={state} />}
         >
-          {state.markers.map((marker, index) => {
+          {markers.map((marker, index) => {
             const scaleStyle = {
               transform: [
                 {
@@ -286,8 +299,13 @@ const HomeScreen = ({ navigation, route }) => {
                 },
               ],
             };
+            console.log('Coordinate: ', marker.coordinate.latitude);
             return (
-              <MapView.Marker key={index} coordinate={marker.coordinate} onPress={(e) => onMarkerPress(e)}>
+              <MapView.Marker
+                key={index}
+                coordinate={{ latitude: marker.coordinate.latitude, longitude: marker.coordinate.longitude }}
+                onPress={(e) => onMarkerPress(e)}
+              >
                 <OldAnimated.View style={[styles.markerWrap]}>
                   <OldAnimated.Image
                     source={require('../assets/map_marker.png')}
@@ -300,9 +318,16 @@ const HomeScreen = ({ navigation, route }) => {
           })}
         </MapView>
 
-        <TouchableOpacity style={styles.hideButton} onPress={() => setCardVisible(!cardVisible)}>
-          {cardVisible ? <Ionicons name="eye-outline" size={23} /> : <Ionicons name="eye-off-outline" size={23} />}
-        </TouchableOpacity>
+        {cardVisible ? (
+          <TouchableOpacity style={styles.hideButton} onPress={() => setCardVisible(!cardVisible)}>
+            <Ionicons name="ios-list" size={23} />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity style={styles.showButton} onPress={() => setCardVisible(!cardVisible)}>
+            <Ionicons name="ios-list-outline" size={23} />
+          </TouchableOpacity>
+        )}
+
         <View style={styles.searchBox}>
           <TextInput
             placeholder="Search here"
@@ -314,25 +339,26 @@ const HomeScreen = ({ navigation, route }) => {
         </View>
         <ScrollView
           horizontal
+          pagingEnabled
           scrollEventThrottle={1}
           showsHorizontalScrollIndicator={false}
-          height={50}
-          style={styles.chipsScrollView}
+          snapToInterval={CARD_WIDTH + 20}
+          snapToAlignment="center"
+          style={styles.scrollView}
           contentInset={{
-            // iOS only
             top: 0,
-            left: 0,
+            left: SPACING_FOR_CARD_INSET,
             bottom: 0,
-            right: 20,
+            right: SPACING_FOR_CARD_INSET,
           }}
           contentContainerStyle={{
-            paddingRight: Platform.OS === 'android' ? 20 : 0,
+            paddingHorizontal: Platform.OS === 'android' ? SPACING_FOR_CARD_INSET : 0,
           }}
         >
-          {state.categories.map((category, index) => (
+          {categories.map((category, index) => (
             <TouchableOpacity key={index} style={styles.chipsItem}>
               {category.icon}
-              <Text>{category.name}</Text>
+              <Text>{category}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -368,7 +394,7 @@ const HomeScreen = ({ navigation, route }) => {
               { useNativeDriver: true },
             )}
           >
-            {state.markers.map((marker, index) => (
+            {markers.map((marker, index) => (
               <View style={styles.card} key={index}>
                 {/* source={{ uri: selectedImage.localUri }} */}
                 <Image source={{ uri: marker.image }} style={styles.cardImage} resizeMode="cover" />
@@ -376,37 +402,23 @@ const HomeScreen = ({ navigation, route }) => {
                   <Text numberOfLines={1} style={styles.cardtitle}>
                     {marker.title}
                   </Text>
-                  <StarRating ratings={marker.rating} reviews={marker.reviews} />
+                  <StarRating ratings={marker.rating} size={18} />
                   <Text numberOfLines={1} style={styles.cardDescription}>
                     {marker.description}
                   </Text>
                   <View style={styles.button}>
                     <TouchableOpacity
                       onPress={() => {
-                        navigation.navigate('LocationScreen', {
-                          image: marker.image,
-                          title: marker.title,
-                          rating: marker.rating,
-                        });
+                        navigation.navigate('LocationScreen', { id: marker._id });
                       }}
                       style={[
-                        styles.signIn,
+                        styles.textSign,
                         {
-                          borderColor: '#FF6347',
-                          borderWidth: 1,
+                          color: '#FF6347',
                         },
                       ]}
                     >
-                      <Text
-                        style={[
-                          styles.textSign,
-                          {
-                            color: '#FF6347',
-                          },
-                        ]}
-                      >
-                        See Location
-                      </Text>
+                      <Text style={styles.textSign}>See Location</Text>
                     </TouchableOpacity>
                   </View>
                 </View>

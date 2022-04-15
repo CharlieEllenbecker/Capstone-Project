@@ -1,7 +1,7 @@
 import styled from 'styled-components/native';
 import { createGlobalStyle } from 'styled-components';
+import { StyleSheet, Dimensions } from 'react-native';
 import Constants from 'expo-constants';
-import { StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 const StatusBarHeight = Constants.statusBarHeight;
 
 export const Colors = {
@@ -56,8 +56,8 @@ export const PageTitle = styled.Text`
 export const LoginBackground = styled.ImageBackground`
   resizemode: contain;
   flex: 1;
-  height: 785px;
-  justifycontent: center;
+  height: 100%;
+  justify-content: center;
   padding-top: ${StatusBarHeight + 30}px;
   padding: 25px;
 `;
@@ -65,7 +65,7 @@ export const LoginBackground = styled.ImageBackground`
 export const SignupBackground = styled.ImageBackground`
   resizemode: cover;
   flex: 1;
-  justifycontent: center;
+  justify-content: center;
   padding-top: ${StatusBarHeight + 30}px;
   padding: 25px;
   padding-bottom: 110px;
@@ -155,6 +155,8 @@ export const Line = styled.View`
   background-color: ${darkBrick};
   margin-vertical: 10px;
 `;
+
+//Location Screen
 export const LocationImage = styled.Image`
   max-height: 200px;
   width: 350px;
@@ -207,7 +209,6 @@ export const BackButton = styled.TouchableOpacity`
   z-index: 1;
   position: absolute;
 `;
-
 export const SubmitReviewButton = styled.TouchableOpacity`
   width: 80%;
   justify-content: center;
@@ -244,6 +245,15 @@ export const ReviewContainer = styled.View`
   justify-content: center;
   border-radius: 10px;
 `;
+export const ReviewProfilePic = styled.Image`
+  width: 30px;
+  height: 30px;
+  border-radius: 15px;
+  justify-content: center;
+  align-content: center;
+`;
+
+//Profile Page
 export const ProfileContainer = styled.View`
   flex: 1;
   padding-top: ${StatusBarHeight + 10}px;
@@ -529,13 +539,24 @@ export const styles = StyleSheet.create({
   hideButton: {
     position: 'absolute',
     right: 0,
-    bottom: 300,
+    bottom: 240,
     margin: 5,
     padding: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 100,
-    backgroundColor: '#FF6347',
+    borderRadius: 5,
+    backgroundColor: '#FFFFFF',
+  },
+  showButton: {
+    position: 'absolute',
+    right: 0,
+    bottom: 8,
+    margin: 5,
+    padding: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+    backgroundColor: '#FFFFFF',
   },
   pinDetails: {
     //position: 'absolute',
