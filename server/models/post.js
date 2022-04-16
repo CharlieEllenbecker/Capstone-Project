@@ -14,6 +14,11 @@ const postSchema = new mongoose.Schema({
         required: false,
         default: null
     },
+    pinId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Pin',
+        required: true  // A post can not exist without a pin
+    },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -27,6 +32,7 @@ function validate(post) {
     const schema = Joi.object({
         description: Joi.string().min(5).max(1024),
         postPictureFileName: Joi.string(),
+        pinId: Joi.objectId().required(),
         userId: Joi.objectId()
     });
 
