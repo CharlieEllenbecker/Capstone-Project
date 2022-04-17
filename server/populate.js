@@ -12,8 +12,9 @@ const populate = async () => {
     const db = client.db('capstone-project');
 
     const userCollection = db.collection('users');
-    const postCollection = db.collection('posts');
     const pinCollection = db.collection('pins');
+    const postCollection = db.collection('posts');
+    const reviewCollection = db.collection('reviews');
 
     const salt = await bcrypt.genSalt(10);
     const passwordOne = await bcrypt.hash('password', salt);
@@ -43,13 +44,6 @@ const populate = async () => {
         },
         title: 'Amazing Food Place',
         description: 'This is the best food place',
-        reviews: [
-            {
-                userId: userTwoId,
-                description: 'Cool!',
-                rating: 5
-            }
-        ],
         userId: userOneId
     });
 
@@ -60,13 +54,6 @@ const populate = async () => {
         },
         title: 'Second Amazing Food Place',
         description: 'This is the second best food place',
-        reviews: [
-            {
-                userId: userTwoId,
-                description: 'Cool!',
-                rating: 4
-            }
-        ],
         userId: userOneId
     });
 
@@ -77,13 +64,6 @@ const populate = async () => {
         },
         title: 'Third Amazing Food Place',
         description: 'This is the third best food place',
-        reviews: [
-            {
-                userId: userTwoId,
-                description: 'Cool!',
-                rating: 3
-            }
-        ],
         userId: userOneId
     });
 
@@ -94,13 +74,6 @@ const populate = async () => {
         },
         title: 'Fourth Amazing Food Place',
         description: 'This is the fourth best food place',
-        reviews: [
-            {
-                userId: userOneId,
-                description: 'Cool!',
-                rating: 2
-            }
-        ],
         userId: userTwoId
     });
 
@@ -111,13 +84,6 @@ const populate = async () => {
         },
         title: 'Fifth Amazing Food Place',
         description: 'This is the fifth best food place',
-        reviews: [
-            {
-                userId: userOneId,
-                description: 'Cool!',
-                rating: 1
-            }
-        ],
         userId: userTwoId
     });
 
@@ -155,6 +121,39 @@ const populate = async () => {
         {
             description: 'Good 5',
             postPictureFileName: 'food-banner5.jpg',
+            pinId: pinFiveId,
+            userId: userOneId
+        }
+    ]);
+
+    const reviews = await reviewCollection.insertMany([
+        {
+            description: 'Cool!',
+            rating: 5,
+            pinId: pinOneId,
+            userId: userTwoId
+        },
+        {
+            description: 'Cool!',
+            rating: 4,
+            pinId: pinTwoId,
+            userId: userTwoId
+        },
+        {
+            description: 'Cool!',
+            rating: 3,
+            pinId: pinThreeId,
+            userId: userTwoId
+        },
+        {
+            description: 'Cool!',
+            rating: 2,
+            pinId: pinFourId,
+            userId: userOneId
+        },
+        {
+            description: 'Cool!',
+            rating: 1,
             pinId: pinFiveId,
             userId: userOneId
         }

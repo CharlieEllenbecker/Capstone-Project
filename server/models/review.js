@@ -13,6 +13,11 @@ const reviewSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    pinId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Pin',
+        required: true  // A review can not exist without a pin
+    },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -26,6 +31,7 @@ function validate(review) {
     const schema = Joi.object({
         description: Joi.string().min(5).max(1024),
         rating: Joi.number().required(),
+        pinId: Joi.obkectId().required(),
         userId: Joi.objectId()
     });
 
