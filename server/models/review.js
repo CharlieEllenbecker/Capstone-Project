@@ -31,7 +31,7 @@ function validate(review) {
     const schema = Joi.object({
         description: Joi.string().min(5).max(1024),
         rating: Joi.number().required(),
-        pinId: Joi.obkectId().required(),
+        pinId: Joi.objectId(),
         userId: Joi.objectId()
     });
 

@@ -32,7 +32,7 @@ function validate(post) {
     const schema = Joi.object({
         description: Joi.string().min(5).max(1024),
         postPictureFileName: Joi.string(),
-        pinId: Joi.objectId().required(),
+        pinId: Joi.objectId(),
         userId: Joi.objectId()
     });
 

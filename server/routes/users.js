@@ -14,6 +14,7 @@ const router = express.Router();
 */
 router.get('/me', auth, async (req, res) => {
     const user = await User.findById(req.user._id).select(['-_id', '-password']);
+    
     return res.status(200).send(user);
 });
 
@@ -22,6 +23,15 @@ router.get('/me', auth, async (req, res) => {
 */
 router.get('/is-auth', auth, (req, res) => {
     return res.status(200).send();
+});
+
+/*
+    GET - Get the user with the given userId
+*/
+router.get('/:userId', auth, async (req, res) => {
+    const user = await User.findById(req.params.userId).select(['-_id', '-password']);
+
+    return res.status(200).send(user);
 });
 
 /*
@@ -43,7 +53,7 @@ router.post('/', async (req, res) => {
         return res.status(400).send('User already registered with that username.');
     }
 
-    let user = new User(_.pick(req.body, ['username', 'email', 'password']));
+    let user = await new User(_.pick(req.body, ['username', 'email', 'password']));
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(user.password, salt);
     user = await user.save();
@@ -126,7 +136,7 @@ router.put('/profile-picture', [auth, upload.single('image')], async (req, res) 
 router.put('/username/:username', auth, async (req, res) => {
     const userId = decodeJwt(req.header('x-auth-token'))._id;
 
-    const user = await User.findByIdAndUpdate(userId, { username: req.params.username });
+    const user = await User.findByIdAndUpdate(userId, { username: req.params.username }, { new: true });
     if(!user) {
         return res.status(400).send('User not found.');
     }
@@ -140,7 +150,7 @@ router.put('/username/:username', auth, async (req, res) => {
 router.put('/email/:email', auth, async (req, res) => {
     const userId = decodeJwt(req.header('x-auth-token'))._id;
 
-    const user = await User.findByIdAndUpdate(userId, { email: req.params.email });
+    const user = await User.findByIdAndUpdate(userId, { email: req.params.email }, { new: true });
     if(!user) {
         return res.status(400).send('User not found.');
     }

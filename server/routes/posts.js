@@ -2,9 +2,36 @@ const { Pin } = require('../models/pin');
 const { Post, validate } = require('../models/post');
 const { upload } = require('../middleware/imageHelper');
 const auth = require('../middleware/auth');
+const decodeJwt = require('jwt-decode');
 const express = require('express');
 require('express-async-errors');
 const router = express.Router();
+
+/*
+    GET - Get all posts for a given pinId
+*/
+router.get('/all/:pinId', auth, async (req, res) => {
+    const pin = await Pin.findById(req.params.pinId);
+    if(!pin) {
+        return res.status(404).send(`The pin with the given id ${req.params.pinId} does not exist.`);
+    }
+
+    const posts = await Post.find({ pinId: req.params.pinId });
+
+    return res.status(200).send(posts);
+});
+
+/*
+    GET - Get a post for a given postId
+*/
+router.get('/:postId', auth, async (req, res) => {
+    const post = await Post.findById(req.params.postId);
+    if(!post) {
+        return res.status(404).send(`The post with the given id ${req.params.postId} does not exist.`);
+    }
+
+    return res.status(200).send(post);
+});
 
 /*
     POST - Post a post to a pin
@@ -47,10 +74,11 @@ router.put('/:postId', auth, async (req, res) => {
 
     const userId = decodeJwt(req.header('x-auth-token'))._id;
     if(post.userId.toString() !== userId) {
-        return res.status(404).send(`The post can not be edited by this user.`);
+        return res.status(404).send(`The post with the given id ${req.params.postId} can not be edited by this user.`);
     }
 
-    post = await post.findByIdAndUpdate(req.params.postId, _.pick(req.body, ['description']), { new: true });
+    post.description = req.body.description;
+    post = await post.save();
 
     return res.status(200).send(post);
 });

@@ -34,13 +34,6 @@ describe('/api/pins', () => {
                     },
                     title: 'Amazing Food Place',
                     description: 'This is the best food place',
-                    reviews: [
-                        {
-                            userId: userId,
-                            description: 'Cool!',
-                            rating: 4.5
-                        }
-                    ],
                     userId: userId
                 },
                 {
@@ -139,13 +132,6 @@ describe('/api/pins', () => {
                     title: 'Amazing Food Place',
                     description: 'This is the best food place',
                     rating: 4.5,
-                    reviews: [
-                        {
-                            userId: userIdTwo,
-                            description: 'Cool!',
-                            rating: 4.5
-                        }
-                    ],
                     userId: userIdOne
                 },
                 {
@@ -155,6 +141,7 @@ describe('/api/pins', () => {
                     },
                     title: 'Second Amazing Food Place',
                     description: 'This is the second best food place',
+                    rating: 0,
                     userId: userIdOne
                 },
                 {
@@ -164,6 +151,7 @@ describe('/api/pins', () => {
                     },
                     title: 'Third Amazing Food Place',
                     description: 'This is the third best food place',
+                    rating: 0,
                     userId: userIdOne
                 },
                 {
@@ -173,6 +161,7 @@ describe('/api/pins', () => {
                     },
                     title: 'Fourth Amazing Food Place',
                     description: 'This is the fourth best food place',
+                    rating: 0,
                     userId: userIdOne
                 },
                 {
@@ -182,6 +171,7 @@ describe('/api/pins', () => {
                     },
                     title: 'Fifth Amazing Food Place',
                     description: 'This is the fifth best food place',
+                    rating: 0,
                     userId: userIdTwo
                 }
             ]);

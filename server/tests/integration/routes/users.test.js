@@ -54,6 +54,81 @@ describe('/api/users', () => {
         });
     });
 
+    describe('GET /is-auth', () => {
+        let user;
+        let token;
+
+        beforeEach(async () => {
+            user = await new User({
+                username: 'johnSmith',
+                email: 'john.smith@gmail.com',
+                password: 'password123'
+            }).save();
+            token = new User(user).generateAuthToken();
+        });
+
+        const exec = async () => {
+            return await request(server)
+                .get('/api/users/is-auth')
+                .set('x-auth-token', token)
+                .send();
+        }
+
+        it('should return 401 if client is not logged in', async () => {
+            token = '';
+
+            const res = await exec();
+
+            expect(res.status).toBe(401);
+        });
+
+        it('should return user data if valid', async () => {
+            const res = await exec();
+
+            expect(res.status).toBe(200);
+        });
+    });
+
+    describe('GET /:userId', () => {
+        let user;
+        let userId;
+        let token;
+
+        beforeEach(async () => {
+            user = await new User({
+                username: 'johnSmith',
+                email: 'john.smith@gmail.com',
+                password: 'password123'
+            }).save();
+            userId = user._id;
+            token = new User(user).generateAuthToken();
+        });
+
+        const exec = async () => {
+            return await request(server)
+                .get(`/api/users/${userId}`)
+                .set('x-auth-token', token)
+                .send();
+        }
+
+        it('should return 401 if client is not logged in', async () => {
+            token = '';
+
+            const res = await exec();
+
+            expect(res.status).toBe(401);
+        });
+
+        it('should return user data if valid', async () => {
+            const res = await exec();
+
+            expect(res.status).toBe(200);
+            expect(res.body).toHaveProperty('username');
+            expect(res.body).toHaveProperty('email');
+            
+        });
+    });
+
     describe('POST /', () => {
         let username;
         let email;
