@@ -8,15 +8,11 @@ require('express-async-errors');
 const router = express.Router();
 
 /*
-    GET - Get all posts for a given pinId
+    GET - Get all user specific posts
 */
-router.get('/all/:pinId', auth, async (req, res) => {
-    const pin = await Pin.findById(req.params.pinId);
-    if(!pin) {
-        return res.status(404).send(`The pin with the given id ${req.params.pinId} does not exist.`);
-    }
-
-    const posts = await Post.find({ pinId: req.params.pinId });
+router.get('/my', auth, async (req, res) => {
+    const userId = decodeJwt(req.header('x-auth-token'))._id;
+    const posts = await Post.find({ userId: userId });
 
     return res.status(200).send(posts);
 });
@@ -31,6 +27,20 @@ router.get('/:postId', auth, async (req, res) => {
     }
 
     return res.status(200).send(post);
+});
+
+/*
+    GET - Get all posts for a given pinId
+*/
+router.get('/all/:pinId', auth, async (req, res) => {
+    const pin = await Pin.findById(req.params.pinId);
+    if(!pin) {
+        return res.status(404).send(`The pin with the given id ${req.params.pinId} does not exist.`);
+    }
+
+    const posts = await Post.find({ pinId: req.params.pinId });
+
+    return res.status(200).send(posts);
 });
 
 /*
@@ -79,6 +89,25 @@ router.put('/:postId', auth, async (req, res) => {
 
     post.description = req.body.description;
     post = await post.save();
+
+    return res.status(200).send(post);
+});
+
+/*
+    DELETE - Delete the post with the given postId
+*/
+router.delete('/:postId', auth, async (req, res) => {
+    let post = await Post.findById(req.params.postId);
+    if(!post) {
+        return res.status(404).send(`The post with the given id ${req.params.postId} does not exist.`);
+    }
+
+    const userId = decodeJwt(req.header('x-auth-token'))._id;
+    if(post.userId.toString() !== userId) {
+        return res.status(404).send(`The post with the given id ${req.params.postId} can not be deleted by this user.`);
+    }
+
+    post = await Post.findByIdAndDelete(req.params.postId);
 
     return res.status(200).send(post);
 });

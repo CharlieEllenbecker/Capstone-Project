@@ -11,6 +11,7 @@ const router = express.Router();
 */
 router.get('/', auth, async (req, res) => {
     const pins = await Pin.find({});    // TODO: within a certain range?
+
     return res.status(200).send(pins);
 });
 

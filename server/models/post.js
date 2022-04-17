@@ -26,7 +26,7 @@ const postSchema = new mongoose.Schema({
     }
 }, { versionKey: false });
 
-const Post = new mongoose.model('Post', postSchema);
+const Post = mongoose.model('Post', postSchema);
 
 function validate(post) {
     const schema = Joi.object({

@@ -13,6 +13,8 @@ describe('/api/pins', () => {
         server.close();
     });
 
+    // TODO: get by pinId
+
     describe('GET /', () => {
         let token;
         let userId;
@@ -26,7 +28,7 @@ describe('/api/pins', () => {
             token = new User(user).generateAuthToken();
             userId = user._id;
 
-            await Pin.collection.insertMany([
+            await Pin.insertMany([
                 {
                     coordinate: {
                         latitude: 43.03725,
@@ -99,7 +101,7 @@ describe('/api/pins', () => {
         });
     });
 
-    describe('GET /pins/my', () => {
+    describe('GET /my', () => {
         let tokenOne;
         let userIdOne;
         let userIdTwo;
@@ -123,7 +125,7 @@ describe('/api/pins', () => {
             }).save();
             userIdTwo = userTwo._id;
 
-            await Pin.collection.insertMany([
+            await Pin.insertMany([
                 {
                     coordinate: {
                         latitude: 43.03725,

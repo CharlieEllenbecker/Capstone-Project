@@ -14,7 +14,78 @@ describe('/api/reviews', () => {
         server.close();
     });
 
-    // TODO: get for given reviewId
+    describe('GET /:reviewId', () => {
+        let pin;
+        let pinId;
+        let token;
+        let tokenOne;
+        let tokenTwo;
+        let userIdOne;
+        let userIdTwo
+        let review;
+        let reviewId;
+
+        beforeEach(async () => {
+            const userOne = await new User({
+                username: 'johnSmith',
+                email: 'john.smith@gmail.com',
+                password: 'password123'
+            }).save();
+            tokenOne = new User(userOne).generateAuthToken();
+            userIdOne = userOne._id;
+
+            const userTwo = await new User({
+                username: 'otherUsername',
+                email: 'john.smith@gmail.com',
+                password: 'password123'
+            }).save();
+            tokenTwo = new User(userTwo).generateAuthToken();
+            userIdTwo = userTwo._id;
+
+            pin = await new Pin({
+                    coordinate: {
+                        latitude: 43.03725,
+                        longitude: -87.91891,
+                    },
+                    title: 'Second Amazing Food Place',
+                    description: 'This is the second best food place',
+                    tags: [{ name: 'Food' }],
+                    userId: userIdOne
+                }).save();
+            pinId = pin._id;
+            token = tokenTwo;
+
+            review = await new Review({
+                description: 'Good!',
+                rating: 4,
+                pinId: pinId,
+                userId: userIdTwo
+            }).save();
+            reviewId = review._id;
+        });
+
+        const exec = async () => {
+            return await request(server)
+            .get(`/api/reviews/${reviewId}`)
+            .set('x-auth-token', token)
+            .send();
+        }
+
+        it('should return 401 if client is not logged in', async () => {
+            token = '';
+
+            const res = await exec();
+
+            expect(res.status).toBe(401);
+        });
+
+        it('should return 200 for valid request and the array of reviews with user info', async () => {
+            const res = await exec();
+
+            expect(res.status).toBe(200);
+            expect(res.body).toHaveProperty('description');
+        });
+    });
 
     describe('GET /all/:pinId', () => {
         let pin;
