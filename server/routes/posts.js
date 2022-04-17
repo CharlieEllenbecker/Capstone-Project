@@ -24,11 +24,9 @@ router.post('/:pinId', [auth, upload.single('image')], async (req, res) => {
     const post = await new Post({
         description: req.body.description,
         postPictureFileName: req.file.filename,
+        pinId: req.params.pinId,
         useId: userId
     }).save();
-    
-    pin.posts.push(post);
-    await pin.save();
 
     return res.status(200).send(post);
 });
@@ -36,15 +34,15 @@ router.post('/:pinId', [auth, upload.single('image')], async (req, res) => {
 /*
     PUT - Update the description
 */
-router.put('/:id', auth, async (req, res) => {
+router.put('/:postId', auth, async (req, res) => {
     const { error } = validate(req.body);
     if(error) {
         return res.status(400).send(error.details[0].message);
     }
 
-    let post = await Post.findById(req.params.id);
+    let post = await Post.findById(req.params.postId);
     if(!post) {
-        return res.status(404).send(`The post with the given id ${req.params.id} does not exist.`);
+        return res.status(404).send(`The post with the given id ${req.params.postId} does not exist.`);
     }
 
     const userId = decodeJwt(req.header('x-auth-token'))._id;
@@ -52,7 +50,7 @@ router.put('/:id', auth, async (req, res) => {
         return res.status(404).send(`The post can not be edited by this user.`);
     }
 
-    post = await post.findByIdAndUpdate(req.params.id, _.pick(req.body, ['description']), { new: true });
+    post = await post.findByIdAndUpdate(req.params.postId, _.pick(req.body, ['description']), { new: true });
 
     return res.status(200).send(post);
 });

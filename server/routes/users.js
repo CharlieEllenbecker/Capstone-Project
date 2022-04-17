@@ -126,13 +126,10 @@ router.put('/profile-picture', [auth, upload.single('image')], async (req, res) 
 router.put('/username/:username', auth, async (req, res) => {
     const userId = decodeJwt(req.header('x-auth-token'))._id;
 
-    let user = await User.findById(userId);
+    const user = await User.findByIdAndUpdate(userId, { username: req.params.username });
     if(!user) {
         return res.status(400).send('User not found.');
     }
-
-    user.username = req.params.username;
-    user = await user.save();
 
     return res.status(200).send(user);
 });
@@ -143,13 +140,10 @@ router.put('/username/:username', auth, async (req, res) => {
 router.put('/email/:email', auth, async (req, res) => {
     const userId = decodeJwt(req.header('x-auth-token'))._id;
 
-    let user = await User.findById(userId);
+    const user = await User.findByIdAndUpdate(userId, { email: req.params.email });
     if(!user) {
         return res.status(400).send('User not found.');
     }
-
-    user.email = req.params.email;
-    user = await user.save();
 
     return res.status(200).send(user);
 });
@@ -160,11 +154,10 @@ router.put('/email/:email', auth, async (req, res) => {
 router.delete('/delete', auth, async (req, res) => { 
     const userId = decodeJwt(req.header('x-auth-token'))._id;
 
-    const user = await User.findById(userId);
+    const user = await User.findByIdAndDelete(userId);
     if(!user) {
         return res.status(404).send('User does not exist.');
     }
-    await User.findByIdAndDelete(userId);
 
     return res.status(200).send('User deleted.');
 });

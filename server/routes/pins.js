@@ -27,8 +27,8 @@ router.get('/my', auth, async (req, res) => {
 /*
     GET - Get a specific pin by id
 */
-router.get('/:id', auth, async (req, res) => {
-    const pin = await Pin.findById(req.params.id);
+router.get('/:pinId', auth, async (req, res) => {
+    const pin = await Pin.findById(req.params.pinId);
     
     return res.status(200).send(pin);
 });
@@ -53,7 +53,7 @@ router.post('/', auth, async (req, res) => {
     }
 
     req.body.userId = decodeJwt(req.header('x-auth-token'))._id;
-    const pin = await new Pin(_.pick(req.body, ['coordinate', 'title', 'description', 'rating', 'tags', 'reviews', 'posts', 'userId'])).save();
+    const pin = await new Pin(_.pick(req.body, ['coordinate', 'title', 'description', 'rating', 'tags', 'userId'])).save();
 
     return res.status(200).send(pin);
 });
@@ -61,15 +61,15 @@ router.post('/', auth, async (req, res) => {
 /*
     PUT - Update Pin
 */
-router.put('/:id', auth, async (req, res) => {
+router.put('/:pinId', auth, async (req, res) => {
     const { error } = validate(req.body);
     if(error) {
         return res.status(400).send(error.details[0].message);
     }
 
-    let pin = await Pin.findById(req.params.id);
+    let pin = await Pin.findById(req.params.pinId);
     if(!pin) {
-        return res.status(404).send(`The pin with the given id ${req.params.id} does not exist.`);
+        return res.status(404).send(`The pin with the given id ${req.params.pinId} does not exist.`);
     }
 
     const userId = decodeJwt(req.header('x-auth-token'))._id;
@@ -78,7 +78,7 @@ router.put('/:id', auth, async (req, res) => {
     }
 
     req.body.userId = userId;
-    pin = await Pin.findByIdAndUpdate(req.params.id, _.pick(req.body, ['title', 'description', 'tags', 'userId']), { new: true });
+    pin = await Pin.findByIdAndUpdate(req.params.pinId, _.pick(req.body, ['title', 'description', 'tags', 'userId']), { new: true });
 
     return res.status(200).send(pin);
 });

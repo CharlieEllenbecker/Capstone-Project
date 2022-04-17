@@ -1,6 +1,5 @@
 const { Pin } = require('../models/pin');
-const { User } = require('../models/user');
-const { validate } = require('../models/review');
+const { Review, validate } = require('../models/review');
 const auth = require('../middleware/auth');
 const decodeJwt = require('jwt-decode');
 const express = require('express');
@@ -16,23 +15,9 @@ router.get('/:pinId', auth, async (req, res) => {
         return res.status(404).send(`The pin with the given id ${req.params.pinId} does not exist.`);
     }
 
-    const promises = [];
-    const newReviews = [];
-    pin.reviews.forEach(r => {
-        promises.push(User.findById(r.userId).select(['-_id', '-email', '-password']));
-    });
+    const reviews = find({ pinId: req.params.pinId });
 
-    const users = await Promise.all(promises);
-
-    for(let i = 0; i < pin.reviews.length; i++) {
-        const user = users[i];
-        const r = pin.reviews[i].toObject();
-        delete r.userId;
-        r.user = user;
-        newReviews.push(r);
-    }
-
-    return res.status(200).send(newReviews);
+    return res.status(200).send(reviews);
 });
 
 /*
@@ -44,7 +29,7 @@ router.post('/:pinId', auth, async (req, res) => {
         return res.status(400).send(error.details[0].message);
     }
 
-    const pin = await Pin.findById(req.params.pinId);
+    let pin = await Pin.findById(req.params.pinId);
     if(!pin) {
         return res.status(404).send(`The pin with the given id ${req.params.pinId} does not exist.`);
     }
@@ -54,88 +39,67 @@ router.post('/:pinId', auth, async (req, res) => {
         return res.status(400).send(`The pin with the given id ${req.params.pinId} already contains a review from that user.`);
     }
 
-    pin.rating = (pin.rating + req.body.rating) / (pin.reviews.length + 1);
     req.body.userId = userId;
-    pin.reviews.push(req.body);
-    await pin.save();
+    req.body.pinId = req.params.pinId;
+    const review = await new Review(_.pick(req.body, ['description', 'rating', 'pinId', 'userId']));
 
-    req.body.user = await User.findById(userId).select(['-_id', '-email', '-password']);
+    const reviews = await Review.find({ pinId: review.pinId });
+    const ratingSum = 0;
+    reviews.forEach(r => {
+        ratingSum += r.rating;
+    });
 
-    return res.status(200).send(req.body);  // return the review with the user data
+    pin.rating = reviews.length !== 0 ? (ratingSum / review.length) : 0;    // update the pin rating
+
+    return res.status(200).send(review);
 });
 
 /*
     PUT - Update a review on a pin
 */
-router.put('/:pinId', auth, async (req, res) => {    // TODO: edit to use reviewId for faster query?
+router.put('/:reviewId', auth, async (req, res) => {
     const { error } = validate(req.body);
     if(error) {
         return res.status(400).send(error.details[0].message);
     }
 
-    const pin = await Pin.findById(req.params.pinId);
-    if(!pin) {
-        return res.status(404).send(`The pin with the given id ${req.params.pinId} does not exist.`);
+    const review = await Review.findByIdAndUpdate(req.params.reviewId, _.pick(req.body, ['description', 'rating']));
+    if(!review) {
+        return res.status(404).send(`The review with the given id ${req.params.reviewId} does not exist.`);
     }
 
-    const userId = decodeJwt(req.header('x-auth-token'))._id;
-
-    if(pin.reviews.every(r => r.userId.toString() !== userId)) {
-        return res.status(400).send(`The pin with the given id ${req.params.pinId} does not contain a review from that user.`);
-    }
-
-    req.body.userId = userId;
-    let reviewRatingSum = 0;
-    const newReviews = [];
-    pin.reviews.forEach(r => {
-        if(r.userId.toString() === userId) {   // Assuming that there will only be one review per person on a pin
-            newReviews.push(req.body);
-            reviewRatingSum += req.body.rating;
-        } else {
-            newReviews.push(r);
-            reviewRatingSum += r.rating;
-        }
+    const reviews = await Review.find({ pinId: review.pinId });
+    const ratingSum = 0;
+    reviews.forEach(r => {
+        ratingSum += r.rating;
     });
-    pin.reviews = newReviews;
-    pin.rating = (reviewRatingSum / newReviews.length);
+
+    let pin = await Pin.findById(review.pinId);
+    pin.rating = reviews.length !== 0 ? (ratingSum / reviews.length) : 0;   // update the pin rating
     await pin.save();
 
-    req.body.user = await User.findById(userId).select(['-_id', '-email', '-password']);
-
-    return res.status(200).send(req.body);  // return the updated review with the user data
+    return res.status(200).send(review);
 });
 
 /*
     DELETE - Delete a review from a pin
 */
-router.delete('/:pinId', auth, async (req, res) => {
-    const pin = await Pin.findById(req.params.pinId);
-    if(!pin) {
-        return res.status(404).send(`The pin with the given id ${req.params.pinId} does not exist.`);
+router.delete('/:reviewId', auth, async (req, res) => {
+    const review = await Review.findByIdAndDelete(req.params.reviewId);
+    if(!review) {
+        return res.status(404).send(`The review with the given id ${req.params.reviewId} does not exist.`);
     }
 
-    const userId = decodeJwt(req.header('x-auth-token'))._id;
-    if(pin.reviews.every(r => r.userId.toString() !== userId)) {
-        return res.status(400).send(`The pin with the given id ${req.params.pinId} does not contain a review from that user.`);
-    }
-
-    let reviewRatingSum = 0;
-    const newReviews = [];
-    let deletedReview;
-    pin.reviews.forEach(r => {
-        if(r.userId.toString() !== userId) {   // Assuming that there will only be one review per person on a pin
-            newReviews.push(r);
-            reviewRatingSum += r.rating;
-        } else {
-            deletedReview = r;
-        }
+    const reviews = await Review.find({ pinId: review.pinId });
+    const ratingSum = 0;
+    reviews.forEach(r => {
+        ratingSum += r.rating;
     });
 
-    pin.reviews = newReviews;
-    pin.rating = newReviews.length !== 0 ? (reviewRatingSum / newReviews.length) : 0;
-    await pin.save();
+    let pin = await Pin.findById(review.pinId);
+    pin.rating = reviews.length !== 0 ? (ratingSum / review.length) : 0;     // update the pin rating
 
-    return res.status(200).send(deletedReview); // return the deleted review without the user data
+    return res.status(200).send(review);
 });
 
 module.exports = router;
