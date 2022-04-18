@@ -13,8 +13,6 @@ describe('/api/pins', () => {
         server.close();
     });
 
-    // TODO: get by pinId
-
     describe('GET /', () => {
         let token;
         let userId;
@@ -199,6 +197,54 @@ describe('/api/pins', () => {
 
             expect(res.status).toBe(200);
             expect(res.body).toHaveLength(4);
+        });
+    });
+
+    describe('GET /:pinId', () => {
+        let token;
+        let userId;
+        let pinId;
+
+        beforeEach(async () => {
+            const user = await new User({
+                username: 'johnSmith',
+                email: 'john.smith@gmail.com',
+                password: 'password123'
+            }).save();
+            token = new User(user).generateAuthToken();
+            userId = user._id;
+
+            const pin = await new Pin({
+                coordinate: {
+                    latitude: 43.03725,
+                    longitude: -87.91891,
+                },
+                title: 'Amazing Food Place',
+                description: 'This is the best food place',
+                userId: userId
+            }).save();
+            pinId = pin._id;
+        });
+
+        const exec = async () => {
+            return await request(server)
+                .get(`/api/pins/${pinId}`)
+                .set('x-auth-token', token)
+                .send();
+        }
+
+        it('should return 401 if client is not logged in', async () => {
+            token = '';
+
+            const res = await exec();
+
+            expect(res.status).toBe(401);
+        });
+
+        it('should return the pin with the given id', async () => {
+            const res = await exec();
+
+            expect(res.status).toBe(200);
         });
     });
 

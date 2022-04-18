@@ -20,6 +20,77 @@ describe('/api/posts', () => {
         await cleanupImages();
     });
 
+    describe('GET /my', () => {
+        let token;
+        let userId;
+        let pinId;
+
+        beforeEach(async () => {
+            const user = await new User({
+                username: 'johnSmith',
+                email: 'john.smith@gmail.com',
+                password: 'password123'
+            }).save();
+            token = new User(user).generateAuthToken();
+            userId = user._id;
+
+            const pin = await new Pin({
+                coordinate: {
+                    latitude: 43.04199,
+                    longitude: -87.92809,
+                },
+                title: 'Second Amazing Food Place',
+                description: 'This is the second best food place',
+                tags: [{ name: 'Food' }],
+                userId: userId
+            }).save();
+            pinId = pin._id;
+
+            await Post.insertMany([
+                {
+                    description: 'Post 1',
+                    postPictureFileName: 'food-banner1.jpg',
+                    pinId: pinId,
+                    userId: userId
+                },
+                {
+                    description: 'Post 2',
+                    postPictureFileName: 'food-banner2.jpg',
+                    pinId: pinId,
+                    userId: userId
+                },
+                {
+                    description: 'Post 3',
+                    postPictureFileName: 'food-banner3.jpg',
+                    pinId: pinId,
+                    userId: userId
+                }
+            ]);
+        });
+
+        const exec = async () => {
+            return await request(server)
+                .get('/api/posts/my')
+                .set('x-auth-token', token)
+                .send();
+        }
+
+        it('should return 401 if client is not logged in', async () => {
+            token = '';
+
+            const res = await exec();
+
+            expect(res.status).toBe(401);
+        });
+
+        it('should return all posts for the given user', async () => {
+            const res = await exec();
+
+            expect(res.status).toBe(200);
+            expect(res.body).toHaveLength(3);
+        });
+    });
+
     describe('GET /:postId', () => {
         let token;
         let userId;
@@ -159,77 +230,6 @@ describe('/api/posts', () => {
         });
 
         it('should return all posts for the given pinId', async () => {
-            const res = await exec();
-
-            expect(res.status).toBe(200);
-            expect(res.body).toHaveLength(3);
-        });
-    });
-
-    describe('GET /my', () => {
-        let token;
-        let userId;
-        let pinId;
-
-        beforeEach(async () => {
-            const user = await new User({
-                username: 'johnSmith',
-                email: 'john.smith@gmail.com',
-                password: 'password123'
-            }).save();
-            token = new User(user).generateAuthToken();
-            userId = user._id;
-
-            const pin = await new Pin({
-                coordinate: {
-                    latitude: 43.04199,
-                    longitude: -87.92809,
-                },
-                title: 'Second Amazing Food Place',
-                description: 'This is the second best food place',
-                tags: [{ name: 'Food' }],
-                userId: userId
-            }).save();
-            pinId = pin._id;
-
-            await Post.insertMany([
-                {
-                    description: 'Post 1',
-                    postPictureFileName: 'food-banner1.jpg',
-                    pinId: pinId,
-                    userId: userId
-                },
-                {
-                    description: 'Post 2',
-                    postPictureFileName: 'food-banner2.jpg',
-                    pinId: pinId,
-                    userId: userId
-                },
-                {
-                    description: 'Post 3',
-                    postPictureFileName: 'food-banner3.jpg',
-                    pinId: pinId,
-                    userId: userId
-                }
-            ]);
-        });
-
-        const exec = async () => {
-            return await request(server)
-                .get('/api/posts/my')
-                .set('x-auth-token', token)
-                .send();
-        }
-
-        it('should return 401 if client is not logged in', async () => {
-            token = '';
-
-            const res = await exec();
-
-            expect(res.status).toBe(401);
-        });
-
-        it('should return all posts for the given user', async () => {
             const res = await exec();
 
             expect(res.status).toBe(200);

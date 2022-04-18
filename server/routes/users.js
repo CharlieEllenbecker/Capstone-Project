@@ -1,4 +1,4 @@
-const { User, validate, validateEmailPassword } = require('../models/user');
+const { User, validate, validateEmailPassword, validateForUpdate } = require('../models/user');
 const { upload } = require('../middleware/imageHelper');
 const auth = require('../middleware/auth');
 var fs = require('fs');
@@ -63,7 +63,7 @@ router.post('/', async (req, res) => {
     return res.status(200).header({
         'Access-Control-Expose-Headers': 'x-auth-token',
         'x-auth-token': token
-    }).send(_.pick(user, ['username', 'email']));
+    }).send(_.pick(user, ['username', 'email', 'profilePictureFileName']));
 });
 
 /*
@@ -90,7 +90,7 @@ router.post('/login', async (req, res) => { // TODO: Do we want to allow the use
     return res.status(200).header({
         'Access-Control-Expose-Headers': 'x-auth-token',
         'x-auth-token': token
-    }).send(_.pick(user, ['username', 'email']));
+    }).send(_.pick(user, ['username', 'email', 'profilePictureFileName']));
 });
 
 /*
@@ -108,7 +108,7 @@ router.post('/profile-picture', [auth, upload.single('image')], async (req, res)
     user.profilePictureFileName = req.file.filename;
     user = await user.save();
 
-    return res.status(200).send(user);
+    return res.status(200).send(_.pick(user, ['username', 'email', 'profilePictureFileName']));
 });
 
 /*
@@ -127,35 +127,30 @@ router.put('/profile-picture', [auth, upload.single('image')], async (req, res) 
     user.profilePictureFileName = req.file.filename;
     user = await user.save();
 
-    return res.status(200).send(user);
+    return res.status(200).send(_.pick(user, ['username', 'email', 'profilePictureFileName']));
 });
 
 /*
-    PUT - Update Username
+    PUT - Update username, password, and or email
 */
-router.put('/username/:username', auth, async (req, res) => {
-    const userId = decodeJwt(req.header('x-auth-token'))._id;
+router.put('/', auth, async (req, res) => {
+    const { error } = validateForUpdate(req.body);
+    if(error) {
+        return res.status(400).send(error.details[0].message);
+    }
 
-    const user = await User.findByIdAndUpdate(userId, { username: req.params.username }, { new: true });
+    if(req.body.password) {
+        const salt = await bcrypt.genSalt(10);
+        req.body.password = await bcrypt.hash(req.body.password, salt);
+    }
+
+    const userId = decodeJwt(req.header('x-auth-token'))._id;
+    const user = await User.findByIdAndUpdate(userId, _.pick(req.body, ['username', 'email', 'password']), { new: true });
     if(!user) {
         return res.status(400).send('User not found.');
     }
 
-    return res.status(200).send(user);
-});
-
-/*
-    PUT - Update Email
-*/
-router.put('/email/:email', auth, async (req, res) => {
-    const userId = decodeJwt(req.header('x-auth-token'))._id;
-
-    const user = await User.findByIdAndUpdate(userId, { email: req.params.email }, { new: true });
-    if(!user) {
-        return res.status(400).send('User not found.');
-    }
-
-    return res.status(200).send(user);
+    return res.status(200).send(_.pick(user, ['username', 'email', 'profilePictureFileName']));
 });
 
 /*
@@ -163,13 +158,12 @@ router.put('/email/:email', auth, async (req, res) => {
 */
 router.delete('/delete', auth, async (req, res) => { 
     const userId = decodeJwt(req.header('x-auth-token'))._id;
-
     const user = await User.findByIdAndDelete(userId);
     if(!user) {
         return res.status(404).send('User does not exist.');
     }
 
-    return res.status(200).send('User deleted.');
+    return res.status(200).send(_.pick(user, ['username', 'email', 'profilePictureFileName']));
 });
 
 module.exports = router;

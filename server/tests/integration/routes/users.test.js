@@ -331,43 +331,6 @@ describe('/api/users', () => {
         });
     });
 
-    describe('DELETE /delete', () => {
-        let user;
-        let token;
-    
-        beforeEach(async () => {
-            user = await new User({
-                username: 'JohnSmith',
-                email: 'joe.buck@gmail.com',
-                password: 'password123'
-            }).save();
-            token = new User(user).generateAuthToken();
-        });
-
-        const exec = async () => {
-            return await request(server)
-                .delete('/api/users/delete')
-                .set('x-auth-token', token)
-                .send();
-        }
-
-        it('should return 401 if client is not logged in', async () => {
-            token = '';
-
-            const res = await exec();
-
-            expect(res.status).toBe(401);
-        });
-
-        it('should return 200 if successful', async () => {
-            const res = await exec();
-
-            const userQuery = User.findById(user._id);
-            expect(res.status).toBe(200);
-            expect(!userQuery);
-        });
-    });
-
     describe('POST /profile-picture', () => {
         let user;
         let token;
@@ -407,13 +370,17 @@ describe('/api/users', () => {
         });
     });
 
-    describe('PUT /username/:username', () => {
+    describe('PUT /', () => {
         let user;
         let token;
         let newUsername;
+        let newEmail;
+        let newPassword;
     
         beforeEach(async () => {
             newUsername = 'newUsername';
+            newEmail = 'new.email@gmail.com';
+            newPassword = 'newPassword';
 
             user = await new User({
                 username: 'JohnSmith',
@@ -425,9 +392,13 @@ describe('/api/users', () => {
 
         const exec = async () => {
             return await request(server)
-                .put(`/api/users/username/${newUsername}`)
+                .put('/api/users/')
                 .set('x-auth-token', token)
-                .send();
+                .send({
+                    username: newUsername,
+                    email: newEmail,
+                    password: newPassword
+                });
         }
 
         it('should return 401 if client is not logged in', async () => {
@@ -443,17 +414,15 @@ describe('/api/users', () => {
 
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('username', newUsername);
+            expect(res.body).toHaveProperty('email', newEmail);
         });
     });
 
-    describe('PUT /email/:email', () => {
+    describe('DELETE /delete', () => {
         let user;
         let token;
-        let newEmail;
     
         beforeEach(async () => {
-            newEmail = 'new.email@gmail.com';
-
             user = await new User({
                 username: 'JohnSmith',
                 email: 'joe.buck@gmail.com',
@@ -464,7 +433,7 @@ describe('/api/users', () => {
 
         const exec = async () => {
             return await request(server)
-                .put(`/api/users/email/${newEmail}`)
+                .delete('/api/users/delete')
                 .set('x-auth-token', token)
                 .send();
         }
@@ -480,8 +449,9 @@ describe('/api/users', () => {
         it('should return 200 if successful', async () => {
             const res = await exec();
 
+            const userQuery = User.findById(user._id);
             expect(res.status).toBe(200);
-            expect(res.body).toHaveProperty('email', newEmail);
+            expect(!userQuery);
         });
     });
 });
