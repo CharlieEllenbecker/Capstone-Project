@@ -3,6 +3,8 @@ import { Camera } from 'expo-camera';
 import axios from 'axios';
 import getIp from '../ip';
 import { useSelector, useDispatch } from 'react-redux';
+import { setAllPins } from '../state/actions/pinActions';
+import { setTags } from '../state/actions/tagActions';
 import {
   StyleSheet,
   Text,
@@ -57,6 +59,7 @@ const HomeScreen = ({ navigation, route }) => {
       longitudeDelta: 0.0421,
     },
   };
+
   const [markers, setMarkers] = React.useState([]);
   const [categories, setCategories] = React.useState([]);
   const [state, setState] = React.useState(initialMapState);
@@ -64,21 +67,23 @@ const HomeScreen = ({ navigation, route }) => {
   const [title, setTitle] = React.useState('');
   const [description, setDescription] = React.useState('');
   const [selectedImage, setSelectedImage] = React.useState(null);
-
   const [previewVisible, setPreviewVisible] = React.useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
-
   const [coordinate, setCoordinate] = React.useState({});
+
+  const ip = getIp();
   const { jwt } = useSelector((state) => state.jwtReducer);
+  const { allPins } = useSelector((state) => state.pinReducer);
+  const { tags } = useSelector((state) => state.tagReducer);
+  const dispatch = useDispatch();
 
   // Get all the pins
   const getAllPins = async () => {
-    const ip = getIp();
     await axios
       .get(`http://${ip}:3001/api/pins/`, { headers: { 'x-auth-token': jwt } })
       .then((response) => {
+        dispatch(setAllPins(response.data));
         setMarkers(response.data);
-        console.log(response.data.length);
       })
       .catch((error) => {
         console.error(error);
@@ -87,12 +92,11 @@ const HomeScreen = ({ navigation, route }) => {
 
   //Get all the tags
   const getAllCategories = async () => {
-    const ip = getIp();
     await axios
       .get(`http://${ip}:3001/api/tags/`, { headers: { 'x-auth-token': jwt } })
       .then((response) => {
+        dispatch(setTags(response.data));
         setCategories(response.data);
-        console.log(response.data);
       })
       .catch((error) => {
         console.error(error);
@@ -299,7 +303,7 @@ const HomeScreen = ({ navigation, route }) => {
                 },
               ],
             };
-            console.log('Coordinate: ', marker.coordinate.latitude);
+
             return (
               <MapView.Marker
                 key={index}
@@ -358,7 +362,7 @@ const HomeScreen = ({ navigation, route }) => {
           {categories.map((category, index) => (
             <TouchableOpacity key={index} style={styles.chipsItem}>
               {category.icon}
-              <Text>{category}</Text>
+              <Text>{category.name}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -409,7 +413,7 @@ const HomeScreen = ({ navigation, route }) => {
                   <View style={styles.button}>
                     <TouchableOpacity
                       onPress={() => {
-                        navigation.navigate('LocationScreen', { id: marker._id });
+                        navigation.navigate('LocationScreen', { pinId: marker._id });
                       }}
                       style={[
                         styles.textSign,

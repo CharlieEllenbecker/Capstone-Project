@@ -54,7 +54,7 @@ export const PageTitle = styled.Text`
 `;
 
 export const LoginBackground = styled.ImageBackground`
-  resizemode: contain;
+  resizeMode: contain;
   flex: 1;
   height: 100%;
   justify-content: center;
@@ -63,7 +63,7 @@ export const LoginBackground = styled.ImageBackground`
 `;
 
 export const SignupBackground = styled.ImageBackground`
-  resizemode: cover;
+  resizeMode: cover;
   flex: 1;
   justify-content: center;
   padding-top: ${StatusBarHeight + 30}px;

@@ -46,9 +46,8 @@ const images = [
 ]
 
 const LocationScreen = ({ route, navigation }) => {
-  
   // user, ip, jwt variables
-  const { id } = route.params;
+  const { pinId } = route.params;
   const ip = getIp();
   const { jwt } = useSelector((state) => state.jwtReducer);
 
@@ -60,13 +59,11 @@ const LocationScreen = ({ route, navigation }) => {
 
   //  get the pin data to display on the page
   const getPinData = async () => {
-
-    await axios.get(`http://${ip}:3001/api/pins/${id}`, { headers: { 'x-auth-token': jwt } })
+    await axios.get(`http://${ip}:3001/api/pins/${pinId}`, { headers: { 'x-auth-token': jwt } })
     .then((response) => {
       setTitle(response.data.title);
       setDescription(response.data.description);
       setRating(response.data.rating);
-      setReviews(response.data.reviews);
     })
     .catch(error => {
       console.log(error);
@@ -74,7 +71,7 @@ const LocationScreen = ({ route, navigation }) => {
   };
   
   const getReviews = async () => {
-    await axios.get(`http://${ip}:3001/api/reviews/${id}`, { headers: { 'x-auth-token': jwt } })
+    await axios.get(`http://${ip}:3001/api/reviews/all/${pinId}`, { headers: { 'x-auth-token': jwt } })
     .then((response) => {
       setReviews(response.data);
       console.log(response.data);
@@ -85,7 +82,7 @@ const LocationScreen = ({ route, navigation }) => {
   }
   
   const postReview = async (review) => {
-    await axios.post(`http://${ip}:3001/api/reviews/${id}`, {review} ,{ headers: { 'x-auth-token': jwt } })
+    await axios.post(`http://${ip}:3001/api/reviews/${pinId}`, {review} ,{ headers: { 'x-auth-token': jwt } })
     .then((response) => {
       setReviews([...reviews, response.data]);
     })
@@ -101,36 +98,32 @@ const LocationScreen = ({ route, navigation }) => {
 
     return (
           <StyledReviewContainer>
-                <ReviewTop title={title} description={description} rating={rating} reviews={reviews} setReviews={setReviews} pinId={id}/>
-                {/* Displays all reviews in scrollview for the pin unless there are none */}
-                <ScrollView
-                  scrollEventThrottle={16}
-                >
-                  {/* {reviews.length > 0 ? ( */}
-                  <View style={{ height: 160, marginTop:5, marginBottom: 5}}>
-                    <ScrollView
-                      horizontal={true}
-                    >{reviews.map((review, index) => {
-                      return (
+            <ReviewTop title={title} description={description} rating={rating} reviews={reviews} setReviews={setReviews} pinId={pinId}/>
+            {/* Displays all reviews in scrollview for the pin unless there are none */}
+            <ScrollView
+              scrollEventThrottle={16}
+            >
+              {/* {reviews.length > 0 ? ( */}
+              <View style={{ height: 160, marginTop:5, marginBottom: 5}}>
+                <ScrollView horizontal={true}>
+                  {reviews.map((review, index) => {
+                    return (
                       <View key={index} style={{ margin: 5, width: 200, marginLeft: 20, borderWidth: 0.7, borderRadius: 5, borderColor: '#dddddd' }}>
                         <View style={{flex: 1, paddingLeft: 15, paddingTop: 15 }}>
-                          {/* <HorizontalContainer>
+                          <HorizontalContainer>
                             {console.log('Review: ', review)}
-                            <ReviewProfilePic source={`http://${ip}:3001/images/${review.user.profilePictureFileName}`}/>
-                            <Text style={{ paddingLeft: 5 }}>{review.user.username}</Text>
+                            {/* <ReviewProfilePic source={`http://${ip}:3001/images/${}`}/> */} {/* TODO: going to have to get the user data for each as user data is not stored on the reviews*/}
                           </HorizontalContainer>
-                           */}
                           <StarRating size={15} rating={review.rating} style={{ paddingLeft: 5 }}/>
-                          <Text style={{ paddingLeft: 5 }}>{review.description}</Text>
                         </View>
                       </View>
-                      );
-                      })}
-                    </ScrollView>
-                  </View>
-                  {/*) : (<Text>No reviews for this location yet. Be the first to add one!</Text>) } */}
-                  <GridView images={images}/>
+                    );
+                  })}
                 </ScrollView>
+              </View>
+              {/*) : (<Text>No reviews for this location yet. Be the first to add one!</Text>) } */}
+              <GridView images={images}/>
+            </ScrollView>
           </StyledReviewContainer>
           
     );
