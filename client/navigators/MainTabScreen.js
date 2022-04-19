@@ -12,6 +12,7 @@ import ExploreScreen from '../screens/ExploreScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 
 import LocationScreen from '../screens/LocationScreen';
+import CameraView from '../screens/CameraView'
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -32,7 +33,7 @@ const MainTabScreen = ({ route, navigation }) => {
 
       <Tab.Screen
         name="Explore"
-        component={LocationScreen}
+        component={CameraView}
         options={{
           tabBarLabel: 'Explore',
           tabBarLabel: <Text style={{ fontSize: 11 }}>Search</Text>,

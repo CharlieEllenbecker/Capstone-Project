@@ -1,7 +1,7 @@
 import jwtTypeActions from '../actions/types/jwtTypeActions';
 
 const initialState = {
-  jwt: '',
+  jwt: null
 };
 
 const jwtReducer = (state = initialState, { type, payload }) => {
@@ -9,12 +9,12 @@ const jwtReducer = (state = initialState, { type, payload }) => {
     case jwtTypeActions.SET_JWT:
       return {
         ...state,
-        jwt: payload,
+        jwt: payload
       };
     case jwtTypeActions.DELETE_JWT:
       return {
         ...state,
-        jwt: '',
+        jwt: null
       };
     default:
       return state;
