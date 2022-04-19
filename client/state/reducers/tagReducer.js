@@ -1,7 +1,7 @@
 import tagTypeActions from "../actions/types/tagTypeActions";
 
 const initialState = {
-    tags: null
+    tags: []
 };
 
 const tagReducer = (state = initialState, { type, payload }) => {

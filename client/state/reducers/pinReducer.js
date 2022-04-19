@@ -2,8 +2,8 @@ import pinTypeActions from "../actions/types/pinTypeActions";
 
 const initialState = {
     selectedPin: null,
-    userSpecificPins: null,
-    allPins: null
+    userSpecificPins: [],
+    allPins: []
 };
 
 const pinReducer = (state = initialState, { type, payload }) => {

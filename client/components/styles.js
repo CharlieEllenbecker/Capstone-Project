@@ -429,7 +429,7 @@ export const styles = StyleSheet.create({
   },
   chipsScrollView: {
     position: 'absolute',
-    top: Platform.OS === 'ios' ? 90 : 80,
+    top: Platform.OS === 'ios' ? 45 : 35,
     paddingHorizontal: 10,
   },
   chipsIcon: {
