@@ -58,7 +58,7 @@ const ProfileTop = ({ navigation }) => {
                 </VerticalContainer>
             </NumberOfPinsContainer>
 
-            <EditProfileButton>
+            <EditProfileButton onPress={() => navigation.navigate('EditProfile')}>
                 <EditButtonText>Edit profile</EditButtonText> 
             </EditProfileButton>
         </VerticalContainer>

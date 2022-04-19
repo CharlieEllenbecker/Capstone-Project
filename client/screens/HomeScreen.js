@@ -193,10 +193,18 @@ const getAllCategories = async () => {
     }
 
     if (cardVisible) {
-      _scrollView.current.scrollTo({ x: x, y: 0, animated: true });
+      console.log(_scrollView);
+      _scrollView.current ? 
+      _scrollView.current.scrollTo({ x: x, y: 0, animated: true })
+      :
+      setTimeout(onMarkerPress(mapEventData), 50)
     } else {
       setCardVisible(true);
-      _scrollView.current.scrollTo({ x: x, y: 0, animated: true });
+      console.log(_scrollView);
+      _scrollView.current ? 
+      _scrollView.current.scrollTo({ x: x, y: 0, animated: true })
+      :
+      setTimeout(onMarkerPress(mapEventData), 50)
     }
   };
   // const handlePress = (e) => {
@@ -257,7 +265,8 @@ const getAllCategories = async () => {
   };
 
   const renderContent = () => (
-    <View style={styles.panel}>
+   <View style={styles.panel}>
+      
       <TextInput
         placeholder="Title"
         placeholderTextColor="#808080"
@@ -278,6 +287,32 @@ const getAllCategories = async () => {
         }}
       />
 
+      <View style={{ marginBottom: 5, height: 30 }}>
+        <ScrollView
+          horizontal
+          scrollEventThrottle={1}
+          showsHorizontalScrollIndicator={false}
+          height={30}
+          style={styles.chipsSelector}
+          contentInset={{
+            // iOS only
+            top: 0,
+            left: 0,
+            bottom: 0,
+            right: 20,
+          }}
+          contentContainerStyle={{
+            paddingRight: Platform.OS === 'android' ? 20 : 0,
+          }}
+      >
+          {categories.map((category, index) => (
+            <TouchableOpacity key={index} style={[styles.chipsItemHeader, {borderColor: '#000000', borderWidth: 0.7, height: 30}]}>
+              <Text>{category}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+
       <TouchableOpacity style={styles.panelButton}>
         <Text style={styles.panelButtonTitle} onPress={__startCamera}>
           Take Photo
@@ -289,11 +324,11 @@ const getAllCategories = async () => {
       </TouchableOpacity>
 
       <View style={{ flexDirection: 'row' }}>
-        <TouchableOpacity style={[styles.panelButton, { width: '50%' }]} onPress={() => bs.current.snapTo(1)}>
+        <TouchableOpacity style={[styles.panelButton, { width: '50%', backgroundColor: '#ce3a39', borderWidth: 0, marginBottom: 30  }]} onPress={() => bs.current.snapTo(1)}>
           <Text style={styles.panelButtonTitle}>Cancel</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.panelButton, { width: '50%', backgroundColor: '#095de3' }]}
+          style={[styles.panelButton, { width: '50%', backgroundColor: '#2fbf78', borderWidth: 0, marginBottom: 30 }]}
           onPress={() => {
             addMarker();
             bs.current.snapTo(1);
@@ -485,7 +520,7 @@ const getAllCategories = async () => {
               };
               console.log('Coordinate: ', marker.coordinate.latitude);
               return(
-                <MapView.Marker key={index} coordinate={{ latitude: marker.coordinate.latitude, longitude: marker.coordinate.longitude }} onPress={(e) => onMarkerPress(e)}>
+                <MapView.Marker key={index} coordinate={{ latitude: marker.coordinate.latitude, longitude: marker.coordinate.longitude }} onPressIn={() => {setCardVisible(true)}} onPress={(e) => onMarkerPress(e)}>
                   <OldAnimated.View style={[styles.markerWrap]}>
                     <OldAnimated.Image
                       source={require('../assets/map_marker.png')}
