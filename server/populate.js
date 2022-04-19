@@ -44,6 +44,7 @@ const populate = async () => {
         },
         title: 'Amazing Food Place',
         description: 'This is the best food place',
+        rating: 5,
         userId: userOneId
     });
 
@@ -54,6 +55,7 @@ const populate = async () => {
         },
         title: 'Second Amazing Food Place',
         description: 'This is the second best food place',
+        rating: 4,
         userId: userOneId
     });
 
@@ -64,6 +66,7 @@ const populate = async () => {
         },
         title: 'Third Amazing Food Place',
         description: 'This is the third best food place',
+        rating: 3,
         userId: userOneId
     });
 
@@ -74,6 +77,7 @@ const populate = async () => {
         },
         title: 'Fourth Amazing Food Place',
         description: 'This is the fourth best food place',
+        rating: 2,
         userId: userTwoId
     });
 
@@ -84,6 +88,7 @@ const populate = async () => {
         },
         title: 'Fifth Amazing Food Place',
         description: 'This is the fifth best food place',
+        rating: 1,
         userId: userTwoId
     });
 

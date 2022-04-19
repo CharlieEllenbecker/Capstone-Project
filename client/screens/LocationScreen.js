@@ -81,7 +81,7 @@ const LocationScreen = ({ route, navigation }) => {
     })
   }
   
-  const postReview = async (review) => {
+  const postReview = async (review) => {  // TODO: This should be moved to a create post component where you pass in the pinId as a prop to make the axios call
     await axios.post(`http://${ip}:3001/api/reviews/${pinId}`, {review} ,{ headers: { 'x-auth-token': jwt } })
     .then((response) => {
       setReviews([...reviews, response.data]);
@@ -96,37 +96,33 @@ const LocationScreen = ({ route, navigation }) => {
     getReviews();
   },[]);
 
-    return (
-          <StyledReviewContainer>
-            <ReviewTop title={title} description={description} rating={rating} reviews={reviews} setReviews={setReviews} pinId={pinId}/>
-            {/* Displays all reviews in scrollview for the pin unless there are none */}
-            <ScrollView
-              scrollEventThrottle={16}
-            >
-              {/* {reviews.length > 0 ? ( */}
-              <View style={{ height: 160, marginTop:5, marginBottom: 5}}>
-                <ScrollView horizontal={true}>
-                  {reviews.map((review, index) => {
-                    return (
-                      <View key={index} style={{ margin: 5, width: 200, marginLeft: 20, borderWidth: 0.7, borderRadius: 5, borderColor: '#dddddd' }}>
-                        <View style={{flex: 1, paddingLeft: 15, paddingTop: 15 }}>
-                          <HorizontalContainer>
-                            {console.log('Review: ', review)}
-                            {/* <ReviewProfilePic source={`http://${ip}:3001/images/${}`}/> */} {/* TODO: going to have to get the user data for each as user data is not stored on the reviews*/}
-                          </HorizontalContainer>
-                          <StarRating size={15} rating={review.rating} style={{ paddingLeft: 5 }}/>
-                        </View>
-                      </View>
-                    );
-                  })}
-                </ScrollView>
+  return (
+    <StyledReviewContainer>
+      <ReviewTop title={title} description={description} rating={rating} reviews={reviews} setReviews={setReviews} pinId={pinId}/>
+      <ScrollView
+        scrollEventThrottle={16}
+      >
+        <View style={{ height: 160, marginTop:5, marginBottom: 5}}>
+          <ScrollView
+            horizontal={true}
+          >{reviews.map((review, index) => {
+            return (
+            <View key={index} style={{ margin: 5, width: 200, marginLeft: 20, borderWidth: 0.7, borderRadius: 5, borderColor: '#dddddd' }}>
+              <View style={{flex: 1, paddingLeft: 15, paddingTop: 15 }}>
+                <HorizontalContainer>
+                </HorizontalContainer>
+                <StarRating size={15} rating={review.rating} style={{ paddingLeft: 5 }}/>
+                {review.description && <Text style={{ paddingLeft: 5 }}>{review.description}</Text>}
               </View>
-              {/*) : (<Text>No reviews for this location yet. Be the first to add one!</Text>) } */}
-              <GridView images={images}/>
-            </ScrollView>
-          </StyledReviewContainer>
-          
-    );
+            </View>
+            );
+            })}
+          </ScrollView>
+        </View>
+        <GridView images={images}/>
+      </ScrollView>
+    </StyledReviewContainer>
+  );
 };
 
 const styles = StyleSheet.create({

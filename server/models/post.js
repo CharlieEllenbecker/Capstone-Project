@@ -12,7 +12,7 @@ const postSchema = new mongoose.Schema({
     postPictureFileName: {
         type: String,
         required: false,
-        default: null
+        default: null   // postPictureFileName is generated when post is created
     },
     pinId: {
         type: mongoose.Schema.Types.ObjectId,
