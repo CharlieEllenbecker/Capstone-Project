@@ -403,13 +403,9 @@ const HomeScreen = ({ navigation, route }) => {
                 {/* source={{ uri: selectedImage.localUri }} */}
                 <Image source={{ uri: marker.image }} style={styles.cardImage} resizeMode="cover" />
                 <View style={styles.textContent}>
-                  <Text numberOfLines={1} style={styles.cardtitle}>
-                    {marker.title}
-                  </Text>
-                  <StarRating ratings={marker.rating} size={18} />
-                  <Text numberOfLines={1} style={styles.cardDescription}>
-                    {marker.description}
-                  </Text>
+                  <Text numberOfLines={1} style={styles.cardtitle}>{marker.title}</Text>
+                  <StarRating rating={marker.rating} size={18} />
+                  {marker.description && <Text numberOfLines={1} style={styles.cardDescription}>{marker.description}</Text>}
                   <View style={styles.button}>
                     <TouchableOpacity
                       onPress={() => {

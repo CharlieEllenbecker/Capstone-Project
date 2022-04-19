@@ -105,17 +105,18 @@ const LocationScreen = ({ route, navigation }) => {
         <View style={{ height: 160, marginTop:5, marginBottom: 5}}>
           <ScrollView
             horizontal={true}
-          >{reviews.map((review, index) => {
-            return (
-            <View key={index} style={{ margin: 5, width: 200, marginLeft: 20, borderWidth: 0.7, borderRadius: 5, borderColor: '#dddddd' }}>
-              <View style={{flex: 1, paddingLeft: 15, paddingTop: 15 }}>
-                <HorizontalContainer>
-                </HorizontalContainer>
-                <StarRating size={15} rating={review.rating} style={{ paddingLeft: 5 }}/>
-                {review.description && <Text style={{ paddingLeft: 5 }}>{review.description}</Text>}
+          >
+            {reviews.map((review, index) => {
+              return (
+              <View key={index} style={{ margin: 5, width: 200, marginLeft: 20, borderWidth: 0.7, borderRadius: 5, borderColor: '#dddddd' }}>
+                <View style={{flex: 1, paddingLeft: 15, paddingTop: 15 }}>
+                  <HorizontalContainer>
+                  </HorizontalContainer>
+                  <StarRating size={15} rating={review.rating} style={{ paddingLeft: 5 }}/>
+                  {review.description && <Text style={{ paddingLeft: 5 }}>{review.description}</Text>}
+                </View>
               </View>
-            </View>
-            );
+              );
             })}
           </ScrollView>
         </View>

@@ -133,31 +133,31 @@ const populate = async () => {
 
     const reviews = await reviewCollection.insertMany([
         {
-            description: 'Cool!',
+            description: 'Cool! 1',
             rating: 5,
             pinId: pinOneId,
             userId: userTwoId
         },
         {
-            description: 'Cool!',
+            description: 'Cool! 2',
             rating: 4,
             pinId: pinTwoId,
             userId: userTwoId
         },
         {
-            description: 'Cool!',
+            description: 'Cool! 3',
             rating: 3,
             pinId: pinThreeId,
             userId: userTwoId
         },
         {
-            description: 'Cool!',
+            description: 'Cool! 4',
             rating: 2,
             pinId: pinFourId,
             userId: userOneId
         },
         {
-            description: 'Cool!',
+            description: 'Cool! 5',
             rating: 1,
             pinId: pinFiveId,
             userId: userOneId
