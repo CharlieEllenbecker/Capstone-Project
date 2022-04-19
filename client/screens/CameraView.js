@@ -241,7 +241,7 @@ export default function CameraView({ route, navigation }) {
   );
 }
 
-const CameraPreview = ({ photo, retakePicture, savePhoto }: any) => {
+const CameraPreview = ({ photo, retakePicture, savePhoto }) => {
   //console.log('sdsfds', photo);
   return (
     <View

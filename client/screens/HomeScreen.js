@@ -253,8 +253,14 @@ const HomeScreen = ({ navigation, route }) => {
       </TouchableOpacity>
 
       <View style={{ flexDirection: 'row' }}>
-        <TouchableOpacity style={[styles.panelButton, { width: '50%' }]} onPress={() => bs.current.snapTo(1)}>
-          <Text style={styles.panelButtonTitle}>Cancel</Text>
+        <TouchableOpacity
+          style={[
+            styles.panelButton,
+            { width: '50%', backgroundColor: 'white', borderWidth: 1, borderColor: '#FF6347' },
+          ]}
+          onPress={() => bs.current.snapTo(1)}
+        >
+          <Text style={[styles.panelButtonTitle, { color: 'black' }]}>Cancel</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.panelButton, { width: '50%', backgroundColor: '#095de3' }]}
