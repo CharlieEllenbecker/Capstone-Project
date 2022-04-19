@@ -15,6 +15,7 @@ import EditProfile from '../screens/EditProfile';
 import HomeScreen from '../screens/HomeScreen';
 import DrawerNavigator from './DrawerNavigator.js';
 import LocationScreen from '../screens/LocationScreen';
+import CameraView from '../screens/CameraView';
 
 const Stack = createNativeStackNavigator();
 
@@ -77,6 +78,7 @@ const RootStack = () => {
         <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
 
         <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="CameraView" component={CameraView} />
       </Stack.Navigator>
     </NavigationContainer>
   );

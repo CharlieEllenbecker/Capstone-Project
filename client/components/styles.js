@@ -1,4 +1,5 @@
 import styled from 'styled-components/native';
+import { createGlobalStyle } from 'styled-components';
 import { StyleSheet, Dimensions } from 'react-native';
 import Constants from 'expo-constants';
 const StatusBarHeight = Constants.statusBarHeight;
@@ -452,7 +453,7 @@ export const styles = StyleSheet.create({
   chipsItemHeader: {
     flexDirection: 'row',
     backgroundColor: '#fff',
-    borderRadius: 20,
+    borderRadius: 10,
     padding: 4,
     paddingHorizontal: 20,
     marginHorizontal: 10,

@@ -5,10 +5,10 @@ import userReducer from './userReducer';
 import tagReducer from './tagReducer';
 
 const reducers = combineReducers({
-    jwtReducer: jwtReducer,
-    pinReducer: pinReducer,
-    userReducer: userReducer,
-    tagReducer: tagReducer
+  jwtReducer: jwtReducer,
+  pinReducer: pinReducer,
+  userReducer: userReducer,
+  tagReducer: tagReducer,
 });
 
 export default reducers;

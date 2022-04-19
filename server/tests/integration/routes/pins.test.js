@@ -26,7 +26,7 @@ describe('/api/pins', () => {
             token = new User(user).generateAuthToken();
             userId = user._id;
 
-            await Pin.collection.insertMany([
+            await Pin.insertMany([
                 {
                     coordinate: {
                         latitude: 43.03725,
@@ -34,13 +34,6 @@ describe('/api/pins', () => {
                     },
                     title: 'Amazing Food Place',
                     description: 'This is the best food place',
-                    reviews: [
-                        {
-                            userId: userId,
-                            description: 'Cool!',
-                            rating: 4.5
-                        }
-                    ],
                     userId: userId
                 },
                 {
@@ -106,7 +99,7 @@ describe('/api/pins', () => {
         });
     });
 
-    describe('GET /pins/my', () => {
+    describe('GET /my', () => {
         let tokenOne;
         let userIdOne;
         let userIdTwo;
@@ -130,7 +123,7 @@ describe('/api/pins', () => {
             }).save();
             userIdTwo = userTwo._id;
 
-            await Pin.collection.insertMany([
+            await Pin.insertMany([
                 {
                     coordinate: {
                         latitude: 43.03725,
@@ -139,13 +132,6 @@ describe('/api/pins', () => {
                     title: 'Amazing Food Place',
                     description: 'This is the best food place',
                     rating: 4.5,
-                    reviews: [
-                        {
-                            userId: userIdTwo,
-                            description: 'Cool!',
-                            rating: 4.5
-                        }
-                    ],
                     userId: userIdOne
                 },
                 {
@@ -155,6 +141,7 @@ describe('/api/pins', () => {
                     },
                     title: 'Second Amazing Food Place',
                     description: 'This is the second best food place',
+                    rating: 0,
                     userId: userIdOne
                 },
                 {
@@ -164,6 +151,7 @@ describe('/api/pins', () => {
                     },
                     title: 'Third Amazing Food Place',
                     description: 'This is the third best food place',
+                    rating: 0,
                     userId: userIdOne
                 },
                 {
@@ -173,6 +161,7 @@ describe('/api/pins', () => {
                     },
                     title: 'Fourth Amazing Food Place',
                     description: 'This is the fourth best food place',
+                    rating: 0,
                     userId: userIdOne
                 },
                 {
@@ -182,6 +171,7 @@ describe('/api/pins', () => {
                     },
                     title: 'Fifth Amazing Food Place',
                     description: 'This is the fifth best food place',
+                    rating: 0,
                     userId: userIdTwo
                 }
             ]);
@@ -207,6 +197,54 @@ describe('/api/pins', () => {
 
             expect(res.status).toBe(200);
             expect(res.body).toHaveLength(4);
+        });
+    });
+
+    describe('GET /:pinId', () => {
+        let token;
+        let userId;
+        let pinId;
+
+        beforeEach(async () => {
+            const user = await new User({
+                username: 'johnSmith',
+                email: 'john.smith@gmail.com',
+                password: 'password123'
+            }).save();
+            token = new User(user).generateAuthToken();
+            userId = user._id;
+
+            const pin = await new Pin({
+                coordinate: {
+                    latitude: 43.03725,
+                    longitude: -87.91891,
+                },
+                title: 'Amazing Food Place',
+                description: 'This is the best food place',
+                userId: userId
+            }).save();
+            pinId = pin._id;
+        });
+
+        const exec = async () => {
+            return await request(server)
+                .get(`/api/pins/${pinId}`)
+                .set('x-auth-token', token)
+                .send();
+        }
+
+        it('should return 401 if client is not logged in', async () => {
+            token = '';
+
+            const res = await exec();
+
+            expect(res.status).toBe(401);
+        });
+
+        it('should return the pin with the given id', async () => {
+            const res = await exec();
+
+            expect(res.status).toBe(200);
         });
     });
 

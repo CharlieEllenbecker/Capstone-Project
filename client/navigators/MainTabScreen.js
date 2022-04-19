@@ -17,7 +17,7 @@ const Tab = createMaterialBottomTabNavigator();
 
 const MainTabScreen = ({ route, navigation }) => {
   return (
-    <Tab.Navigator initialRouteName="Home" activeColor="#fff" style={{ flex: 1 }}>
+    <Tab.Navigator initialRouteName="Home" tabBarOptions= {{activeBackgroundColor: '#FFFFFF', inactiveBackgroundColor: '#FFFFFF', style: {backgroundColor: '#FFFFFF'}}} activeColor="#fff" style={{ flex: 1 }}>
       <Tab.Screen
         name="Home"
         component={HomeScreen}
@@ -25,7 +25,7 @@ const MainTabScreen = ({ route, navigation }) => {
         options={{
           //tabBarLabel: "Home",
           tabBarLabel: <Text style={{ fontSize: 11 }}>Home</Text>,
-          tabBarColor: '#ffffff',
+          tabBarColor: '#FFFFFF',
           tabBarIcon: ({ color }) => <Ionicons name="ios-home" color="#000000" size={26} />,
         }}
       />
@@ -35,8 +35,8 @@ const MainTabScreen = ({ route, navigation }) => {
         component={LocationScreen}
         options={{
           tabBarLabel: 'Explore',
-          tabBarLabel: <Text style={{ fontSize: 11 }}>Search</Text>,
-          tabBarColor: '#ffffff',
+          tabBarLabel: <Text style={{ fontSize: 11 }}>Camera</Text>,
+          tabBarColor: '#FFFFFF',
           tabBarIcon: ({ color }) => <Ionicons name="ios-camera" color="#000000" size={26} />,
         }}
       />
@@ -60,7 +60,7 @@ const MainTabScreen = ({ route, navigation }) => {
         component={ProfileScreen}
         options={{
           tabBarLabel: <Text style={{ fontSize: 11 }}>Profile</Text>,
-          tabBarColor: '#ffffff',
+          tabBarColor: '#FFFFFF',
           tabBarIcon: ({ color }) => <Ionicons name="ios-person" color="#000000" size={26} />,
         }}
       />

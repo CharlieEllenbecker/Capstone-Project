@@ -3,6 +3,8 @@
     "db": "mongodb://localhost/capstone-project",
     "imageDestination": "images",
     "tags": [
+        "All",
+        "My",
         "Portrait",
         "Landscape",
         "Astrophotography",

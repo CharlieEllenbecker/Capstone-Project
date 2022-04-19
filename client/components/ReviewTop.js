@@ -61,7 +61,7 @@ const ReviewTop = (props) => {
       {/* <LocationImage style={{paddingLeft: 20}} source= {{ uri: image }}></LocationImage> */}
       <LocationTitle style={{ paddingLeft: 20 }}>{props.title}</LocationTitle>
       <View style={{ paddingLeft: 20 }}>
-        <StarRating ratings={props.rating} size={25} />
+        <StarRating rating={props.rating} size={25} />
         <LocationDescription>{props.description}</LocationDescription>
       </View>
 
@@ -70,7 +70,7 @@ const ReviewTop = (props) => {
         <View style={styles.viewWrapper}>
           <View style={styles.modalView}>
             <AddPictureContainer><Ionicons name='ios-camera-outline' size={25} /></AddPictureContainer>
-            <StarRating size={25} ratings={props.rating} />
+            <StarRating size={25} rating={props.rating} />
             <TextInput multiline numberOfLines={4} onChangeText={setDescription} value={description} style={styles.input} placeholder="Your review here..."></TextInput>
             <SubmitReviewButton onPress={() => { showModal(false), postReview(description) }}>
               <ReviewButtonText>Submit Review</ReviewButtonText>

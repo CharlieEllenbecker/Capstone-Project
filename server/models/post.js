@@ -12,16 +12,28 @@ const postSchema = new mongoose.Schema({
     postPictureFileName: {
         type: String,
         required: false,
-        default: null
+        default: null   // postPictureFileName is generated when post is created
+    },
+    pinId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Pin',
+        required: true  // A post can not exist without a pin
+    },
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: false // userId is generated from token
     }
 }, { versionKey: false });
 
-const Post = new mongoose.model('Post', postSchema);
+const Post = mongoose.model('Post', postSchema);
 
 function validate(post) {
     const schema = Joi.object({
         description: Joi.string().min(5).max(1024),
-        postPictureFileName: Joi.string()
+        postPictureFileName: Joi.string(),
+        pinId: Joi.objectId(),
+        userId: Joi.objectId()
     });
 
     return schema.validate(post);

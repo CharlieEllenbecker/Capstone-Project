@@ -2,6 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import ImagePickerCom from './ImagePicker';
 import { deleteJWT } from '../state/actions/jwtActions';
+import { deleteUserData } from '../state/actions/userActions';
 import { useDispatch } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import {
@@ -23,10 +24,13 @@ import {
   } from './styles';
 const ProfileTop = ({ navigation }) => {
     const dispatch = useDispatch();
+
     const handleLogout = () => {
         dispatch(deleteJWT());
+        dispatch(deleteUserData());
         navigation.navigate('Login');
       };
+      
     return(
     <View>
     <HeaderContainer>
