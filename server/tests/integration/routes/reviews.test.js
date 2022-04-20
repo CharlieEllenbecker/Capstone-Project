@@ -1,5 +1,6 @@
 const { User } = require('../../../models/user');
 const { Pin } = require('../../../models/Pin');
+const { Review } = require('../../../models/review');
 const request = require('supertest');
 const mongoose = require('mongoose');
 
@@ -13,7 +14,7 @@ describe('/api/reviews', () => {
         server.close();
     });
 
-    describe('GET /:pinId', () => {
+    describe('GET /:reviewId', () => {
         let pin;
         let pinId;
         let token;
@@ -21,6 +22,8 @@ describe('/api/reviews', () => {
         let tokenTwo;
         let userIdOne;
         let userIdTwo
+        let review;
+        let reviewId;
 
         beforeEach(async () => {
             const userOne = await new User({
@@ -47,21 +50,94 @@ describe('/api/reviews', () => {
                     title: 'Second Amazing Food Place',
                     description: 'This is the second best food place',
                     tags: [{ name: 'Food' }],
-                    reviews: [{
-                        userId: userIdTwo,
-                        description: 'Good pin!',
-                        rating: 5
-                    }],
                     userId: userIdOne
                 }).save();
             pinId = pin._id;
-
             token = tokenTwo;
+
+            review = await new Review({
+                description: 'Good!',
+                rating: 4,
+                pinId: pinId,
+                userId: userIdTwo
+            }).save();
+            reviewId = review._id;
         });
 
         const exec = async () => {
             return await request(server)
-            .get(`/api/reviews/${pinId}`)
+            .get(`/api/reviews/${reviewId}`)
+            .set('x-auth-token', token)
+            .send();
+        }
+
+        it('should return 401 if client is not logged in', async () => {
+            token = '';
+
+            const res = await exec();
+
+            expect(res.status).toBe(401);
+        });
+
+        it('should return 200 for valid request and the array of reviews with user info', async () => {
+            const res = await exec();
+
+            expect(res.status).toBe(200);
+            expect(res.body).toHaveProperty('description');
+        });
+    });
+
+    describe('GET /all/:pinId', () => {
+        let pin;
+        let pinId;
+        let token;
+        let tokenOne;
+        let tokenTwo;
+        let userIdOne;
+        let userIdTwo
+        let review;
+
+        beforeEach(async () => {
+            const userOne = await new User({
+                username: 'johnSmith',
+                email: 'john.smith@gmail.com',
+                password: 'password123'
+            }).save();
+            tokenOne = new User(userOne).generateAuthToken();
+            userIdOne = userOne._id;
+
+            const userTwo = await new User({
+                username: 'otherUsername',
+                email: 'john.smith@gmail.com',
+                password: 'password123'
+            }).save();
+            tokenTwo = new User(userTwo).generateAuthToken();
+            userIdTwo = userTwo._id;
+
+            pin = await new Pin({
+                    coordinate: {
+                        latitude: 43.03725,
+                        longitude: -87.91891,
+                    },
+                    title: 'Second Amazing Food Place',
+                    description: 'This is the second best food place',
+                    tags: [{ name: 'Food' }],
+                    userId: userIdOne
+                }).save();
+            pinId = pin._id;
+            token = tokenTwo;
+
+            review = await new Review({
+                description: 'Good!',
+                rating: 4,
+                pinId: pinId,
+                userId: userIdTwo
+            }).save();
+        });
+
+        const exec = async () => {
+            return await request(server)
+            .get(`/api/reviews/all/${pinId}`)
             .set('x-auth-token', token)
             .send();
         }
@@ -79,8 +155,7 @@ describe('/api/reviews', () => {
 
             expect(res.status).toBe(200);
             expect(res.body).toHaveLength(1);
-            expect(res.body[0]).toHaveProperty('user');
-            expect(res.body[0].user).toHaveProperty('username');
+            expect(res.body[0]).toHaveProperty('description');
         });
     });
 
@@ -170,7 +245,7 @@ describe('/api/reviews', () => {
         });
     });
 
-    describe('PUT /:pinId', () => {
+    describe('PUT /:reviewId', () => {
         let pin;
         let pinId;
         let token;
@@ -180,10 +255,12 @@ describe('/api/reviews', () => {
         let userIdTwo
         let newDescription;
         let newRating;
+        let review;
+        let reviewId;
 
         beforeEach(async () => {
             newDescription = 'new Description';
-            newRating = 4
+            newRating = 4;
 
             const userOne = await new User({
                 username: 'johnSmith',
@@ -209,21 +286,23 @@ describe('/api/reviews', () => {
                     title: 'Second Amazing Food Place',
                     description: 'This is the second best food place',
                     tags: [{ name: 'Food' }],
-                    reviews: [{
-                        userId: userIdTwo,
-                        description: 'Good pin!',
-                        rating: 5
-                    }],
                     userId: userIdOne
                 }).save();
             pinId = pin._id;
-
             token = tokenTwo;
+
+            review = await new Review({
+                description: 'Good!',
+                rating: 4,
+                pinId: pinId,
+                userId: userIdTwo
+            }).save();
+            reviewId = review._id;
         });
 
         const exec = async () => {
             return await request(server)
-            .put(`/api/reviews/${pinId}`)
+            .put(`/api/reviews/${reviewId}`)
             .set('x-auth-token', token)
             .send({
                 description: newDescription,
@@ -239,8 +318,8 @@ describe('/api/reviews', () => {
             expect(res.status).toBe(401);
         });
 
-        it('should return 404 if the pin with the given id does not exist', async () => {
-            pinId = mongoose.Types.ObjectId();;
+        it('should return 404 if the review with the given id does not exist', async () => {
+            reviewId = mongoose.Types.ObjectId();
 
             const res = await exec();
 
@@ -263,7 +342,7 @@ describe('/api/reviews', () => {
         });
     });
 
-    describe('DELETE /:pinId', () => {
+    describe('DELETE /:reviewId', () => {
         let pin;
         let pinId;
         let token;
@@ -271,6 +350,8 @@ describe('/api/reviews', () => {
         let tokenTwo;
         let userIdOne;
         let userIdTwo;
+        let review;
+        let reviewId;
 
         beforeEach(async () => {
             const userOne = await new User({
@@ -297,21 +378,23 @@ describe('/api/reviews', () => {
                     title: 'Second Amazing Food Place',
                     description: 'This is the second best food place',
                     tags: [{ name: 'Food' }],
-                    reviews: [{
-                        userId: userIdTwo,
-                        description: 'Good pin!',
-                        rating: 5
-                    }],
                     userId: userIdOne
                 }).save();
             pinId = pin._id;
-
             token = tokenTwo;
+
+            review = await new Review({
+                description: 'Good!',
+                rating: 4,
+                pinId: pinId,
+                userId: userIdTwo
+            }).save();
+            reviewId = review._id;
         });
 
         const exec = async () => {
             return await request(server)
-            .delete(`/api/reviews/${pinId}`)
+            .delete(`/api/reviews/${reviewId}`)
             .set('x-auth-token', token)
             .send();
         }
@@ -325,7 +408,7 @@ describe('/api/reviews', () => {
         });
 
         it('should return 404 if the pin with the given id does not exist', async () => {
-            pinId = mongoose.Types.ObjectId();;
+            reviewId = mongoose.Types.ObjectId();;
 
             const res = await exec();
 
@@ -344,9 +427,6 @@ describe('/api/reviews', () => {
             const res = await exec();
 
             expect(res.status).toBe(200);
-
-            const pin = await Pin.findById(pinId);
-            expect(pin.reviews).toHaveLength(0);
         });
     });
 });

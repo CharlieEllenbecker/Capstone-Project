@@ -1,4 +1,4 @@
-const { User, validate, validateEmailPassword } = require('../models/user');
+const { User, validate, validateEmailPassword, validateForUpdate } = require('../models/user');
 const { upload } = require('../middleware/imageHelper');
 const auth = require('../middleware/auth');
 var fs = require('fs');
@@ -14,6 +14,7 @@ const router = express.Router();
 */
 router.get('/me', auth, async (req, res) => {
     const user = await User.findById(req.user._id).select(['-_id', '-password']);
+    
     return res.status(200).send(user);
 });
 
@@ -22,6 +23,15 @@ router.get('/me', auth, async (req, res) => {
 */
 router.get('/is-auth', auth, (req, res) => {
     return res.status(200).send();
+});
+
+/*
+    GET - Get the user with the given userId
+*/
+router.get('/:userId', auth, async (req, res) => {
+    const user = await User.findById(req.params.userId).select(['-_id', '-password']);
+
+    return res.status(200).send(user);
 });
 
 /*
@@ -43,7 +53,7 @@ router.post('/', async (req, res) => {
         return res.status(400).send('User already registered with that username.');
     }
 
-    let user = new User(_.pick(req.body, ['username', 'email', 'password']));
+    let user = await new User(_.pick(req.body, ['username', 'email', 'password']));
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(user.password, salt);
     user = await user.save();
@@ -53,7 +63,7 @@ router.post('/', async (req, res) => {
     return res.status(200).header({
         'Access-Control-Expose-Headers': 'x-auth-token',
         'x-auth-token': token
-    }).send(_.pick(user, ['username', 'email']));
+    }).send(_.pick(user, ['username', 'email', 'profilePictureFileName']));
 });
 
 /*
@@ -80,7 +90,7 @@ router.post('/login', async (req, res) => { // TODO: Do we want to allow the use
     return res.status(200).header({
         'Access-Control-Expose-Headers': 'x-auth-token',
         'x-auth-token': token
-    }).send(_.pick(user, ['username', 'email']));
+    }).send(_.pick(user, ['username', 'email', 'profilePictureFileName']));
 });
 
 /*
@@ -98,7 +108,7 @@ router.post('/profile-picture', [auth, upload.single('image')], async (req, res)
     user.profilePictureFileName = req.file.filename;
     user = await user.save();
 
-    return res.status(200).send(user);
+    return res.status(200).send(_.pick(user, ['username', 'email', 'profilePictureFileName']));
 });
 
 /*
@@ -117,41 +127,30 @@ router.put('/profile-picture', [auth, upload.single('image')], async (req, res) 
     user.profilePictureFileName = req.file.filename;
     user = await user.save();
 
-    return res.status(200).send(user);
+    return res.status(200).send(_.pick(user, ['username', 'email', 'profilePictureFileName']));
 });
 
 /*
-    PUT - Update Username
+    PUT - Update username, password, and or email
 */
-router.put('/username/:username', auth, async (req, res) => {
-    const userId = decodeJwt(req.header('x-auth-token'))._id;
+router.put('/', auth, async (req, res) => {
+    const { error } = validateForUpdate(req.body);
+    if(error) {
+        return res.status(400).send(error.details[0].message);
+    }
 
-    let user = await User.findById(userId);
+    if(req.body.password) {
+        const salt = await bcrypt.genSalt(10);
+        req.body.password = await bcrypt.hash(req.body.password, salt);
+    }
+
+    const userId = decodeJwt(req.header('x-auth-token'))._id;
+    const user = await User.findByIdAndUpdate(userId, _.pick(req.body, ['username', 'email', 'password']), { new: true });
     if(!user) {
         return res.status(400).send('User not found.');
     }
 
-    user.username = req.params.username;
-    user = await user.save();
-
-    return res.status(200).send(user);
-});
-
-/*
-    PUT - Update Email
-*/
-router.put('/email/:email', auth, async (req, res) => {
-    const userId = decodeJwt(req.header('x-auth-token'))._id;
-
-    let user = await User.findById(userId);
-    if(!user) {
-        return res.status(400).send('User not found.');
-    }
-
-    user.email = req.params.email;
-    user = await user.save();
-
-    return res.status(200).send(user);
+    return res.status(200).send(_.pick(user, ['username', 'email', 'profilePictureFileName']));
 });
 
 /*
@@ -159,14 +158,12 @@ router.put('/email/:email', auth, async (req, res) => {
 */
 router.delete('/delete', auth, async (req, res) => { 
     const userId = decodeJwt(req.header('x-auth-token'))._id;
-
-    const user = await User.findById(userId);
+    const user = await User.findByIdAndDelete(userId);
     if(!user) {
         return res.status(404).send('User does not exist.');
     }
-    await User.findByIdAndDelete(userId);
 
-    return res.status(200).send('User deleted.');
+    return res.status(200).send(_.pick(user, ['username', 'email', 'profilePictureFileName']));
 });
 
 module.exports = router;

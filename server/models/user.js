@@ -35,12 +35,22 @@ userSchema.methods.generateAuthToken = function() {
 
 const User = mongoose.model('User', userSchema);
 
-function validateFullUser(user) {
+function validate(user) {
     const schema = Joi.object({
         username: Joi.string().min(5).max(256).required(),
         email: Joi.string().min(5).max(256).email().required(),
         password: Joi.string().min(5).max(1024).required(), // TODO: utilize joi-password-conplexity module?
         profilePictureFileName: Joi.string()
+    });
+
+    return schema.validate(user);
+}
+
+function validateForUpdate(user) {
+    const schema = Joi.object({
+        username: Joi.string().min(5).max(256),
+        email: Joi.string().min(5).max(256).email(),
+        password: Joi.string().min(5).max(1024)
     });
 
     return schema.validate(user);
@@ -56,5 +66,6 @@ function validateEmailPassword(user) {
 }
 
 module.exports.User = User;
-module.exports.validate = validateFullUser;
+module.exports.validate = validate;
 module.exports.validateEmailPassword = validateEmailPassword;
+module.exports.validateForUpdate = validateForUpdate;

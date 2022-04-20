@@ -26,7 +26,17 @@ mongod
 
 - Ctrl + c to stop running Mongo Daemon
 
-# Fix network error
+# Populate the Database
+- Open another new command prompt at '/capstone-project/server'
+- Type the following into the prompt and press enter:
+
+```console
+npm run populate
+```
+
+- This script will have cleared your 'capstone-project' database if it already existed and populate it for you
+
+# Fix Network Error
 - Type the following into a command prompt and press enter
 
 ```console
@@ -57,7 +67,7 @@ export default function getIp() {
 
 To run the program:
 
-- Download MongoDB (steps above)
+- Run database and populate it (steps above)
 - Open another new command prompt at '/capstone-project/server'
 - Set the JWT Private Key:
 - Type the following into the prompt and press enter (windows):

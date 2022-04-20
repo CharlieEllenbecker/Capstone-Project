@@ -3,7 +3,7 @@ import { Formik } from 'formik';
 import { View } from 'react-native';
 import { Octicons, Ionicons } from '@expo/vector-icons';
 import KeyboardAvoidingWrapper from '../components/keyboardAvoidingWrapper';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { setJWT } from '../state/actions/jwtActions';
 import getIp from '../ip';
 //components
@@ -34,7 +34,6 @@ const Login = ({ navigation }) => {
   const [messageType, setMessageType] = useState();
 
   const ip = getIp();
-  const { jwt } = useSelector((state) => state.jwtReducer);
   const dispatch = useDispatch();
 
   const handleLogin = async (values) => {

@@ -54,16 +54,14 @@ export const PageTitle = styled.Text`
 `;
 
 export const LoginBackground = styled.ImageBackground`
-  resizemode: contain;
   flex: 1;
-  height: 100%;
+  height: 785px;
   justify-content: center;
   padding-top: ${StatusBarHeight + 30}px;
   padding: 25px;
 `;
 
 export const SignupBackground = styled.ImageBackground`
-  resizemode: cover;
   flex: 1;
   justify-content: center;
   padding-top: ${StatusBarHeight + 30}px;
@@ -367,6 +365,40 @@ export const AddPictureContainer = styled.TouchableOpacity`
   justify-content: center;
 `;
 
+//Edit Profile Screen
+
+export const EditTextLabel = styled.Text`
+  color: #000000;
+  font-size: 13px;
+  text-align: left;
+`;
+
+export const EditTextInput = styled.TextInput`
+  background-color: rgba(0, 0, 0, 0.15);
+  padding: 15px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 5px;
+  border-color: ${brick};
+  font-size: 15px;
+  height: 50px;
+  margin-vertical: 3px;
+  margin-bottom: 10px;
+  color: #000000;
+`;
+
+export const DeleteButton = styled.TouchableOpacity`
+  padding: 15px;
+  background-color: ${brick};
+  justify-content: center;
+  align-content: center;
+  border-radius: 5px;
+  margin-vertical: 5px;
+  height: 60px;
+`;
+
+
+
 const { width, height } = Dimensions.get('screen');
 const CARD_HEIGHT = 220;
 const CARD_WIDTH = width * 0.8;
@@ -390,19 +422,39 @@ export const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 10,
   },
+  chipsSelector: {
+    position: 'absolute',
+    paddingHorizontal: 10,
+    elevation: 10,
+  },
   chipsScrollView: {
     position: 'absolute',
-    top: Platform.OS === 'ios' ? 90 : 80,
+    top: Platform.OS === 'ios' ? 45 : 35,
     paddingHorizontal: 10,
   },
   chipsIcon: {
     marginRight: 5,
+    elevation: 5,
   },
   chipsItem: {
     flexDirection: 'row',
     backgroundColor: '#fff',
     borderRadius: 20,
     padding: 8,
+    paddingHorizontal: 20,
+    marginHorizontal: 10,
+    height: 35,
+    shadowColor: '#ccc',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 10,
+  },
+  chipsItemHeader: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 4,
     paddingHorizontal: 20,
     marginHorizontal: 10,
     height: 35,
@@ -484,7 +536,10 @@ export const styles = StyleSheet.create({
   panel: {
     padding: 13,
     backgroundColor: '#FFFFFF',
-    paddingTop: 20,
+    paddingTop: 5,
+    elevation: 10,
+    paddingBottom: 20,
+    zIndex: 10,
     // borderTopLeftRadius: 20,
     // borderTopRightRadius: 20,
     // shadowColor: '#000000',
@@ -499,16 +554,16 @@ export const styles = StyleSheet.create({
     shadowRadius: 2,
     shadowOpacity: 0.4,
     // elevation: 5,
-    paddingTop: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    paddingTop: 15,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
   panelHeader: {
     alignItems: 'center',
   },
   panelHandle: {
     width: 40,
-    height: 8,
+    height: 5,
     borderRadius: 4,
     backgroundColor: '#00000040',
     //marginBottom: 10,
@@ -525,8 +580,10 @@ export const styles = StyleSheet.create({
   },
   panelButton: {
     padding: 10,
-    borderRadius: 10,
-    backgroundColor: '#FF6347',
+    borderRadius: 5,
+    backgroundColor: '#FFFFFF',
+    borderColor: '#000000',
+    borderWidth: 0.5,
     alignItems: 'center',
     marginBottom: 8,
     marginRight: 4,
@@ -534,9 +591,10 @@ export const styles = StyleSheet.create({
   panelButtonTitle: {
     fontSize: 15,
     fontWeight: 'bold',
-    color: 'white',
+    color: 'black',
   },
   hideButton: {
+    elevation: 2,
     position: 'absolute',
     right: 0,
     bottom: 240,
@@ -546,8 +604,10 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 5,
     backgroundColor: '#FFFFFF',
+    zIndex: 2,
   },
   showButton: {
+    elevation: 2,
     position: 'absolute',
     right: 0,
     bottom: 8,
@@ -557,6 +617,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 5,
     backgroundColor: '#FFFFFF',
+    zIndex: 2,
   },
   pinDetails: {
     //position: 'absolute',
@@ -567,7 +628,7 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     width: '90%',
     alignSelf: 'center',
-    borderRadius: 15,
+    borderRadius: 5,
     padding: 7,
     shadowColor: '#ccc',
     shadowOffset: { width: 0, height: 3 },
