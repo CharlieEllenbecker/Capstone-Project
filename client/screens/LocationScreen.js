@@ -13,10 +13,12 @@ import { useSelector, useDispatch, getState } from 'react-redux';
 //components
 import GridView from '../components/GridView';
 import ReviewTop from '../components/ReviewTop';
+import UserDisplay from '../components/DisplayUser';
 import {
   Colors,
   StyledReviewContainer,
   HorizontalContainer,
+  ReviewUserName,
   ReviewProfilePic,
 } from './../components/styles';
 import colors from './../components/styles';
@@ -24,6 +26,7 @@ import colors from './../components/styles';
 const { lightBrick } = Colors;
 //axios
 import axios from 'axios';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 const images = [
   require('../assets/banners/food-banner1.jpg'),
@@ -55,6 +58,8 @@ const LocationScreen = ({ route, navigation }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [rating, setRating] = useState('');
+  const [userRating, setUserRating] = useState('');
+  const [userDescription, setUserDescription] = useState('review 2');
   const [reviews, setReviews] = useState([]);
 
   //  get the pin data to display on the page
@@ -66,6 +71,7 @@ const LocationScreen = ({ route, navigation }) => {
       setRating(response.data.rating);
     })
     .catch(error => {
+      console.log('here1');
       console.log(error);
     });
   };
@@ -77,28 +83,36 @@ const LocationScreen = ({ route, navigation }) => {
       console.log(response.data);
     })
     .catch((error) => {
+      console.log('here2');
       console.error(error);
     })
   }
   
-  const postReview = async (review) => {  // TODO: This should be moved to a create post component where you pass in the pinId as a prop to make the axios call
-    await axios.post(`http://${ip}:3001/api/reviews/${pinId}`, {review} ,{ headers: { 'x-auth-token': jwt } })
-    .then((response) => {
-      setReviews([...reviews, response.data]);
-    })
-    .catch((error) => {
-      console.error(error);
-    })
+  
+  const postReview = async () => {
+    await axios.post(`http://${ip}:3001/api/reviews/${pinId}`, { description: userDescription, rating: userRating }, { headers: { 'x-auth-token': jwt } })
+      .then((response) => {
+        setReviews([...reviews, response.data]);
+      })
+      .catch((error) => {
+        console.log(userDescription, userRating);
+        console.error(error);
+      })
+  }
+
+
+  const handlePostReview = () => {
+    postReview();
   }
   
   useEffect(() => {
     getPinData();
     getReviews();
-  },[]);
+  }, []);
 
   return (
     <StyledReviewContainer>
-      <ReviewTop title={title} description={description} rating={rating} reviews={reviews} setReviews={setReviews} pinId={pinId}/>
+      <ReviewTop title={title} description={description} rating={rating} reviews={reviews} setReviews={setReviews} setUserRating={setUserRating} setUserDescription={setUserDescription} handlePostReview={handlePostReview} pinId={pinId}/>
       <ScrollView
         scrollEventThrottle={16}
       >
@@ -108,10 +122,11 @@ const LocationScreen = ({ route, navigation }) => {
           >
             {reviews.map((review, index) => {
               return (
-              <View key={index} style={{ margin: 5, width: 200, marginLeft: 20, borderWidth: 0.7, borderRadius: 5, borderColor: '#dddddd' }}>
+              <View key={index} style={{ width: 200, marginLeft: 20, borderWidth: 0.7, borderRadius: 5, borderColor: '#dddddd' }}>
                 <View style={{flex: 1, paddingLeft: 15, paddingTop: 15 }}>
                   <HorizontalContainer>
                   </HorizontalContainer>
+                  <UserDisplay userId={review.userId} />
                   <StarRating size={15} rating={review.rating} style={{ paddingLeft: 5 }}/>
                   {review.description && <Text style={{ paddingLeft: 5 }}>{review.description}</Text>}
                 </View>
