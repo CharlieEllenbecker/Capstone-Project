@@ -20,3 +20,10 @@ export const setAllPins = (pins) => {
         payload: pins
     };
 }
+
+export const setFilteredPins = (pins) => {
+    return {
+        type: pinTypeActions.SET_FILTERED_PINS,
+        payload: pins
+    };
+}
