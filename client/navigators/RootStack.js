@@ -13,7 +13,6 @@ import SettingsScreen from '../screens/SettingsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import EditProfile from '../screens/EditProfile';
 import HomeScreen from '../screens/HomeScreen';
-import DrawerNavigator from './DrawerNavigator.js';
 import LocationScreen from '../screens/LocationScreen';
 import CameraView from '../screens/CameraView';
 
@@ -32,7 +31,7 @@ const RootStack = () => {
 
         <Stack.Screen name="Signup" component={Signup} />
 
-        <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} options={{ headerShown: false }} />
+        <Stack.Screen name="MainTabScreen" component={MainTabScreen} options={{ headerShown: false }} />
 
         <Stack.Screen
           name="LocationScreen"
@@ -66,11 +65,6 @@ const RootStack = () => {
             headerTransparent: true,
             headerTitleAlign: 'center',
             headerBackVisible: true,
-            headerRight: () => (
-            
-                <Button onPress={() => navigation.navigate('ProfileScreen')} color='#349feb' title='Save'/>
-              
-            )
           })}
         />
         <Stack.Screen name="HomeScreen" component={MainTabScreen} />

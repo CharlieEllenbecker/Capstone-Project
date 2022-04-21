@@ -1,16 +1,16 @@
-import React from 'react';
-import { View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Image } from 'react-native';
 import ImagePickerCom from './ImagePicker';
-import { deleteJWT } from '../state/actions/jwtActions';
+import { deleteJWT, getJWT } from '../state/actions/jwtActions';
 import { deleteUserData } from '../state/actions/userActions';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import {
     HeaderContainer,
     SettingsButton,
     LogoutButton,
     UserContainer,
-    ProfilePictureContainer,
+    ProfilePicContainer,
     NumberOfPinsContainer,
     NumberOfPinsText,
     EditProfileButton,
@@ -22,22 +22,44 @@ import {
     HorizontalContainer,
     LocationLine,
   } from './styles';
+import axios from 'axios';
+import getIp from '../ip.js';
+import { propTypes } from 'react-bootstrap/esm/Image';
 const ProfileTop = ({ navigation }) => {
+    const [username, setUsername] = useState('');
+    const [profilePicture, setProfilePicture] = useState(null);
+    const ip = getIp();
     const dispatch = useDispatch();
-
+    const { jwt } = useSelector((state) => state.jwtReducer);
     const handleLogout = () => {
         dispatch(deleteJWT());
         dispatch(deleteUserData());
         navigation.navigate('Login');
       };
-      
+
+    const getUserData = async () => {
+        await axios.get(`http://${ip}:3001/api/users/me`, { headers: { 'x-auth-token': jwt } })
+        .then((response) => {
+            setUsername(response.data.username);
+            const url = `http://${ip}:3001/${response.data.profilePictureFileName}`
+            setProfilePicture(url);
+            console.log(profilePicture, username);
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+    }
+    useEffect(() => {
+        getUserData();
+    });
+    
     return(
     <View>
     <HeaderContainer>
         <SettingsButton> 
             <Ionicons name='ios-settings-outline' size={25}/> 
         </SettingsButton>
-        <UsernameText>Username</UsernameText> 
+        <UsernameText>{username}</UsernameText> 
         <LogoutButton onPress={() => handleLogout()}>
             <Ionicons name='ios-exit-outline' size={25}/>
         </LogoutButton> 
@@ -45,7 +67,7 @@ const ProfileTop = ({ navigation }) => {
       
     <UserContainer>
         <VerticalContainer>
-            <ProfilePictureContainer onPress={ImagePickerCom}></ProfilePictureContainer> 
+            <Image style={{height: 160, width: 160, borderRadius: 80}} source={{ uri: profilePicture }}/> 
         </VerticalContainer>
 
         <VerticalContainer>
@@ -56,8 +78,8 @@ const ProfileTop = ({ navigation }) => {
                         <NumberOfPinsText>Posts</NumberOfPinsText>  
                     </HorizontalContainer>
                     <HorizontalContainer>
-                        <NumberOfPinsNumber>40</NumberOfPinsNumber> 
-                        <NumberOfPinsNumber>40</NumberOfPinsNumber> 
+                        <NumberOfPinsNumber>5</NumberOfPinsNumber> 
+                        <NumberOfPinsNumber>5</NumberOfPinsNumber> 
                     </HorizontalContainer>
                 </VerticalContainer>
             </NumberOfPinsContainer>
