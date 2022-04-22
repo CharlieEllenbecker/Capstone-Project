@@ -45,6 +45,7 @@ const populate = async () => {
         title: 'Amazing Food Place',
         description: 'This is the best food place',
         rating: 5,
+        tags: [{name:"Landscape"},],
         userId: userOneId
     });
 
@@ -56,6 +57,7 @@ const populate = async () => {
         title: 'Second Amazing Food Place',
         description: 'This is the second best food place',
         rating: 4,
+        tags: [{name: "Portrait"}, {name: "Landscape"}],
         userId: userOneId
     });
 
@@ -67,6 +69,7 @@ const populate = async () => {
         title: 'Third Amazing Food Place',
         description: 'This is the third best food place',
         rating: 3,
+        tags: [{name:"Abstract"},],
         userId: userOneId
     });
 

@@ -3,7 +3,7 @@ import { Camera } from 'expo-camera';
 import axios from 'axios';
 import getIp from '../ip';
 import { useSelector, useDispatch } from 'react-redux';
-import { setAllPins } from '../state/actions/pinActions';
+import { setAllPins, setUserSpecificPins } from '../state/actions/pinActions';
 import { setTags } from '../state/actions/tagActions';
 import {
   StyleSheet,
@@ -62,6 +62,8 @@ const HomeScreen = ({ navigation, route }) => {
   const [cardVisible, setCardVisible] = React.useState(true);
   const [title, setTitle] = React.useState('');
   const [description, setDescription] = React.useState('');
+  const [tag, setTag] = React.useState('');
+  const [filter, setFilter] = React.useState('');
   const [selectedImage, setSelectedImage] = React.useState(null);
   const [previewVisible, setPreviewVisible] = React.useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
@@ -70,6 +72,8 @@ const HomeScreen = ({ navigation, route }) => {
   const ip = getIp();
   const { jwt } = useSelector((state) => state.jwtReducer);
   const { allPins } = useSelector((state) => state.pinReducer);
+  const { userSpecificPins } = useSelector((state) => state.pinReducer);
+  const [filteredPins, setFilteredPins] = React.useState(allPins); 
   const { tags } = useSelector((state) => state.tagReducer);
   const dispatch = useDispatch();
 
@@ -79,6 +83,18 @@ const HomeScreen = ({ navigation, route }) => {
       .get(`http://${ip}:3001/api/pins/`, { headers: { 'x-auth-token': jwt } })
       .then((response) => {
         dispatch(setAllPins(response.data));
+        setFilteredPins(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const getMyPins = async () => {
+    await axios
+      .get(`http://${ip}:3001/api/pins/my`, { headers: { 'x-auth-token': jwt } })
+      .then((response) => {
+        dispatch(setUserSpecificPins(response.data));
       })
       .catch((error) => {
         console.error(error);
@@ -102,6 +118,7 @@ const HomeScreen = ({ navigation, route }) => {
   let mapAnimation = new OldAnimated.Value(0);
   useEffect(() => {
     getAllPins();
+    getMyPins();
     getAllCategories();
     mapAnimation.addListener(({ value }) => {
       let index = Math.floor(value / CARD_WIDTH + 0.3); // animate 30% away from landing on the next item
@@ -126,7 +143,7 @@ const HomeScreen = ({ navigation, route }) => {
       }, 10);
     });
   }, []);
-  const interpolations = allPins.map((pin, index) => {
+  const interpolations = filteredPins.map((pin, index) => {
     const inputRange = [(index - 1) * CARD_WIDTH, index * CARD_WIDTH, (index + 1) * CARD_WIDTH];
     const scale = mapAnimation.interpolate({
       inputRange,
@@ -169,6 +186,10 @@ const HomeScreen = ({ navigation, route }) => {
   const handleLongPress = (e) => {
     bs.current.snapTo(0);
     setCoordinate(e.nativeEvent.coordinate);
+  };
+
+  const filterPins = (tagFilter) => {
+    setFilteredPins(allPins.filter(pin => pin.tags.some(tag => tag.name === tagFilter)));
   };
 
   const addMarker = () => {
@@ -299,7 +320,7 @@ const HomeScreen = ({ navigation, route }) => {
           onLongPress={handleLongPress}
           //onLongPress={<addMarker state={state} />}
         >
-          {allPins.map((pin, index) => {
+          {filteredPins.map((pin, index) => {
             const scaleStyle = {
               transform: [
                 {
@@ -342,15 +363,18 @@ const HomeScreen = ({ navigation, route }) => {
             paddingHorizontal: Platform.OS === 'android' ? SPACING_FOR_CARD_INSET : 0,
           }}
         >
-          <TouchableOpacity style={styles.chipsItem}>
+          <TouchableOpacity style={styles.chipsItem} onPress={() => {setFilteredPins(allPins)}}>
             <Text>All</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.chipsItem}>
+          <TouchableOpacity style={styles.chipsItem} onPress={() => {setFilteredPins(userSpecificPins)}}>
             <Text>My</Text>
           </TouchableOpacity>
           
           {tags.map((tag, index) => (
-            <TouchableOpacity key={index} style={styles.chipsItem}>
+            <TouchableOpacity key={index} style={styles.chipsItem} onPress={() => {
+              setFilter(tag)
+              filterPins(filter)
+              }}>
               <Text>{tag}</Text>
             </TouchableOpacity>
           ))}
@@ -388,7 +412,7 @@ const HomeScreen = ({ navigation, route }) => {
               { useNativeDriver: true },
             )}
           >
-            {allPins.map((pin, index) => (
+            {filteredPins.map((pin, index) => (
               <View style={styles.card} key={index}>
                 <Image source={{ uri: pin.image }} style={styles.cardImage} resizeMode="cover" />
                 <View style={styles.textContent}>
