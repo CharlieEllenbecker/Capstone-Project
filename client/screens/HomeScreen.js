@@ -20,6 +20,7 @@ import {
   Alert,
 } from 'react-native';
 
+import ListView from '../components/ListView.js';
 import CameraView from './CameraView';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
@@ -58,7 +59,6 @@ const HomeScreen = ({ navigation, route }) => {
     longitudeDelta: 0.0421,
   };
 
-  const [cardVisible, setCardVisible] = React.useState(true);
   const [title, setTitle] = React.useState('');
   const [description, setDescription] = React.useState('');
   const [selectedImage, setSelectedImage] = React.useState(null);
@@ -137,34 +137,18 @@ const HomeScreen = ({ navigation, route }) => {
   const _map = React.useRef(null);
   const _scrollView = React.useRef(null);
   const onMarkerPress = (mapEventData) => {
-    // if (!cardVisible) {
-    //   setCardVisible(true);
-    // }
+    
     const markerID = mapEventData._targetInst.return.key;
     let x = markerID * CARD_WIDTH + markerID * 20;
     if (Platform.OS === 'ios') {
       x = x - SPACING_FOR_CARD_INSET;
     }
 
-    if (cardVisible) {
-      console.log(_scrollView);
-      _scrollView.current ? 
-      _scrollView.current.scrollTo({ x: x, y: 0, animated: true })
-      :
-      setTimeout(onMarkerPress(mapEventData), 50)
-    } else {
-      setCardVisible(true);
-      console.log(_scrollView);
-      _scrollView.current ? 
-      _scrollView.current.scrollTo({ x: x, y: 0, animated: true })
-      :
-      setTimeout(onMarkerPress(mapEventData), 50)
-    }
+    console.log(_scrollView);
+    _scrollView.current.scrollTo({ x: x, y: 0, animated: true })
+    
   };
-  // const handlePress = (e) => {
-  //   //setCardVisible(!cardVisible);
-  //   console.log(cardVisible);
-  // };
+
   const handleLongPress = (e) => {
     bs.current.snapTo(0);
     setCoordinate(e.nativeEvent.coordinate);
@@ -325,16 +309,6 @@ const HomeScreen = ({ navigation, route }) => {
           })}
         </MapView>
 
-        {cardVisible ? (
-          <TouchableOpacity style={styles.hideButton} onPress={() => setCardVisible(!cardVisible)}>
-            <Ionicons name="ios-list" size={23} />
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity style={styles.showButton} onPress={() => setCardVisible(!cardVisible)}>
-            <Ionicons name="ios-list-outline" size={23} />
-          </TouchableOpacity>
-        )}
-
         <ScrollView
           horizontal
           pagingEnabled
@@ -367,7 +341,6 @@ const HomeScreen = ({ navigation, route }) => {
           ))}
         </ScrollView>
         
-        {cardVisible ? (
           <OldAnimated.ScrollView
             ref={_scrollView}
             horizontal
@@ -400,35 +373,10 @@ const HomeScreen = ({ navigation, route }) => {
             )}
           >
             {allPins.map((pin, index) => (
-              <View style={styles.card} key={index}>
-                <Image source={{ uri: pin.image }} style={styles.cardImage} resizeMode="cover" />
-                <View style={styles.textContent}>
-                  <Text numberOfLines={1} style={styles.cardtitle}>{pin.title}</Text>
-                  <StarRating rating={pin.rating} size={18} />
-                  {pin.description && <Text numberOfLines={1} style={styles.cardDescription}>{pin.description}</Text>}
-                  <View style={styles.button}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        navigation.navigate('LocationScreen', { pinId: pin._id });
-                      }}
-                      style={[
-                        styles.signIn,
-                        {
-                          color: '#FF6347',
-                          borderWidth: 0.5,
-                          borderColor: 'black',
-                          marginBottom: 5,
-                        },
-                      ]}
-                    >
-                      <Text style={styles.textSign}>See Location</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </View>
+              <ListView pin={pin} key={index} navigation={navigation}/>
             ))}
           </OldAnimated.ScrollView>
-        ) : null}
+        
         <BottomSheet
           ref={bs}
           snapPoints={[300, 0]}

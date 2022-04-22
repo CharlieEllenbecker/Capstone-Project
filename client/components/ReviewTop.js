@@ -1,6 +1,6 @@
 import StarRating from './StarRating';
 import InputStarRating from './InputStarRating';
-import { Formik } from 'formik';
+import { Field, Formik } from 'formik';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import getIp from '../ip.js';
@@ -38,15 +38,27 @@ const ReviewTop = (props) => {
   const ip = getIp();
   const { jwt } = useSelector((state) => state.jwtReducer);
   const modalVis = false;
-  const reviewVis = null;
   //modalVisible and setModalVisible for writing a review
   const [modalVisible, setModalVisible] = useState(modalVis ? true : false);
-  const [description, setDescription] = useState(reviewVis ? '' : null);
-
+  const [rating, setRating] = useState(0);
+  const [description, setDescription] = useState('');
   const showModal = (set) => {
     set ? setModalVisible(true) : setModalVisible(false);
   };
 
+
+  const postReview = async (values) => {
+    await axios.post(`http://${ip}:3001/api/reviews/${props.pinId}`, { description: values.description, rating: rating }, { headers: { 'x-auth-token': jwt } })
+      .then((response) => {
+        console.log(response.data);
+        props.setReviews([...props.reviews, response.data]);
+        props.getPinData();
+      })
+      .catch((error) => {
+        console.log(description, rating);
+        console.error(error.response.data);
+      })
+  }
 
   return (
     <View>
@@ -61,34 +73,34 @@ const ReviewTop = (props) => {
       {/* Modal popup review window */}
       <Modal visible={modalVisible} transparent={true} animationType="slide" presentationStyle="overFullScreen" onRequestClose={() => showModal(!modalVisible)}>
         <View style={styles.viewWrapper}>
-        <Formik
-                enableReinitialize
-                initialValues={{ description: 'review 2' }}
-                onSubmit={(values) => {
-                  console.log(values.description);
-                  props.setUserDescription(values.description);
-                  props.handlePostReview();
-                }}
-              >{({ handleChange, handleBlur, handleSubmit, values }) => (
-                <View style={styles.modalView}>
-                  <AddPictureContainer><Ionicons name='ios-camera-outline' size={25} /></AddPictureContainer>
-                  <InputStarRating setUserRating={props.setUserRating}/>
-                  <TextInput 
-                    multiline numberOfLines={4} 
-                    value={values.description}
-                    onChangeText={handleChange('description')}
-                    onBlur={handleBlur('description')} 
-                    style={styles.input} 
-                    placeholder="Your review here..."
-                  />
-                  <SubmitReviewButton onPress={() => { showModal(false), handleSubmit }}>
-                    <ReviewButtonText>Submit Review</ReviewButtonText>
-                  </SubmitReviewButton>
-                  <SubmitReviewButton onPress={() => { showModal(false) }}>
-                    <ReviewButtonText>Cancel Review</ReviewButtonText>
-                  </SubmitReviewButton>
-                </View>
-              )}
+          <Formik
+            initialValues={{ description: description }}
+            onSubmit={(values) => {
+              console.log('here');
+              postReview(values);
+              showModal(false);
+            }}
+            validator={() => ({})}
+          >{({ handleChange, handleBlur, handleSubmit, values }) => (
+            <View style={styles.modalView}>
+              <AddPictureContainer><Ionicons name='ios-camera-outline' size={25} /></AddPictureContainer>
+              <InputStarRating setRating={setRating}/>
+              <TextInput
+                multiline numberOfLines={4} 
+                value={values.description}
+                onChangeText={handleChange('description')}
+                onBlur={handleBlur('description')} 
+                style={styles.input} 
+                placeholder="Your review here..."
+              />
+              <SubmitReviewButton onPress={handleSubmit}>
+                <ReviewButtonText>Submit Review</ReviewButtonText>
+              </SubmitReviewButton>
+              <SubmitReviewButton onPress={() => showModal(false)}>
+                <ReviewButtonText>Cancel Review</ReviewButtonText>
+              </SubmitReviewButton>
+            </View>
+            )}
           </Formik>
         </View>
       </Modal>

@@ -58,8 +58,6 @@ const LocationScreen = ({ route, navigation }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [rating, setRating] = useState('');
-  const [userRating, setUserRating] = useState('');
-  const [userDescription, setUserDescription] = useState('review 2');
   const [reviews, setReviews] = useState([]);
 
   //  get the pin data to display on the page
@@ -71,7 +69,6 @@ const LocationScreen = ({ route, navigation }) => {
       setRating(response.data.rating);
     })
     .catch(error => {
-      console.log('here1');
       console.log(error);
     });
   };
@@ -83,26 +80,8 @@ const LocationScreen = ({ route, navigation }) => {
       console.log(response.data);
     })
     .catch((error) => {
-      console.log('here2');
       console.error(error);
     })
-  }
-  
-  
-  const postReview = async () => {
-    await axios.post(`http://${ip}:3001/api/reviews/${pinId}`, { description: userDescription, rating: userRating }, { headers: { 'x-auth-token': jwt } })
-      .then((response) => {
-        setReviews([...reviews, response.data]);
-      })
-      .catch((error) => {
-        console.log(userDescription, userRating);
-        console.error(error);
-      })
-  }
-
-
-  const handlePostReview = () => {
-    postReview();
   }
   
   useEffect(() => {
@@ -112,7 +91,7 @@ const LocationScreen = ({ route, navigation }) => {
 
   return (
     <StyledReviewContainer>
-      <ReviewTop title={title} description={description} rating={rating} reviews={reviews} setReviews={setReviews} setUserRating={setUserRating} setUserDescription={setUserDescription} handlePostReview={handlePostReview} pinId={pinId}/>
+      <ReviewTop title={title} description={description} rating={rating} reviews={reviews} setReviews={setReviews} getPinData={getPinData} pinId={pinId}/>
       <ScrollView
         scrollEventThrottle={16}
       >

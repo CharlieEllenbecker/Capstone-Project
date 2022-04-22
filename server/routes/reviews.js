@@ -38,7 +38,7 @@ router.post('/:pinId', auth, async (req, res) => {
     if(error) {
         return res.status(400).send(error.details[0].message);
     }
-    console.log('here');
+
     let pin = await Pin.findById(req.params.pinId);
     if(!pin) {
         return res.status(404).send(`The pin with the given id ${req.params.pinId} does not exist.`);

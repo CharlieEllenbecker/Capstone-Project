@@ -469,7 +469,7 @@ export const styles = StyleSheet.create({
   chipsItemHeader: {
     flexDirection: 'row',
     backgroundColor: '#fff',
-    borderRadius: 10,
+    borderRadius: 20,
     padding: 4,
     paddingHorizontal: 20,
     marginHorizontal: 10,
