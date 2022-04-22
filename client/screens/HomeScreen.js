@@ -32,6 +32,7 @@ import Fontisto from 'react-native-vector-icons/Fontisto';
 import * as ImagePicker from 'expo-image-picker';
 import { mapDarkStyle, mapStandardStyle } from '../model/mapData';
 
+import MapPin from '../components/MapPin';
 import StarRating from '../components/StarRating';
 import { useTheme } from '@react-navigation/native';
 import { styles } from '../components/styles';
@@ -287,24 +288,12 @@ const HomeScreen = ({ navigation, route }) => {
               transform: [
                 {
                   scale: interpolations[index].scale,
-                },
-              ],
+                }
+              ]
             };
 
             return (
-              <MapView.Marker
-                key={index}
-                coordinate={{ latitude: pin.coordinate.latitude, longitude: pin.coordinate.longitude }}
-                onPress={(e) => onMarkerPress(e)}
-              >
-                <OldAnimated.View style={[styles.markerWrap]}>
-                  <OldAnimated.Image
-                    source={require('../assets/map_marker.png')}
-                    style={[styles.marker, scaleStyle]}
-                    resizeMode="cover"
-                  />
-                </OldAnimated.View>
-              </MapView.Marker>
+              <MapPin key={index} pin={pin} scaleStyle={scaleStyle} onMarkerPress={onMarkerPress} />
             );
           })}
         </MapView>
