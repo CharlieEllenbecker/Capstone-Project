@@ -10,7 +10,7 @@ export const setSelectedPin = (pin) => {
 export const setSelectedPinReviews = (reviews) => {
     return {
         type: pinTypeActions.SET_SELECTED_PIN_REVIEWS,
-        payloas: reviews
+        payload: reviews
     };
 }
 

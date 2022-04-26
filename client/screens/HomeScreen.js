@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, createRef, useRef } from 'react';
 import { Camera } from 'expo-camera';
 import axios from 'axios';
 import getIp from '../ip';
 import { useSelector, useDispatch } from 'react-redux';
-import { setAllPins, setUserSpecificPins } from '../state/actions/pinActions';
+import { setAllPins, setUserSpecificPins, setFilteredPins } from '../state/actions/pinActions';
 import { setTags } from '../state/actions/tagActions';
 import {
   StyleSheet,
@@ -44,10 +44,10 @@ const SPACING_FOR_CARD_INSET = width * 0.1 - 10;
 
 const HomeScreen = ({ navigation, route }) => {
   //const { image, dummy } = route.params;
-  React.useEffect(() => {
+
+  useEffect(() => {
     if (route.params?.image) {
       setSelectedImage(route.params.image);
-      console.log('image: ' + route.params.image);
     }
   }, [route.params?.image]);
 
@@ -60,23 +60,23 @@ const HomeScreen = ({ navigation, route }) => {
     longitudeDelta: 0.0421,
   };
 
-  const [title, setTitle] = React.useState('');
-  const [description, setDescription] = React.useState('');
-  const [tag, setTag] = React.useState('');
-  
-  const [filter, setFilter] = React.useState('');
-  const [selectedImage, setSelectedImage] = React.useState(null);
-  const [previewVisible, setPreviewVisible] = React.useState(false);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [tag, setTag] = useState('');
+
+  const [filter, setFilter] = useState('');
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [previewVisible, setPreviewVisible] = useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
-  const [coordinate, setCoordinate] = React.useState({});
+  const [coordinate, setCoordinate] = useState({});
 
   const ip = getIp();
+  const dispatch = useDispatch();
   const { jwt } = useSelector((state) => state.jwtReducer);
   const { allPins } = useSelector((state) => state.pinReducer);
   const { userSpecificPins } = useSelector((state) => state.pinReducer);
-  const [filteredPins, setFilteredPins] = React.useState(allPins); 
+  const { filteredPins } = useSelector((state) =>  state.pinReducer);
   const { tags } = useSelector((state) => state.tagReducer);
-  const dispatch = useDispatch();
 
   // Get all the pins
   const getAllPins = async () => {
@@ -84,7 +84,7 @@ const HomeScreen = ({ navigation, route }) => {
       .get(`http://${ip}:3001/api/pins/`, { headers: { 'x-auth-token': jwt } })
       .then((response) => {
         dispatch(setAllPins(response.data));
-        setFilteredPins(response.data);
+        dispatch(setFilteredPins(response.data));
       })
       .catch((error) => {
         console.error(error);
@@ -102,13 +102,11 @@ const HomeScreen = ({ navigation, route }) => {
       });
   };
 
-  //Get all the tags
-  const getAllCategories = async () => {
+  const getAllTags = async () => {
     await axios
       .get(`http://${ip}:3001/api/tags/`, { headers: { 'x-auth-token': jwt } })
       .then((response) => {
         dispatch(setTags(response.data));
-        console.log(response.data);
       })
       .catch((error) => {
         console.error(error);
@@ -120,7 +118,7 @@ const HomeScreen = ({ navigation, route }) => {
   useEffect(() => {
     getAllPins();
     getMyPins();
-    getAllCategories();
+    getAllTags();
     mapAnimation.addListener(({ value }) => {
       let index = Math.floor(value / CARD_WIDTH + 0.3); // animate 30% away from landing on the next item
       if (index >= allPins.length) {
@@ -144,6 +142,7 @@ const HomeScreen = ({ navigation, route }) => {
       }, 10);
     });
   }, []);
+
   const interpolations = filteredPins.map((pin, index) => {
     const inputRange = [(index - 1) * CARD_WIDTH, index * CARD_WIDTH, (index + 1) * CARD_WIDTH];
     const scale = mapAnimation.interpolate({
@@ -153,8 +152,9 @@ const HomeScreen = ({ navigation, route }) => {
     });
     return { scale };
   });
-  const _map = React.useRef(null);
-  const _scrollView = React.useRef(null);
+
+  const _map = useRef(null);
+  const _scrollView = useRef(null);
   const onMarkerPress = (mapEventData) => {
     
     const markerID = mapEventData._targetInst.return.key;
@@ -163,7 +163,6 @@ const HomeScreen = ({ navigation, route }) => {
       x = x - SPACING_FOR_CARD_INSET;
     }
 
-    console.log(_scrollView);
     _scrollView.current.scrollTo({ x: x, y: 0, animated: true })
     
   };
@@ -174,7 +173,7 @@ const HomeScreen = ({ navigation, route }) => {
   };
 
   const filterPins = (tagFilter) => {
-    setFilteredPins(allPins.filter(pin => pin.tags.some(tag => tag.name === tagFilter)));
+    dispatch(setFilteredPins(allPins.filter(pin => pin.tags.some(tag => tag.name === tagFilter))));
   };
 
   const addMarker = () => {
@@ -195,7 +194,7 @@ const HomeScreen = ({ navigation, route }) => {
       aspect: [4, 3],
       quality: 1,
     });
-    console.log(result.uri);
+
     setSelectedImage(result.uri);
     // if (result.cancelled === true) {
     //   startCamera ? setStartCamera(false) : null;
@@ -213,7 +212,6 @@ const HomeScreen = ({ navigation, route }) => {
         style={styles.pinDetails}
         onChangeText={(newText) => {
           setTitle(newText);
-          console.log('Image: ', selectedImage);
         }}
       />
       <TextInput
@@ -290,7 +288,7 @@ const HomeScreen = ({ navigation, route }) => {
       </View>
     </View>
   );
-  const bs = React.createRef();
+  const bs = createRef();
   const fall = new Animated.Value(1);
 
   return (

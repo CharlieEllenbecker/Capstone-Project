@@ -57,7 +57,6 @@ const ReviewTop = (props) => {
         props.getPinData();
       })
       .catch((error) => {
-        console.log(description, rating);
         console.error(error.response.data);
       })
   }
@@ -66,10 +65,10 @@ const ReviewTop = (props) => {
     <View>
       <LocationReviewContainer></LocationReviewContainer>
       {/* <LocationImage style={{paddingLeft: 20}} source= {{ uri: image }}></LocationImage> */}
-      <LocationTitle style={{ paddingLeft: 20 }}>{selectedPin.title}</LocationTitle>
+      {selectedPin && <LocationTitle style={{ paddingLeft: 20 }}>{selectedPin.title}</LocationTitle>}
       <View style={{ paddingLeft: 20 }}>
-        <StarRating rating={selectedPin.rating} size={25} />
-        <LocationDescription>{selectedPin.description}</LocationDescription>
+        {selectedPin && <StarRating rating={selectedPin.rating} size={25} />}
+        {selectedPin && <LocationDescription>{selectedPin.description}</LocationDescription>}
       </View>
 
       {/* Modal popup review window */}

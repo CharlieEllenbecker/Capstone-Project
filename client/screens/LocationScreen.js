@@ -54,7 +54,7 @@ const LocationScreen = ({ route, navigation }) => {
   const ip = getIp();
   const dispatch = useDispatch();
   const { jwt } = useSelector((state) => state.jwtReducer);
-  const { selectedPinReviews, selectedPinPosts } = useSelector((state) => state.pinReducer);
+  const { selectedPinReviews } = useSelector((state) => state.pinReducer);
 
   const getPinData = async () => {
     await axios.get(`http://${ip}:3001/api/pins/${pinId}`, { headers: { 'x-auth-token': jwt } })
@@ -68,12 +68,12 @@ const LocationScreen = ({ route, navigation }) => {
   
   const getReviews = async () => {
     await axios.get(`http://${ip}:3001/api/reviews/all/${pinId}`, { headers: { 'x-auth-token': jwt } })
-    .then((response) => {
-      dispatch(setSelectedPinReviews(response.data));
-    })
-    .catch((error) => {
-      console.error(error);
-    })
+      .then((response) => {
+        dispatch(setSelectedPinReviews(response.data));
+      })
+      .catch((error) => {
+        console.error(error);
+      })
   }
   
   useEffect(() => {
@@ -91,17 +91,17 @@ const LocationScreen = ({ route, navigation }) => {
           <ScrollView
             horizontal={true}
           >
-            {selectedPinReviews.map((review, index) => {
+            {selectedPinReviews .map((review, index) => {
               return (
-              <View key={index} style={{ width: 200, marginLeft: 20, borderWidth: 0.7, borderRadius: 5, borderColor: '#dddddd' }}>
-                <View style={{flex: 1, paddingLeft: 15, paddingTop: 15 }}>
-                  <HorizontalContainer>
-                  </HorizontalContainer>
-                  <UserDisplay userId={review.userId} />
-                  <StarRating size={15} rating={review.rating} style={{ paddingLeft: 5 }}/>
-                  {review.description && <Text style={{ paddingLeft: 5 }}>{review.description}</Text>}
+                <View key={index} style={{ width: 200, marginLeft: 20, borderWidth: 0.7, borderRadius: 5, borderColor: '#dddddd' }}>
+                  <View style={{flex: 1, paddingLeft: 15, paddingTop: 15 }}>
+                    <HorizontalContainer>
+                    </HorizontalContainer>
+                    <UserDisplay userId={review.userId} />
+                    <StarRating size={15} rating={review.rating} style={{ paddingLeft: 5 }}/>
+                    {review.description && <Text style={{ paddingLeft: 5 }}>{review.description}</Text>}
+                  </View>
                 </View>
-              </View>
               );
             })}
           </ScrollView>

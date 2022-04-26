@@ -20,7 +20,7 @@ const InputStarRating = (props) => {
                             activeOpacity={0.7}
                             index={star}
                             key={index}
-                            onPress={() => [setDefaultRating(star), props.setRating(star), console.log(star)]}
+                            onPress={() => [setDefaultRating(star), props.setRating(star)]}
                         >
                         <Ionicons  
                             name = {
