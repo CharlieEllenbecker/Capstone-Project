@@ -9,7 +9,8 @@ import {
 } from 'react-native';
 import StarRating from '../components/StarRating';
 import getIp from '../ip';
-import { useSelector, useDispatch, getState } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { setSelectedPin, setSelectedPinReviews, setSelectedPinPosts } from '../state/actions/pinActions';
 //components
 import GridView from '../components/GridView';
 import ReviewTop from '../components/ReviewTop';
@@ -49,24 +50,16 @@ const images = [
 ]
 
 const LocationScreen = ({ route, navigation }) => {
-  // user, ip, jwt variables
   const { pinId } = route.params;
   const ip = getIp();
+  const dispatch = useDispatch();
   const { jwt } = useSelector((state) => state.jwtReducer);
+  const { selectedPinReviews, selectedPinPosts } = useSelector((state) => state.pinReducer);
 
-  //  pin properties
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [rating, setRating] = useState('');
-  const [reviews, setReviews] = useState([]);
-
-  //  get the pin data to display on the page
   const getPinData = async () => {
     await axios.get(`http://${ip}:3001/api/pins/${pinId}`, { headers: { 'x-auth-token': jwt } })
     .then((response) => {
-      setTitle(response.data.title);
-      setDescription(response.data.description);
-      setRating(response.data.rating);
+      dispatch(setSelectedPin(response.data));
     })
     .catch(error => {
       console.log(error);
@@ -76,8 +69,7 @@ const LocationScreen = ({ route, navigation }) => {
   const getReviews = async () => {
     await axios.get(`http://${ip}:3001/api/reviews/all/${pinId}`, { headers: { 'x-auth-token': jwt } })
     .then((response) => {
-      setReviews(response.data);
-      console.log(response.data);
+      dispatch(setSelectedPinReviews(response.data));
     })
     .catch((error) => {
       console.error(error);
@@ -91,7 +83,7 @@ const LocationScreen = ({ route, navigation }) => {
 
   return (
     <StyledReviewContainer>
-      <ReviewTop title={title} description={description} rating={rating} reviews={reviews} setReviews={setReviews} getPinData={getPinData} pinId={pinId}/>
+      <ReviewTop getPinData={getPinData} pinId={pinId}/>
       <ScrollView
         scrollEventThrottle={16}
       >
@@ -99,7 +91,7 @@ const LocationScreen = ({ route, navigation }) => {
           <ScrollView
             horizontal={true}
           >
-            {reviews.map((review, index) => {
+            {selectedPinReviews.map((review, index) => {
               return (
               <View key={index} style={{ width: 200, marginLeft: 20, borderWidth: 0.7, borderRadius: 5, borderColor: '#dddddd' }}>
                 <View style={{flex: 1, paddingLeft: 15, paddingTop: 15 }}>
