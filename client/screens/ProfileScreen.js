@@ -34,7 +34,7 @@ const ProfileScreen = ({ route, navigation }) => {
 
   return (
     <ProfileContainer>
-      <ProfileTop navigation={navigation} />
+      <ProfileTop navigation={navigation} length={images.length}/>
       <ScrollView scrollEventThrottle={16}>
         <GridView images={images} />
       </ScrollView>

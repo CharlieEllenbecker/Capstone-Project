@@ -114,7 +114,19 @@ export const RightIcon = styled.TouchableOpacity`
   position: absolute;
   z-index: 1;
 `;
+export const EditLeftIcon = styled.View`
+  left: 16px;
+  top: 30px;
+  position: absolute;
+  z-index: 1;
+`;
 
+export const EditRightIcon = styled.TouchableOpacity`
+  right: 16px;
+  top: 32px;
+  position: absolute;
+  z-index: 1;
+`;
 export const LoginButton = styled.TouchableOpacity`
   padding: 15px;
   background-color: ${brick};
@@ -169,10 +181,8 @@ export const LocationTitle = styled.Text`
   padding: 1px;
 `;
 export const LocationDescription = styled.Text`
-  text-align: center;
   font-size: 15px;
   color: #000000;
-  padding: 25px;
 `;
 export const LocationReviewContainer = styled.View`
   width: 100%;
@@ -249,8 +259,12 @@ export const ReviewProfilePic = styled.Image`
   border-radius: 15px;
   justify-content: center;
   align-content: center;
+  margin-right: 10px;
 `;
-
+export const ReviewUserName = styled.Text`
+  font-size: 15px;
+  color: #000000;
+`;
 //Profile Page
 export const ProfileContainer = styled.View`
   flex: 1;
@@ -267,9 +281,11 @@ export const ProfilePictureContainer = styled.TouchableOpacity`
   width: 160px;
   height: 160px;
   border-radius: 80px;
-  background-color: ${brick};
 `;
-
+export const ProfilePicContainer = styled.Image`
+  width: 160px;
+  height: 160px;
+`;
 export const EditButtonText = styled.Text`
   font-size: 15px;
   font-weight: bold;
@@ -376,8 +392,8 @@ export const EditTextLabel = styled.Text`
 export const EditTextInput = styled.TextInput`
   background-color: rgba(0, 0, 0, 0.15);
   padding: 15px;
-  padding-left: 10px;
-  padding-right: 10px;
+  padding-left: 55px;
+  padding-right: 55px;
   border-radius: 5px;
   border-color: ${brick};
   font-size: 15px;
@@ -453,7 +469,7 @@ export const styles = StyleSheet.create({
   chipsItemHeader: {
     flexDirection: 'row',
     backgroundColor: '#fff',
-    borderRadius: 10,
+    borderRadius: 20,
     padding: 4,
     paddingHorizontal: 20,
     marginHorizontal: 10,

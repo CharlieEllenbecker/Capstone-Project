@@ -28,7 +28,7 @@ import { useTheme } from '@react-navigation/native';
 import { styles } from '../components/styles';
 const { width, height } = Dimensions.get('window');
 
-export default function CameraView({ route, navigation }) {
+export default function CameraView({ route, navigation, setTakenImage }) {
   const [capturedImage, setCapturedImage] = React.useState(null);
 
   const [startCamera, setStartCamera] = React.useState(false);
@@ -63,11 +63,14 @@ export default function CameraView({ route, navigation }) {
   // }
   const __savePhoto = () => {
     setPreviewVisible(false);
-    console.log('Taken Picture after save: ' + capturedImage);
-    navigation.navigate('HomeScreen', {
-      image: capturedImage,
-      dummy: 'dummy',
-    });
+
+    setTakenImage(capturedImage);
+
+    // console.log('Taken Picture after save: ' + capturedImage);
+    // navigation.navigate('HomeScreen', {
+    //   image: capturedImage,
+    //   dummy: 'dummy',
+    // });
   };
   const __retakePicture = () => {
     setCapturedImage(null);
