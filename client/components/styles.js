@@ -1,5 +1,4 @@
 import styled from 'styled-components/native';
-import { createGlobalStyle } from 'styled-components';
 import { StyleSheet, Dimensions } from 'react-native';
 import Constants from 'expo-constants';
 const StatusBarHeight = Constants.statusBarHeight;
