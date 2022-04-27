@@ -1,8 +1,8 @@
 const { Pin } = require('../models/pin');
-const { Post, validate } = require('../models/post');
-const { upload } = require('../middleware/imageHelper');
+const { Post, validate, validateForUpdate } = require('../models/post');
 const auth = require('../middleware/auth');
 const decodeJwt = require('jwt-decode');
+const _ = require('lodash');
 const express = require('express');
 require('express-async-errors');
 const router = express.Router();
@@ -44,11 +44,12 @@ router.get('/all/:pinId', auth, async (req, res) => {
 });
 
 /*
-    POST - Post a post to a pin
+    POST - Post a post to a pin (image is posted seperately)
 */
-router.post('/:pinId', [auth, upload.single('image')], async (req, res) => {
+router.post('/:pinId', auth, async (req, res) => {
     const { error } = validate(req.body);
     if(error) {
+        console.log(error.details[0].message);
         return res.status(400).send(error.details[0].message);
     }
 
@@ -57,13 +58,9 @@ router.post('/:pinId', [auth, upload.single('image')], async (req, res) => {
         return res.status(404).send(`The pin with the given id ${req.params.pinId} does not exist.`);
     }
 
-    const userId = decodeJwt(req.header('x-auth-token'))._id;
-    const post = await new Post({
-        description: req.body.description,
-        postPictureFileName: req.file.filename,
-        pinId: req.params.pinId,
-        useId: userId
-    }).save();
+    req.body.userId = decodeJwt(req.header('x-auth-token'))._id;
+    req.body.pinId = req.params.pinId;
+    const post = await new Post(_.pick(req.body, ['description', 'postPictureFileName', 'pinId', 'userId'])).save();
 
     return res.status(200).send(post);
 });
@@ -72,7 +69,7 @@ router.post('/:pinId', [auth, upload.single('image')], async (req, res) => {
     PUT - Update the description
 */
 router.put('/:postId', auth, async (req, res) => {
-    const { error } = validate(req.body);
+    const { error } = validateForUpdate(req.body);
     if(error) {
         return res.status(400).send(error.details[0].message);
     }
