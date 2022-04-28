@@ -324,7 +324,7 @@ const HomeScreen = ({ navigation, route }) => {
           scrollEventThrottle={1}
           showsHorizontalScrollIndicator={false}
           snapToInterval={CARD_WIDTH + 20}
-          snapToAlignment="center"
+          snapToAlignment="left"
           style={styles.chipsScrollView}
           contentInset={{
             top: 0,
@@ -336,10 +336,10 @@ const HomeScreen = ({ navigation, route }) => {
             paddingHorizontal: Platform.OS === 'android' ? SPACING_FOR_CARD_INSET : 0,
           }}
         >
-          <TouchableOpacity style={styles.chipsItem} onPress={() => {setFilteredPins(allPins)}}>
+          <TouchableOpacity style={styles.chipsItem} onPress={() => {dispatch(setFilteredPins(allPins))}}>
             <Text>All</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.chipsItem} onPress={() => {setFilteredPins(userSpecificPins)}}>
+          <TouchableOpacity style={styles.chipsItem} onPress={() => {dispatch(setFilteredPins(userSpecificPins))}}>
             <Text>My</Text>
           </TouchableOpacity>
           
