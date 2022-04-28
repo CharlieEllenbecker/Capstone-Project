@@ -64,7 +64,7 @@ const HomeScreen = ({ navigation, route }) => {
   const [description, setDescription] = useState('');
   const [tag, setTag] = useState('');
 
-  const [filter, setFilter] = useState('');
+  const [filter, setFilter] = useState('All'); // TODO: Use filter to set the filtered pins when you get all pins periodically from user location
   const [selectedImage, setSelectedImage] = useState(null);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
@@ -172,8 +172,9 @@ const HomeScreen = ({ navigation, route }) => {
     setCoordinate(e.nativeEvent.coordinate);
   };
 
-  const filterPins = (tagFilter) => {
-    dispatch(setFilteredPins(allPins.filter(pin => pin.tags.some(tag => tag.name === tagFilter))));
+  const filterPins = (filterTag) => {
+    console.log('Current Filter: ', filterTag);
+    dispatch(setFilteredPins(allPins.filter(pin => pin.tags.some(tag => tag.name === filterTag))));
   };
 
   const addMarker = () => {
@@ -336,17 +337,23 @@ const HomeScreen = ({ navigation, route }) => {
             paddingHorizontal: Platform.OS === 'android' ? SPACING_FOR_CARD_INSET : 0,
           }}
         >
-          <TouchableOpacity style={styles.chipsItem} onPress={() => {dispatch(setFilteredPins(allPins))}}>
+          <TouchableOpacity style={styles.chipsItem} onPress={() => {
+            setFilter('All');
+            dispatch(setFilteredPins(allPins));
+            }}>
             <Text>All</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.chipsItem} onPress={() => {dispatch(setFilteredPins(userSpecificPins))}}>
+          <TouchableOpacity style={styles.chipsItem} onPress={() => {
+            setFilter('My');
+            dispatch(setFilteredPins(userSpecificPins));
+            }}>
             <Text>My</Text>
           </TouchableOpacity>
           
           {tags.map((tag, index) => (
             <TouchableOpacity key={index} style={styles.chipsItem} onPress={() => {
-              setFilter(tag)
-              filterPins(filter)
+              setFilter(tag);
+              filterPins(tag);
               }}>
               <Text>{tag}</Text>
             </TouchableOpacity>

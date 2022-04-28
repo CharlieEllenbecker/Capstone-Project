@@ -1,7 +1,6 @@
 const { User } = require('../../../models/user');
 const { cleanupImages } = require('../../cleanupImages');
 const request = require('supertest');
-const mongoose = require('mongoose');
 const fs = require('fs');
 
 let server;

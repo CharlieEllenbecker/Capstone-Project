@@ -35,9 +35,9 @@ describe('/api/posts', () => {
             userId = user._id;
 
             const pin = await new Pin({
-                coordinate: {
-                    latitude: 43.04199,
-                    longitude: -87.92809,
+                location: {
+                    type: 'Point',
+                    coordinates: [43.04199, -87.92809]
                 },
                 title: 'Second Amazing Food Place',
                 description: 'This is the second best food place',
@@ -107,9 +107,9 @@ describe('/api/posts', () => {
             userId = user._id;
 
             const pin = await new Pin({
-                coordinate: {
-                    latitude: 43.04199,
-                    longitude: -87.92809,
+                location: {
+                    type: 'Point',
+                    coordinates: [43.04199, -87.92809]
                 },
                 title: 'Second Amazing Food Place',
                 description: 'This is the second best food place',
@@ -173,9 +173,9 @@ describe('/api/posts', () => {
             userId = user._id;
 
             const pin = await new Pin({
-                coordinate: {
-                    latitude: 43.04199,
-                    longitude: -87.92809,
+                location: {
+                    type: 'Point',
+                    coordinates: [43.04199, -87.92809]
                 },
                 title: 'Second Amazing Food Place',
                 description: 'This is the second best food place',
@@ -254,9 +254,9 @@ describe('/api/posts', () => {
             userId = user._id;
 
             const pin = await new Pin({
-                coordinate: {
-                    latitude: 43.04199,
-                    longitude: -87.92809,
+                location: {
+                    type: 'Point',
+                    coordinates: [43.04199, -87.92809]
                 },
                 title: 'Second Amazing Food Place',
                 description: 'This is the second best food place',
@@ -323,9 +323,9 @@ describe('/api/posts', () => {
             userId = user._id;
 
             const pin = await new Pin({
-                coordinate: {
-                    latitude: 43.04199,
-                    longitude: -87.92809,
+                location: {
+                    type: 'Point',
+                    coordinates: [43.04199, -87.92809]
                 },
                 title: 'Second Amazing Food Place',
                 description: 'This is the second best food place',
@@ -394,9 +394,9 @@ describe('/api/posts', () => {
             userId = user._id;
 
             const pin = await new Pin({
-                coordinate: {
-                    latitude: 43.04199,
-                    longitude: -87.92809,
+                location: {
+                    type: 'Point',
+                    coordinates: [43.04199, -87.92809]
                 },
                 title: 'Second Amazing Food Place',
                 description: 'This is the second best food place',

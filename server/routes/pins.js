@@ -7,10 +7,29 @@ require('express-async-errors');
 const router = express.Router();
 
 /*
-    GET - Get all pins
+    GET - Get all pins everywhere
 */
 router.get('/', auth, async (req, res) => {
-    const pins = await Pin.find({});    // TODO: within a certain range?
+    const pins = await Pin.find({});
+
+    return res.status(200).send(pins);
+});
+
+/*
+    GET - Get all pins within a range of the users location
+*/
+router.get('/user-location/:lat/:lon', auth, async (req, res) => {
+    const pins = await Pin.find({
+        location: {
+            $near: {
+                $maxDistance: 16000,    // roughly 10 miles in meters
+                $geometry: {
+                    type: 'Point',
+                    coordinates: [req.params.lat, req.params.lon]
+                }
+            }
+        }
+    });
 
     return res.status(200).send(pins);
 });
@@ -48,13 +67,48 @@ router.post('/', auth, async (req, res) => {
         return res.status(400).send('Pin already exists using that title.');
     }
 
-    const pinByCoordinate = await Pin.findOne({ coordinate: req.body.coordinate });
+    const pinByCoordinate = await Pin.findOne({ location: req.body.location });
     if(pinByCoordinate) {
         return res.status(400).send('Pin already exists using that location.'); // TODO: might want to make it within a certain range? => "A pin already exists near by."
     }
 
     req.body.userId = decodeJwt(req.header('x-auth-token'))._id;
-    const pin = await new Pin(_.pick(req.body, ['coordinate', 'title', 'description', 'rating', 'tags', 'userId'])).save();
+    const pin = await new Pin(_.pick(req.body, ['location', 'title', 'description', 'rating', 'tags', 'userId'])).save();
+
+    return res.status(200).send(pin);
+});
+
+/*
+    POST - Add a new pin while checking for near-by existing pins
+*/
+router.post('/location', auth, async (req, res) => {
+    const { error } = validate(req.body);
+    if(error) {
+        return res.status(400).send(error.details[0].message);
+    }
+
+    const pinByTitle = await Pin.findOne({ title: req.body.title });
+    if(pinByTitle) {
+        return res.status(400).send('Pin already exists using that title.');
+    }
+
+    const pinByCoordinate = await Pin.findOne({
+        location: {
+            $near: {
+                $maxDistance: 200,    // 200 meters
+                $geometry: {
+                    type: 'Point',
+                    coordinates: [req.body.location.coordinates[0], req.body.location.coordinates[1]]   // [lat, lon]
+                }
+            }
+        }
+    });
+    if(pinByCoordinate) {
+        return res.status(400).send('Pin already exists using that location.'); // TODO: might want to make it within a certain range? => "A pin already exists near by."
+    }
+
+    req.body.userId = decodeJwt(req.header('x-auth-token'))._id;
+    const pin = await new Pin(_.pick(req.body, ['location', 'title', 'description', 'rating', 'tags', 'userId'])).save();
 
     return res.status(200).send(pin);
 });
