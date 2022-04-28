@@ -413,8 +413,47 @@ export const DeleteButton = styled.TouchableOpacity`
   height: 60px;
 `;
 
+//Post Screen
+export const OverlayBottom = styled.View`
+  margin-bottom: 0px;
+  height: 20%;
+  width: 100%;
+`;
 
+export const OverlayTop = styled.View`
+  margin-top: 0px;
+  height: 15%;
+  width: 100%;
+  align-content: center;
+  justify-content: center;
+`;
 
+export const OverlayTitle = styled.Text`
+  color: #FFFFFF;
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 4%;
+`;
+
+export const OverlayProfilePic = styled.Image`
+  height: 50px;
+  width: 50px;
+  border-radius: 25px;
+  margin-left: 5%;
+`
+
+export const OverlayUsername = styled.Text`
+  color: #FFFFFF;
+  font-size: 15px;
+  font-weight: bold;
+  margin-left: 5%
+`;
+
+export const OverlayDescription = styled.Text`
+  color: #FFFFFF;
+  font-size: 14px;
+  margin-left: 5%;
+`
 const { width, height } = Dimensions.get('screen');
 const CARD_HEIGHT = 220;
 const CARD_WIDTH = width * 0.8;

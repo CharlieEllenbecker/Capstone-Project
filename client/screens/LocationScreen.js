@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import StarRating from '../components/StarRating';
 import getIp from '../ip';
-import { useSelector, useDispatch, getState } from 'react-redux';
+import { useSelector } from 'react-redux';
 //components
 import GridView from '../components/GridView';
 import ReviewTop from '../components/ReviewTop';
@@ -18,35 +18,33 @@ import {
   Colors,
   StyledReviewContainer,
   HorizontalContainer,
-  ReviewUserName,
-  ReviewProfilePic,
 } from './../components/styles';
 import colors from './../components/styles';
 //colors
 const { lightBrick } = Colors;
 //axios
 import axios from 'axios';
-import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
-const images = [
-  require('../assets/banners/food-banner1.jpg'),
-  require('../assets/banners/food-banner4.jpg'),
-  require('../assets/banners/food-banner3.jpg'),
-  require('../assets/banners/food-banner2.jpg'),
-  require('../assets/banners/food-banner5.jpg'),
-  require('../assets/banners/food-banner4.jpg'),
-  require('../assets/banners/food-banner3.jpg'),
-  require('../assets/banners/food-banner2.jpg'),
-  require('../assets/banners/food-banner4.jpg'),
-  require('../assets/banners/food-banner3.jpg'),
-  require('../assets/banners/food-banner2.jpg'),
-  require('../assets/banners/food-banner4.jpg'),
-  require('../assets/banners/food-banner3.jpg'),
-  require('../assets/banners/food-banner2.jpg'),
-  require('../assets/banners/food-banner4.jpg'),
-  require('../assets/banners/food-banner3.jpg'),
-  require('../assets/banners/food-banner2.jpg')
-]
+// static
+// const images = [
+//   require('../assets/banners/food-banner1.jpg'),
+//   require('../assets/banners/food-banner4.jpg'),
+//   require('../assets/banners/food-banner3.jpg'),
+//   require('../assets/banners/food-banner2.jpg'),
+//   require('../assets/banners/food-banner5.jpg'),
+//   require('../assets/banners/food-banner4.jpg'),
+//   require('../assets/banners/food-banner3.jpg'),
+//   require('../assets/banners/food-banner2.jpg'),
+//   require('../assets/banners/food-banner4.jpg'),
+//   require('../assets/banners/food-banner3.jpg'),
+//   require('../assets/banners/food-banner2.jpg'),
+//   require('../assets/banners/food-banner4.jpg'),
+//   require('../assets/banners/food-banner3.jpg'),
+//   require('../assets/banners/food-banner2.jpg'),
+//   require('../assets/banners/food-banner4.jpg'),
+//   require('../assets/banners/food-banner3.jpg'),
+//   require('../assets/banners/food-banner2.jpg')
+// ]
 
 const LocationScreen = ({ route, navigation }) => {
   // user, ip, jwt variables
@@ -59,7 +57,7 @@ const LocationScreen = ({ route, navigation }) => {
   const [description, setDescription] = useState('');
   const [rating, setRating] = useState('');
   const [reviews, setReviews] = useState([]);
-
+  const [images, setImages] = useState([]);
   //  get the pin data to display on the page
   const getPinData = async () => {
     await axios.get(`http://${ip}:3001/api/pins/${pinId}`, { headers: { 'x-auth-token': jwt } })
@@ -73,6 +71,17 @@ const LocationScreen = ({ route, navigation }) => {
     });
   };
   
+  const getPosts = async () => {
+    await axios.get(`http://${ip}:3001/api/posts/all/${pinId}`, { headers: { 'x-auth-token' : jwt }})
+    .then((response) => {
+      setImages(response.data);
+      console.log(response.data);
+    })
+    .catch((error) => {
+      console.error(error);
+    })
+  }
+
   const getReviews = async () => {
     await axios.get(`http://${ip}:3001/api/reviews/all/${pinId}`, { headers: { 'x-auth-token': jwt } })
     .then((response) => {
@@ -87,6 +96,7 @@ const LocationScreen = ({ route, navigation }) => {
   useEffect(() => {
     getPinData();
     getReviews();
+    getPosts();
   }, []);
 
   return (
@@ -114,7 +124,7 @@ const LocationScreen = ({ route, navigation }) => {
             })}
           </ScrollView>
         </View>
-        <GridView images={images}/>
+        <GridView navigation={navigation} images={images}/>
       </ScrollView>
     </StyledReviewContainer>
   );

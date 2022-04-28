@@ -4,8 +4,10 @@ import { Field, Formik } from 'formik';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import getIp from '../ip.js';
+import styles from './styles.js';
 import { useSelector } from 'react-redux'
 import React, { useEffect, useState } from 'react';
+import CameraView from '../screens/CameraView';
 import {
   StyleSheet,
   Modal,
@@ -39,6 +41,8 @@ const ReviewTop = (props) => {
   const { jwt } = useSelector((state) => state.jwtReducer);
   const modalVis = false;
   //modalVisible and setModalVisible for writing a review
+  const [takenImage, setTakenImage] = useState(null);
+  const [postDescription, setPostDescription] = useState('');
   const [modalVisible, setModalVisible] = useState(modalVis ? true : false);
   const [rating, setRating] = useState(0);
   const [description, setDescription] = useState('');
@@ -60,6 +64,62 @@ const ReviewTop = (props) => {
       })
   }
 
+  const postPost = async () => {
+    const FormData = require('form-data');
+    const formData = new FormData();
+    formData.append('image', { uri: takenImage });
+    await axios.post(`http://${ip}:3001/api/posts/${props.pinId}`, { image : formData, description: postDescription }, { headers: { 'x-auth-token' : jwt }})
+    .then((response) => {
+      console.log(response.data);
+      
+    })
+    .catch((error) => {
+      console.error(error);
+    })
+  }
+  const renderContent = () => ( // TODO: make a component for creating a new pin?
+  <View style={styles.panel}>
+    <TextInput
+      placeholder="Description"
+      placeholderTextColor="#808080"
+      autoCapitalize="none"
+      style={styles.pinDetails}
+      onChangeText={(newText) => {
+        setPostDescription(newText);
+      }}
+    />
+
+    <TouchableOpacity
+      style={styles.panelButton}
+      onPress={() => {
+        <CameraView setTakenImage={setTakenImage}/>
+      }}
+    >
+      {/* <Text style={styles.panelButtonTitle} onPress={__startCamera}> */}
+      <Text style={styles.panelButtonTitle}>Take Photo</Text>
+      {/* {capturedImage && <Image source={{ uri: image }} style={{ flex: 1 }} />} */}
+    </TouchableOpacity>
+    <TouchableOpacity style={styles.panelButton} onPress={openImagePickerAsync}>
+      <Text style={styles.panelButtonTitle}>Choose From Library</Text>
+    </TouchableOpacity>
+    
+    <View style={{ flexDirection: 'row' }}>
+      <TouchableOpacity style={[styles.panelButton, { width: '50%', backgroundColor: '#ce3a39', borderWidth: 0, marginBottom: 30  }]} onPress={() => bs.current.snapTo(1)}>
+        <Text style={styles.panelButtonTitle}>Cancel</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.panelButton, { width: '50%', backgroundColor: '#2fbf78', borderWidth: 0, marginBottom: 30 }]}
+        onPress={() => {
+          postPost();
+          bs.current.snapTo(1);
+        }}
+      >
+        <Text style={styles.panelButtonTitle}>Accept</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+);
+
   return (
     <View>
       <LocationReviewContainer></LocationReviewContainer>
@@ -72,7 +132,7 @@ const ReviewTop = (props) => {
 
       {/* Modal popup review window */}
       <Modal visible={modalVisible} transparent={true} animationType="slide" presentationStyle="overFullScreen" onRequestClose={() => showModal(!modalVisible)}>
-        <View style={styles.viewWrapper}>
+        <View style={stylesReview.viewWrapper}>
           <Formik
             initialValues={{ description: description }}
             onSubmit={(values) => {
@@ -82,7 +142,7 @@ const ReviewTop = (props) => {
             }}
             validator={() => ({})}
           >{({ handleChange, handleBlur, handleSubmit, values }) => (
-            <View style={styles.modalView}>
+            <View style={stylesReview.modalView}>
               <AddPictureContainer><Ionicons name='ios-camera-outline' size={25} /></AddPictureContainer>
               <InputStarRating setRating={setRating}/>
               <TextInput
@@ -90,7 +150,7 @@ const ReviewTop = (props) => {
                 value={values.description}
                 onChangeText={handleChange('description')}
                 onBlur={handleBlur('description')} 
-                style={styles.input} 
+                style={stylesReview.input} 
                 placeholder="Your review here..."
               />
               <SubmitReviewButton onPress={handleSubmit}>
@@ -110,17 +170,17 @@ const ReviewTop = (props) => {
           <ReviewButtonText>Write a review</ReviewButtonText>
         </LocationReviewButton>
         <LocationNavigateButton>
-          <ReviewButtonText>Navigate</ReviewButtonText>
-          <Ionicons name='ios-navigate' size={20} style={{ paddingRight: 1 }} />
+          <ReviewButtonText>Post</ReviewButtonText>
         </LocationNavigateButton>
       </HorizontalContainerTwo>
       {/* Displays fancy line :) */}
       <LocationLine />
     </View>
   );
+  
 }
 export default ReviewTop;
-const styles = StyleSheet.create({
+const stylesReview = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',

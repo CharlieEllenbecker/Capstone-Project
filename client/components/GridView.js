@@ -1,11 +1,14 @@
+import { useNavigation } from '@react-navigation/native-stack';
 import {
     View, 
     Image, 
-    Dimensions } from 'react-native';
+    Dimensions,
+    TouchableOpacity, 
+    ImageBackground} from 'react-native';
+import getIp from '../ip';
 
-const GridView = (props) => {
+const GridView = ({ navigation, images }) => {
     var {width, height} = Dimensions.get('screen');
-
     const gridView = (images, width, height) => {
         return (
             <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -16,16 +19,20 @@ const GridView = (props) => {
       
       const renderImages = (images, width, height) => {
         return images.map((image, index) => {
+            const ip = getIp();
+            const url = `http://${ip}:3001/${image.postPictureFileName}`;
             return (
-            <View key={index} style={[{ width: (width) / 3 }, { height: (width) / 3 }]}>
-                <Image style={{ flex: 1, width: undefined, height: undefined, borderColor: '#FFFFFF', borderWidth: 1 }} source={image}/>
-            </View>
+            <TouchableOpacity key={index} onPress={() => navigation.navigate('Post', {postId: image._id})}>
+                <View style={[{ width: (width) / 3 }, { height: (width) / 3 }]}>
+                    <ImageBackground style={{ flex: 1, width: undefined, height: undefined, borderColor: '#FFFFFF', borderWidth: 1 }} source={{ uri : url }}/>
+                </View>
+            </TouchableOpacity>
             );
         });
       }
       
     return (
-      gridView(props.images, width, height)
+      gridView(images, width, height)
     );
 }
 export default GridView;
