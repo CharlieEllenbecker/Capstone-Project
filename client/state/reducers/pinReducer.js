@@ -2,6 +2,8 @@ import pinTypeActions from "../actions/types/pinTypeActions";
 
 const initialState = {
     selectedPin: null,
+    selectedPinReviews: [],
+    selectedPinPosts: [],
     userSpecificPins: [],
     allPins: [],
     filteredPins: []
@@ -13,6 +15,16 @@ const pinReducer = (state = initialState, { type, payload }) => {
             return {
                 ...state,
                 selectedPin: payload
+            };
+        case pinTypeActions.SET_SELECTED_PIN_REVIEWS:
+            return {
+                ...state,
+                selectedPinReviews: payload
+            };
+        case pinTypeActions.SET_SELECTED_PIN_POSTS:
+            return {
+                ...state,
+                selectedPinPosts: payload
             };
         case pinTypeActions.SET_USER_SPECIFIC_PINS:
             return {

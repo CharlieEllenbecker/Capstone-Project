@@ -43,15 +43,15 @@ describe('/api/reviews', () => {
             userIdTwo = userTwo._id;
 
             pin = await new Pin({
-                    coordinate: {
-                        latitude: 43.03725,
-                        longitude: -87.91891,
-                    },
-                    title: 'Second Amazing Food Place',
-                    description: 'This is the second best food place',
-                    tags: [{ name: 'Food' }],
-                    userId: userIdOne
-                }).save();
+                location: {
+                    type: 'Point',
+                    coordinates: [43.03725, -87.91891]
+                },
+                title: 'Second Amazing Food Place',
+                description: 'This is the second best food place',
+                tags: [{ name: 'Food' }],
+                userId: userIdOne
+            }).save();
             pinId = pin._id;
             token = tokenTwo;
 
@@ -115,15 +115,15 @@ describe('/api/reviews', () => {
             userIdTwo = userTwo._id;
 
             pin = await new Pin({
-                    coordinate: {
-                        latitude: 43.03725,
-                        longitude: -87.91891,
-                    },
-                    title: 'Second Amazing Food Place',
-                    description: 'This is the second best food place',
-                    tags: [{ name: 'Food' }],
-                    userId: userIdOne
-                }).save();
+                location: {
+                    type: 'Point',
+                    coordinates: [43.03725, -87.91891]
+                },
+                title: 'Second Amazing Food Place',
+                description: 'This is the second best food place',
+                tags: [{ name: 'Food' }],
+                userId: userIdOne
+            }).save();
             pinId = pin._id;
             token = tokenTwo;
 
@@ -180,15 +180,15 @@ describe('/api/reviews', () => {
             userId = user._id;
 
             pin = await new Pin({
-                    coordinate: {
-                        latitude: 43.03725,
-                        longitude: -87.91891,
-                    },
-                    title: 'Second Amazing Food Place',
-                    description: 'This is the second best food place',
-                    tags: [{ name: 'Food' }],
-                    userId: userId
-                }).save();
+                location: {
+                    type: 'Point',
+                    coordinates: [43.03725, -87.91891]
+                },
+                title: 'Second Amazing Food Place',
+                description: 'This is the second best food place',
+                tags: [{ name: 'Food' }],
+                userId: userId
+            }).save();
             pinId = pin._id;
         });
 
@@ -279,15 +279,15 @@ describe('/api/reviews', () => {
             userIdTwo = userTwo._id;
 
             pin = await new Pin({
-                    coordinate: {
-                        latitude: 43.03725,
-                        longitude: -87.91891,
-                    },
-                    title: 'Second Amazing Food Place',
-                    description: 'This is the second best food place',
-                    tags: [{ name: 'Food' }],
-                    userId: userIdOne
-                }).save();
+                location: {
+                    type: 'Point',
+                    coordinates: [43.03725, -87.91891]
+                },
+                title: 'Second Amazing Food Place',
+                description: 'This is the second best food place',
+                tags: [{ name: 'Food' }],
+                userId: userIdOne
+            }).save();
             pinId = pin._id;
             token = tokenTwo;
 
@@ -371,15 +371,15 @@ describe('/api/reviews', () => {
             userIdTwo = userTwo._id;
 
             pin = await new Pin({
-                    coordinate: {
-                        latitude: 43.03725,
-                        longitude: -87.91891,
-                    },
-                    title: 'Second Amazing Food Place',
-                    description: 'This is the second best food place',
-                    tags: [{ name: 'Food' }],
-                    userId: userIdOne
-                }).save();
+                location: {
+                    type: 'Point',
+                    coordinates: [43.03725, -87.91891]
+                },
+                title: 'Second Amazing Food Place',
+                description: 'This is the second best food place',
+                tags: [{ name: 'Food' }],
+                userId: userIdOne
+            }).save();
             pinId = pin._id;
             token = tokenTwo;
 

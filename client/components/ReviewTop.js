@@ -5,7 +5,8 @@ import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import getIp from '../ip.js';
 import styles from './styles.js';
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux';
+import { setSelectedPinReviews } from '../state/actions/pinActions';
 import React, { useEffect, useState } from 'react';
 import CameraView from '../screens/CameraView';
 import {
@@ -36,9 +37,12 @@ import {
 } from './styles';
 //colors
 const { lightBrick } = Colors;
+
 const ReviewTop = (props) => {
   const ip = getIp();
+  const dispatch = useDispatch();
   const { jwt } = useSelector((state) => state.jwtReducer);
+  const { selectedPin, selectedPinReviews } = useSelector((state) => state.pinReducer);
   const modalVis = false;
   //modalVisible and setModalVisible for writing a review
   const [takenImage, setTakenImage] = useState(null);
@@ -50,16 +54,13 @@ const ReviewTop = (props) => {
     set ? setModalVisible(true) : setModalVisible(false);
   };
 
-
   const postReview = async (values) => {
     await axios.post(`http://${ip}:3001/api/reviews/${props.pinId}`, { description: values.description, rating: rating }, { headers: { 'x-auth-token': jwt } })
       .then((response) => {
-        console.log(response.data);
-        props.setReviews([...props.reviews, response.data]);
+        dispatch(setSelectedPinReviews([...selectedPinReviews, response.data]));
         props.getPinData();
       })
       .catch((error) => {
-        console.log(description, rating);
         console.error(error.response.data);
       })
   }
@@ -124,10 +125,10 @@ const ReviewTop = (props) => {
     <View>
       <LocationReviewContainer></LocationReviewContainer>
       {/* <LocationImage style={{paddingLeft: 20}} source= {{ uri: image }}></LocationImage> */}
-      <LocationTitle style={{ paddingLeft: 20 }}>{props.title}</LocationTitle>
+      {selectedPin && <LocationTitle style={{ paddingLeft: 20 }}>{selectedPin.title}</LocationTitle>}
       <View style={{ paddingLeft: 20 }}>
-        <StarRating rating={props.rating} size={25} />
-        <LocationDescription>{props.description}</LocationDescription>
+        {selectedPin && <StarRating rating={selectedPin.rating} size={25} />}
+        {selectedPin && <LocationDescription>{selectedPin.description}</LocationDescription>}
       </View>
 
       {/* Modal popup review window */}

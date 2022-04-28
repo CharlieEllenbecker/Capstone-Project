@@ -15,7 +15,6 @@ export const ImagePickerCom = () => {
           aspect: [4, 3],
           quality: 1,
         });
-        console.log(result.uri);
     
         if (result.cancelled === true) {
           return;

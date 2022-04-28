@@ -28,45 +28,45 @@ describe('/api/pins', () => {
 
             await Pin.insertMany([
                 {
-                    coordinate: {
-                        latitude: 43.03725,
-                        longitude: -87.91891,
+                    location: {
+                        type: 'Point',
+                        coordinates: [43.03725, -87.91891]
                     },
                     title: 'Amazing Food Place',
                     description: 'This is the best food place',
                     userId: userId
                 },
                 {
-                    coordinate: {
-                        latitude: 43.04199,
-                        longitude: -87.92809,
+                    location: {
+                        type: 'Point',
+                        coordinates: [43.04199, -87.92809]
                     },
                     title: 'Second Amazing Food Place',
                     description: 'This is the second best food place',
                     userId: userId
                 },
                 {
-                    coordinate: {
-                        latitude: 43.02452,
-                        longitude: -87.91511,
+                    location: {
+                        type: 'Point',
+                        coordinates: [43.02452, -87.91511]
                     },
                     title: 'Third Amazing Food Place',
                     description: 'This is the third best food place',
                     userId: userId
                 },
                 {
-                    coordinate: {
-                        latitude: 43.04363,
-                        longitude: -87.90602,
+                    location: {
+                        type: 'Point',
+                        coordinates: [43.04363, -87.90602]
                     },
                     title: 'Fourth Amazing Food Place',
                     description: 'This is the fourth best food place',
                     userId: userId
                 },
                 {
-                    coordinate: {
-                        latitude: 43.0352,
-                        longitude: -87.904921,
+                    location: {
+                        type: 'Point',
+                        coordinates: [43.0352, -87.904921]
                     },
                     title: 'Fifth Amazing Food Place',
                     description: 'This is the fifth best food place',
@@ -125,9 +125,9 @@ describe('/api/pins', () => {
 
             await Pin.insertMany([
                 {
-                    coordinate: {
-                        latitude: 43.03725,
-                        longitude: -87.91891,
+                    location: {
+                        type: 'Point',
+                        coordinates: [43.03725, -87.91891]
                     },
                     title: 'Amazing Food Place',
                     description: 'This is the best food place',
@@ -135,9 +135,9 @@ describe('/api/pins', () => {
                     userId: userIdOne
                 },
                 {
-                    coordinate: {
-                        latitude: 43.04199,
-                        longitude: -87.92809,
+                    location: {
+                        type: 'Point',
+                        coordinates: [43.04199, -87.92809]
                     },
                     title: 'Second Amazing Food Place',
                     description: 'This is the second best food place',
@@ -145,9 +145,9 @@ describe('/api/pins', () => {
                     userId: userIdOne
                 },
                 {
-                    coordinate: {
-                        latitude: 43.02452,
-                        longitude: -87.91511,
+                    location: {
+                        type: 'Point',
+                        coordinates: [43.02452, -87.91511]
                     },
                     title: 'Third Amazing Food Place',
                     description: 'This is the third best food place',
@@ -155,9 +155,9 @@ describe('/api/pins', () => {
                     userId: userIdOne
                 },
                 {
-                    coordinate: {
-                        latitude: 43.04363,
-                        longitude: -87.90602,
+                    location: {
+                        type: 'Point',
+                        coordinates: [43.04363, -87.90602]
                     },
                     title: 'Fourth Amazing Food Place',
                     description: 'This is the fourth best food place',
@@ -165,9 +165,9 @@ describe('/api/pins', () => {
                     userId: userIdOne
                 },
                 {
-                    coordinate: {
-                        latitude: 43.0352,
-                        longitude: -87.904921,
+                    location: {
+                        type: 'Point',
+                        coordinates: [43.0352, -87.904921]
                     },
                     title: 'Fifth Amazing Food Place',
                     description: 'This is the fifth best food place',
@@ -215,9 +215,9 @@ describe('/api/pins', () => {
             userId = user._id;
 
             const pin = await new Pin({
-                coordinate: {
-                    latitude: 43.03725,
-                    longitude: -87.91891,
+                location: {
+                    type: 'Point',
+                    coordinates: [43.03725, -87.91891]
                 },
                 title: 'Amazing Food Place',
                 description: 'This is the best food place',
@@ -270,9 +270,9 @@ describe('/api/pins', () => {
                 .post('/api/pins')
                 .set('x-auth-token', token)
                 .send({
-                    coordinate: {
-                        latitude: 43.04199,
-                        longitude: -87.92809,
+                    location: {
+                        type: 'Point',
+                        coordinates: [43.04199, -87.92809]
                     },
                     title: title,
                     description: description,
@@ -334,19 +334,19 @@ describe('/api/pins', () => {
         let tokenOne;
         let tokenTwo;
         let userId;
-        let oldCoordinate;
-        let newCoordinate;
+        let oldLocation;
+        let newLocation;
         let newTitle;
 
         beforeEach(async () => {
             newTitle = 'New Title';
-            oldCoordinate = {
-                latitude: 43.04199,
-                longitude: -87.92809,
-            };
-            newCoordinate = {
-                latitude: 45.04199,
-                longitude: -90.92809,
+            oldLocation = {
+                type: 'Point',
+                coordinates: [43.04199, -87.92809]
+            }
+            newLocation = {
+                type: 'Point',
+                coordinates: [45.04199, -90.92809]
             };
 
             const userOne = await new User({
@@ -365,7 +365,7 @@ describe('/api/pins', () => {
             tokenTwo = new User(userTwo).generateAuthToken();
 
             const pin = await new Pin({
-                    coordinate: oldCoordinate,
+                    location: oldLocation,
                     title: 'Second Amazing Food Place',
                     description: 'This is the second best food place',
                     tags: [{ name: 'Food' }],
@@ -381,7 +381,7 @@ describe('/api/pins', () => {
                 .put(`/api/pins/${pinId}`)
                 .set('x-auth-token', token)
                 .send({
-                    coordinate: newCoordinate,
+                    location: newLocation,
                     title: newTitle,
                     description: 'This is the second best food place',
                     tags: [{ name: 'Food' }]
@@ -417,8 +417,7 @@ describe('/api/pins', () => {
 
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('title', newTitle);
-            expect(res.body.coordinate).toHaveProperty('latitude', oldCoordinate.latitude);   // can't change the location
-            expect(res.body.coordinate).toHaveProperty('longitude', oldCoordinate.longitude);
+            expect(res.body.location).toHaveProperty('coordinates', oldLocation.coordinates);   // can't change the location
         });
     });
 });

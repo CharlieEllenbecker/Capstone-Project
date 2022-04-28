@@ -36,47 +36,53 @@ const populate = async () => {
 
     const userOneId = userOne.insertedId;
     const userTwoId = userTwo.insertedId;
+    /*
+    location: {
+        type: 'Point',
+        coordinates: []
+    },
+    */
     
     const pinOne = await pinCollection.insertOne({
-        coordinate: {
-            latitude: 43.03725,
-            longitude: -87.91891,
+        location: {
+            type: 'Point',
+            coordinates: [43.03725, -87.91891]
         },
         title: 'Amazing Food Place',
         description: 'This is the best food place',
         rating: 5,
-        tags: [{name:"Landscape"},],
+        tags: [{ name: 'Landscape' },],
         userId: userOneId
     });
 
     const pinTwo = await pinCollection.insertOne({
-        coordinate: {
-            latitude: 43.04199,
-            longitude: -87.92809,
+        location: {
+            type: 'Point',
+            coordinates: [43.04199, -87.92809]
         },
         title: 'Second Amazing Food Place',
         description: 'This is the second best food place',
         rating: 4,
-        tags: [{name: "Portrait"}, {name: "Landscape"}],
+        tags: [{ name: 'Portrait' }, { name: 'Landscape' }],
         userId: userOneId
     });
 
     const pinThree = await pinCollection.insertOne({
-        coordinate: {
-            latitude: 43.02452,
-            longitude: -87.91511,
+        location: {
+            type: 'Point',
+            coordinates: [43.02452,-87.91511]
         },
         title: 'Third Amazing Food Place',
         description: 'This is the third best food place',
         rating: 3,
-        tags: [{name:"Abstract"},],
+        tags: [{ name:  'Abstract' },],
         userId: userOneId
     });
 
     const pinFour = await pinCollection.insertOne({
-        coordinate: {
-            latitude: 43.04363,
-            longitude: -87.90602,
+        location: {
+            type: 'Point',
+            coordinates: [43.04363, -87.90602]
         },
         title: 'Fourth Amazing Food Place',
         description: 'This is the fourth best food place',
@@ -85,9 +91,9 @@ const populate = async () => {
     });
 
     const pinFive = await pinCollection.insertOne({
-        coordinate: {
-            latitude: 43.0352,
-            longitude: -87.904921,
+        location: {
+            type: 'Point',
+            coordinates: [43.0352, -87.904921]
         },
         title: 'Fifth Amazing Food Place',
         description: 'This is the fifth best food place',
