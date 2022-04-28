@@ -88,15 +88,17 @@ export capstone-project_jwtPrivateKey=privateKeyHere
 ```
 
 To run server:
-
-- Type the following into the prompt and press enter:
-
+- You will want to run this command before starting the server or running tests:
 ```console
 npm i
+```
+
+- Then type the following into the prompt and press enter:
+```console
 npm start
 ```
 
-To run tests:
+Or to run tests:
 
 - Type the following into the prompt and press enter:
 
