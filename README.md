@@ -115,10 +115,14 @@ To run program:
 - To download Android Studio (Windows): https://developer.android.com/studio?authuser=1
 - To download xCode (MacOS): https://developer.apple.com/documentation/xcode/running-your-app-in-the-simulator-or-on-a-device
 - Open another new command prompt at '/capstone-project/client'
-- Type the following into the prompt and press enter:
+- The first time you run, type the following into the prompt and press enter:
 
 ```console
 npm i -g expo-cli 
+```
+Any time after that:
+
+```console
 expo start
 ```
 !!NOTE: If it asks for "audit fix" after running npm i -g expo-cli, ignore. Especially do NOT run npm audit fix --force
