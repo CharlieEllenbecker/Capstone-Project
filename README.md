@@ -112,9 +112,10 @@ To run program:
 - Type the following into the prompt and press enter:
 
 ```console
-npm i -g expo-cli       //NOTE: If it asks for "audit fix", ignore. DO NOT run npm audit fix --force
+npm i -g expo-cli 
 expo start
 ```
+!!NOTE: If it asks for "audit fix" after running npm i -g expo-cli, ignore. Especially do NOT run npm audit fix --force
 
 - Open android emulator if using one
 - Type 'a' for android emulator or scan QR code for ios device
