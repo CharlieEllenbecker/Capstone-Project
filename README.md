@@ -21,17 +21,18 @@ Download MongoDB with MongoDB Compass:
 - Open a new command prompt and type in the following and press enter to run Mongo Daemon on your pc:
 
 ```console
-mongod
+>mongod
 ```
 
 - Ctrl + c to stop running Mongo Daemon
 
 # Populate the Database
+//The populate script contains pre-made data to demonstrate the app's functionality
 - Open another new command prompt at '/capstone-project/server'
 - Type the following into the prompt and press enter:
 
 ```console
-npm run populate
+>npm run populate
 ```
 
 - This script will have cleared your 'capstone-project' database if it already existed and populate it for you
@@ -40,7 +41,7 @@ npm run populate
 - Type the following into a command prompt and press enter
 
 ```console
-ipconfig /all
+>ipconfig /all
 ```
 
 - Under 'Ethernet adapter Ethernet' find 'IPv4 Address'
@@ -73,13 +74,13 @@ To run the program:
 - Type the following into the prompt and press enter (windows):
 
 ```console
-set capstone-project_jwtPrivateKey=privateKeyHere
+>set capstone-project_jwtPrivateKey=privateKeyHere
 ```
 
 - Type the following into the prompt and press enter (mac):
 
 ```console
-export capstone-project_jwtPrivateKey=privateKeyHere
+>export capstone-project_jwtPrivateKey=privateKeyHere
 ```
 
 To run server:
@@ -87,7 +88,8 @@ To run server:
 - Type the following into the prompt and press enter:
 
 ```console
-npm start
+>npm i
+>npm start
 ```
 
 To run tests:
@@ -95,7 +97,7 @@ To run tests:
 - Type the following into the prompt and press enter:
 
 ```console
-npm test
+>npm test
 ```
 
 - Ctrl + c to stop running
@@ -110,7 +112,8 @@ To run program:
 - Type the following into the prompt and press enter:
 
 ```console
-expo start
+>npm i -g expo-cli       //NOTE: If it asks for "audit fix", ignore. DO NOT run npm audit fix --force
+>expo start
 ```
 
 - Open android emulator if using one
