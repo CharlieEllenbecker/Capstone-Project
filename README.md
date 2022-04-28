@@ -41,7 +41,7 @@ npm run populate
 - Type the following into a command prompt and press enter
 
 ```console
->ipconfig /all
+ipconfig /all
 ```
 
 - Under 'Ethernet adapter Ethernet' find 'IPv4 Address'
