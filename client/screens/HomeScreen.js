@@ -48,7 +48,7 @@ const HomeScreen = ({ navigation, route }) => {
   //const { image, dummy } = route.params;
 
   const [errorMsg, setErrorMsg] = useState(null);
-  const [locationGranted, setLocationGranted] = useState(false);
+  const [locationGranted, setLocationGranted] = useState(true);
 
   const askPermission = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -56,18 +56,16 @@ const HomeScreen = ({ navigation, route }) => {
       setLocationGranted(false);
       setErrorMsg('Permission to access location was denied');
     } else {
-      //status === 'granted'
       setLocationGranted(true);
       console.log('Granted!');
       const location = await Location.getCurrentPositionAsync({});
       setRegion((region) => ({ ...region, latitude: location.coords.latitude, longitude: location.coords.longitude }));
-      console.log('lat: ', region.latitude);
     }
   };
 
   const [region, setRegion] = useState({
-    latitude: null,
-    longitude: null,
+    latitude: 43.03725, // null
+    longitude: -87.91891, // null
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   });
@@ -93,9 +91,9 @@ const HomeScreen = ({ navigation, route }) => {
   const { filteredPins } = useSelector((state) => state.pinReducer);
   const { tags } = useSelector((state) => state.tagReducer);
 
-  const getAllPins = async (longitude, latitude) => {
+  const getAllPins = async () => {
     await axios
-      .get(`http://${ip}:3001/api/pins/user-location/${longitude}/${latitude}`, { headers: { 'x-auth-token': jwt } })
+      .get(`http://${ip}:3001/api/pins/`, { headers: { 'x-auth-token': jwt } })
       .then((response) => {
         dispatch(setAllPins(response.data));
         dispatch(setFilteredPins(response.data));
@@ -105,9 +103,9 @@ const HomeScreen = ({ navigation, route }) => {
       });
   };
 
-  const getMyPins = async (longitude, latitude) => {
+  const getMyPins = async () => {
     await axios
-      .get(`http://${ip}:3001/api/pins/my/user-location/${longitude}/${latitude}`, { headers: { 'x-auth-token': jwt } })
+      .get(`http://${ip}:3001/api/pins/my`, { headers: { 'x-auth-token': jwt } })
       .then((response) => {
         dispatch(setUserSpecificPins(response.data));
       })
@@ -127,21 +125,12 @@ const HomeScreen = ({ navigation, route }) => {
       });
   };
 
-  const getPinsBasedOnLocation = async () => {
-    const location = await Location.getCurrentPositionAsync({});
-    getAllPins(location.coords.longitude, location.coords.latitude);
-    getMyPins(location.coords.longitude, location.coords.latitude);
-  }
-
   let mapIndex = 0;
   let mapAnimation = new OldAnimated.Value(0);
   useEffect(() => {
-    askPermission();
-    setTimeout(() => {
-      if(locationGranted) {
-        getPinsBasedOnLocation();
-      }
-    }, 5000);
+    // askPermission();
+    getAllPins();
+    getMyPins();
     getAllTags();
     mapAnimation.addListener(({ value }) => {
       let index = Math.floor(value / CARD_WIDTH + 0.3); // animate 30% away from landing on the next item
