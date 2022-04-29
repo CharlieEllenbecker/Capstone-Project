@@ -88,7 +88,7 @@ export capstone-project_jwtPrivateKey=privateKeyHere
 ```
 
 To run server:
-- You will want to run this command before starting the server or running tests:
+- You will want to run this command before starting the server or running tests for the first time in a session:
 ```console
 npm i
 ```
@@ -120,10 +120,14 @@ To run program:
 ```console
 npm i -g expo-cli 
 ```
-Any time after that:
-
+- The first time you run in a session, you'll want to run the following command:
 ```console
 npm i
+```
+
+-Now you're ready to start the client:
+
+```console
 expo start
 ```
 !!NOTE: If it asks for "audit fix" after running an npm command, ignore. Especially do NOT run npm audit fix --force
