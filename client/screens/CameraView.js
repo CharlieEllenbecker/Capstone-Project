@@ -22,13 +22,13 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import * as ImagePicker from 'expo-image-picker';
 import { markers, mapDarkStyle, mapStandardStyle } from '../model/mapData';
-
+import HomeScreen from './HomeScreen';
 import StarRating from '../components/StarRating';
 import { useTheme } from '@react-navigation/native';
 import { styles } from '../components/styles';
 const { width, height } = Dimensions.get('window');
 
-export default function CameraView({ route, navigation, setTakenImage }) {
+export default function CameraView({ route, navigation }) {
   const [capturedImage, setCapturedImage] = React.useState(null);
 
   const [startCamera, setStartCamera] = React.useState(false);
@@ -64,13 +64,11 @@ export default function CameraView({ route, navigation, setTakenImage }) {
   const __savePhoto = () => {
     setPreviewVisible(false);
 
-    setTakenImage(capturedImage);
-
-    // console.log('Taken Picture after save: ' + capturedImage);
-    // navigation.navigate('HomeScreen', {
-    //   image: capturedImage,
-    //   dummy: 'dummy',
-    // });
+    console.log('Taken Picture after save: ' + capturedImage);
+    navigation.navigate('HomeScreen', {
+      image: capturedImage,
+      dummy: 'dummy',
+    });
   };
   const __retakePicture = () => {
     setCapturedImage(null);
