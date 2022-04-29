@@ -269,7 +269,7 @@ const HomeScreen = ({ navigation, route }) => {
       <TouchableOpacity style={styles.panelButton} onPress={openImagePickerAsync}>
         <Text style={styles.panelButtonTitle}>Choose From Library</Text>
       </TouchableOpacity>
-
+      
       <View style={{ flexDirection: 'row' }}>
         <TouchableOpacity style={[styles.panelButton, { width: '50%', backgroundColor: '#ce3a39', borderWidth: 0, marginBottom: 30  }]} onPress={() => bs.current.snapTo(1)}>
           <Text style={styles.panelButtonTitle}>Cancel</Text>

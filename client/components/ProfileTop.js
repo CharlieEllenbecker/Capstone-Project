@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Image } from 'react-native';
-import ImagePickerCom from './ImagePicker';
+import { View, Image, ImageStore } from 'react-native';
 import { deleteJWT, getJWT } from '../state/actions/jwtActions';
 import { deleteUserData } from '../state/actions/userActions';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,7 +9,6 @@ import {
     SettingsButton,
     LogoutButton,
     UserContainer,
-    ProfilePicContainer,
     NumberOfPinsContainer,
     NumberOfPinsText,
     EditProfileButton,
@@ -24,9 +22,10 @@ import {
   } from './styles';
 import axios from 'axios';
 import getIp from '../ip.js';
-import { propTypes } from 'react-bootstrap/esm/Image';
-const ProfileTop = ({ navigation }) => {
+
+const ProfileTop = ({ navigation, length }) => {
     const [username, setUsername] = useState('');
+    const [numPins, setNumPins] = useState(0);
     const [profilePicture, setProfilePicture] = useState(null);
     const ip = getIp();
     const dispatch = useDispatch();
@@ -36,7 +35,17 @@ const ProfileTop = ({ navigation }) => {
         dispatch(deleteUserData());
         navigation.navigate('Login');
       };
+    
 
+    const getPins = async () => {
+        await axios.get(`http://${ip}:3001/api/pins/my`, { headers: { 'x-auth-token' : jwt }})
+        .then((response) => {
+            setNumPins(response.data.length);
+        })
+        .catch((error) => {
+            console.error(error);
+        })
+    }
     const getUserData = async () => {
         await axios.get(`http://${ip}:3001/api/users/me`, { headers: { 'x-auth-token': jwt } })
         .then((response) => {
@@ -51,13 +60,13 @@ const ProfileTop = ({ navigation }) => {
     }
     useEffect(() => {
         getUserData();
+        getPins();
     });
     
     return(
     <View>
     <HeaderContainer>
         <SettingsButton> 
-            <Ionicons name='ios-settings-outline' size={25}/> 
         </SettingsButton>
         <UsernameText>{username}</UsernameText> 
         <LogoutButton onPress={() => handleLogout()}>
@@ -78,8 +87,8 @@ const ProfileTop = ({ navigation }) => {
                         <NumberOfPinsText>Posts</NumberOfPinsText>  
                     </HorizontalContainer>
                     <HorizontalContainer>
-                        <NumberOfPinsNumber>5</NumberOfPinsNumber> 
-                        <NumberOfPinsNumber>5</NumberOfPinsNumber> 
+                        <NumberOfPinsNumber>{numPins}</NumberOfPinsNumber> 
+                        <NumberOfPinsNumber>{length}</NumberOfPinsNumber> 
                     </HorizontalContainer>
                 </VerticalContainer>
             </NumberOfPinsContainer>
@@ -89,8 +98,6 @@ const ProfileTop = ({ navigation }) => {
             </EditProfileButton>
         </VerticalContainer>
     </UserContainer>
-
-    <BioText>This is my bio.</BioText>  
 
     <LocationLine/>
     </View>
