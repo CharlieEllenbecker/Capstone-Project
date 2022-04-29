@@ -6,7 +6,7 @@ const MapPin = ({ pin, scaleStyle, onMarkerPress }) => {
 
     return(
         <MapView.Marker
-            coordinate={{ latitude: pin.location.coordinates[0], longitude: pin.location.coordinates[1] }}
+            coordinate={{ longitude: pin.location.coordinates[0], latitude: pin.location.coordinates[1] }}
             onPress={(e) => onMarkerPress(e)}
         >
             <OldAnimated.View style={[styles.markerWrap]}>

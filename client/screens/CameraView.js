@@ -28,9 +28,9 @@ import { useTheme } from '@react-navigation/native';
 import { styles } from '../components/styles';
 const { width, height } = Dimensions.get('window');
 
-export default function CameraView({ route, navigation, setTakenImage}) {
+export default function CameraView({ route, navigation}) {
   const [capturedImage, setCapturedImage] = React.useState(null);
-
+  const setTakenImage = route.params;
   const [startCamera, setStartCamera] = React.useState(false);
   const [previewVisible, setPreviewVisible] = React.useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
@@ -137,13 +137,6 @@ export default function CameraView({ route, navigation, setTakenImage}) {
                     }}
                   >
                     <Ionicons name="ios-flash" size={30} color={flashMode === 'off' ? '#FFF' : '#fffb05'}/>
-                    {/* <Text
-                      style={{
-                        fontSize: 20,
-                      }}
-                    >
-                      ⚡️
-                    </Text> */}
                   </TouchableOpacity>
                 )}
                 <TouchableOpacity
