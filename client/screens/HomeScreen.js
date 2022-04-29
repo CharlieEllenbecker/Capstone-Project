@@ -50,8 +50,6 @@ const HomeScreen = ({ navigation, route }) => {
   const [errorMsg, setErrorMsg] = useState(null);
   const [locationGranted, setLocationGranted] = useState(false);
 
-  let homeRegion;
-
   const askPermission = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
@@ -62,9 +60,8 @@ const HomeScreen = ({ navigation, route }) => {
       setLocationGranted(true);
       console.log('Granted!');
       const location = await Location.getCurrentPositionAsync({});
-
       setRegion((region) => ({ ...region, latitude: location.coords.latitude, longitude: location.coords.longitude }));
-      homeRegion = region;
+      console.log('lat: ', region.latitude);
     }
   };
 
@@ -96,10 +93,9 @@ const HomeScreen = ({ navigation, route }) => {
   const { filteredPins } = useSelector((state) => state.pinReducer);
   const { tags } = useSelector((state) => state.tagReducer);
 
-  // Get all the pins
-  const getAllPins = async () => {
+  const getAllPins = async (longitude, latitude) => {
     await axios
-      .get(`http://${ip}:3001/api/pins/`, { headers: { 'x-auth-token': jwt } })
+      .get(`http://${ip}:3001/api/pins/user-location/${longitude}/${latitude}`, { headers: { 'x-auth-token': jwt } })
       .then((response) => {
         dispatch(setAllPins(response.data));
         dispatch(setFilteredPins(response.data));
@@ -109,9 +105,9 @@ const HomeScreen = ({ navigation, route }) => {
       });
   };
 
-  const getMyPins = async () => {
+  const getMyPins = async (longitude, latitude) => {
     await axios
-      .get(`http://${ip}:3001/api/pins/my`, { headers: { 'x-auth-token': jwt } })
+      .get(`http://${ip}:3001/api/pins/my/user-location/${longitude}/${latitude}`, { headers: { 'x-auth-token': jwt } })
       .then((response) => {
         dispatch(setUserSpecificPins(response.data));
       })
@@ -131,12 +127,21 @@ const HomeScreen = ({ navigation, route }) => {
       });
   };
 
+  const getPinsBasedOnLocation = async () => {
+    const location = await Location.getCurrentPositionAsync({});
+    getAllPins(location.coords.longitude, location.coords.latitude);
+    getMyPins(location.coords.longitude, location.coords.latitude);
+  }
+
   let mapIndex = 0;
   let mapAnimation = new OldAnimated.Value(0);
   useEffect(() => {
     askPermission();
-    getAllPins();
-    getMyPins();
+    setTimeout(() => {
+      if(locationGranted) {
+        getPinsBasedOnLocation();
+      }
+    }, 5000);
     getAllTags();
     mapAnimation.addListener(({ value }) => {
       let index = Math.floor(value / CARD_WIDTH + 0.3); // animate 30% away from landing on the next item
