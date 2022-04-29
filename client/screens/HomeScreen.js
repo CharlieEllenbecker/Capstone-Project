@@ -173,8 +173,13 @@ const HomeScreen = ({ navigation, route }) => {
   };
 
   const filterPins = (filterTag) => {
-    console.log('Current Filter: ', filterTag);
-    dispatch(setFilteredPins(allPins.filter(pin => pin.tags.some(tag => tag.name === filterTag))));
+    if(filterTag === 'All') {
+      dispatch(setFilteredPins(allPins));
+    } else if (filterTag === 'My') {
+      dispatch(setFilteredPins(userSpecificPins));
+    } else {
+      dispatch(setFilteredPins(allPins.filter(pin => pin.tags.some(tag => tag.name === filterTag))));
+    }
   };
 
   const addMarker = () => {
@@ -339,13 +344,13 @@ const HomeScreen = ({ navigation, route }) => {
         >
           <TouchableOpacity style={styles.chipsItem} onPress={() => {
             setFilter('All');
-            dispatch(setFilteredPins(allPins));
+            filterPins('All');
             }}>
             <Text>All</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.chipsItem} onPress={() => {
             setFilter('My');
-            dispatch(setFilteredPins(userSpecificPins));
+            filterPins('My');
             }}>
             <Text>My</Text>
           </TouchableOpacity>

@@ -37,7 +37,7 @@ describe('/api/posts', () => {
             const pin = await new Pin({
                 location: {
                     type: 'Point',
-                    coordinates: [43.04199, -87.92809]
+                    coordinates: [-87.92809, 43.04199]
                 },
                 title: 'Second Amazing Food Place',
                 description: 'This is the second best food place',
@@ -109,7 +109,7 @@ describe('/api/posts', () => {
             const pin = await new Pin({
                 location: {
                     type: 'Point',
-                    coordinates: [43.04199, -87.92809]
+                    coordinates: [-87.92809, 43.04199]
                 },
                 title: 'Second Amazing Food Place',
                 description: 'This is the second best food place',
@@ -175,7 +175,7 @@ describe('/api/posts', () => {
             const pin = await new Pin({
                 location: {
                     type: 'Point',
-                    coordinates: [43.04199, -87.92809]
+                    coordinates: [-87.92809, 43.04199]
                 },
                 title: 'Second Amazing Food Place',
                 description: 'This is the second best food place',
@@ -256,7 +256,7 @@ describe('/api/posts', () => {
             const pin = await new Pin({
                 location: {
                     type: 'Point',
-                    coordinates: [43.04199, -87.92809]
+                    coordinates: [-87.92809, 43.04199]
                 },
                 title: 'Second Amazing Food Place',
                 description: 'This is the second best food place',
@@ -325,7 +325,7 @@ describe('/api/posts', () => {
             const pin = await new Pin({
                 location: {
                     type: 'Point',
-                    coordinates: [43.04199, -87.92809]
+                    coordinates: [-87.92809, 43.04199]
                 },
                 title: 'Second Amazing Food Place',
                 description: 'This is the second best food place',
@@ -376,7 +376,7 @@ describe('/api/posts', () => {
         });
     });
 
-    describe('POST /', () => {  // For some reason this test fails and affects other tests below, so keep at bottom
+    describe('POST /', () => {
         let token;
         let userId;
         let pinId;
@@ -396,7 +396,7 @@ describe('/api/posts', () => {
             const pin = await new Pin({
                 location: {
                     type: 'Point',
-                    coordinates: [43.04199, -87.92809]
+                    coordinates: [-87.92809, 43.04199]
                 },
                 title: 'Second Amazing Food Place',
                 description: 'This is the second best food place',

@@ -5,13 +5,13 @@ const locationSchema = mongoose.Schema({
     type: {
         type: String,
         required: false,
-        defaule: 'Point'
+        default: 'Point'
     },
-    coordinates: {  // [lat, lon]
+    coordinates: {  // [longitude, latitude]
         type: [Number],
         required: true
     }
-});
+}, { versionKey: false });
 
 const Location = mongoose.model('Location', locationSchema);
 

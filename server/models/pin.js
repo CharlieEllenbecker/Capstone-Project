@@ -29,7 +29,7 @@ const pinSchema = new mongoose.Schema({
         ref: 'User',
         required: false // userId is generated from token
     }
-}, { versionKey: false });
+}, { versionKey: false }).index({ location: '2dsphere' });
 
 const Pin = mongoose.model('Pin', pinSchema);
 
@@ -37,7 +37,7 @@ function validate(pin) {
     const schema = Joi.object({
         location: Joi.object({
             type: Joi.string(),
-            coordinates: Joi.array().items(Joi.number()).required()
+            coordinates: Joi.array().items(Joi.number()).required() // [longitude, latitude]
         }).required(),
         title: Joi.string().min(5).max(256).required(),
         description: Joi.string().min(5).max(1024),
