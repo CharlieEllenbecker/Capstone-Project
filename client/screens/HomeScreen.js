@@ -81,7 +81,7 @@ const HomeScreen = ({ navigation, route }) => {
   const [description, setDescription] = useState('');
   const [tag, setTag] = useState('');
 
-  const [filter, setFilter] = useState('');
+  const [filter, setFilter] = useState('All'); // TODO: Use filter to set the filtered pins when you get all pins periodically from user location
   const [selectedImage, setSelectedImage] = useState(null);
   const [takenImage, setTakenImage] = useState(null);
   const [previewVisible, setPreviewVisible] = useState(false);
@@ -192,9 +192,14 @@ const HomeScreen = ({ navigation, route }) => {
     setCoordinate(e.nativeEvent.coordinate);
   };
 
-  const filterPins = (tagFilter) => {
-    dispatch(setFilteredPins(allPins.filter((pin) => pin.tags.some((tag) => tag.name === tagFilter))));
-    _scrollView.current.scrollTo({ x: 1, y: 0, animated: true });
+  const filterPins = (filterTag) => {
+    if (filterTag === 'All') {
+      dispatch(setFilteredPins(allPins));
+    } else if (filterTag === 'My') {
+      dispatch(setFilteredPins(userSpecificPins));
+    } else {
+      dispatch(setFilteredPins(allPins.filter((pin) => pin.tags.some((tag) => tag.name === filterTag))));
+    }
   };
 
   const addMarker = () => {
@@ -275,20 +280,6 @@ const HomeScreen = ({ navigation, route }) => {
         </ScrollView>
       </View>
 
-      {/* <TouchableOpacity
-        style={styles.panelButton}
-        onPress={() => {
-          //<CameraView takenImage={setTakenImage} />;
-          navigation.navigate('CameraView');
-        }}
-      >
-        <Text style={styles.panelButtonTitle}>Take Photo</Text>
-        
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.panelButton} onPress={openImagePickerAsync}>
-        <Text style={styles.panelButtonTitle}>Choose From Library</Text>
-      </TouchableOpacity> */}
-
       <View style={{ flexDirection: 'row' }}>
         <TouchableOpacity
           style={[styles.panelButton, { width: '50%', backgroundColor: '#ce3a39', borderWidth: 0, marginBottom: 30 }]}
@@ -352,7 +343,7 @@ const HomeScreen = ({ navigation, route }) => {
             scrollEventThrottle={1}
             showsHorizontalScrollIndicator={false}
             snapToInterval={CARD_WIDTH + 20}
-            snapToAlignment="center"
+            snapToAlignment="left"
             style={styles.chipsScrollView}
             contentInset={{
               top: 0,
@@ -367,9 +358,9 @@ const HomeScreen = ({ navigation, route }) => {
             <TouchableOpacity
               style={styles.chipsItem}
               onPress={() => {
-                dispatch(setFilteredPins(allPins));
-                _scrollView.current.scrollTo({ x: CARD_WIDTH * 20, y: 0, animated: true });
-                console.log(CARD_WIDTH * 20);
+                setFilter('All');
+                filterPins('All');
+                _scrollView.current.scrollTo({ x: 0, y: 0, animated: true });
               }}
             >
               <Text>All</Text>
@@ -377,7 +368,8 @@ const HomeScreen = ({ navigation, route }) => {
             <TouchableOpacity
               style={styles.chipsItem}
               onPress={() => {
-                dispatch(setFilteredPins(userSpecificPins));
+                setFilter('My');
+                filterPins('My');
                 _scrollView.current.scrollTo({ x: 0, y: 0, animated: true });
               }}
             >
@@ -390,7 +382,8 @@ const HomeScreen = ({ navigation, route }) => {
                 style={styles.chipsItem}
                 onPress={() => {
                   setFilter(tag);
-                  filterPins(filter);
+                  filterPins(tag);
+                  _scrollView.current.scrollTo({ x: 0, y: 0, animated: true });
                 }}
               >
                 <Text>{tag}</Text>

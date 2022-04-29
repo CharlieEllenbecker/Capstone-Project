@@ -146,11 +146,6 @@ return(
                     value={values.email}
                     keyboardType="email-address"
                 />
-                <MyTextInput
-                    placeholder={'Tell us about yourself'}
-                    icon="repo"
-                    label='Bio'
-                />
                 <MyTextInput 
                     placeholder={'**********'}  
                     label='New Password'

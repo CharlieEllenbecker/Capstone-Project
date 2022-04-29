@@ -123,7 +123,10 @@ router.put('/profile-picture', [auth, upload.single('image')], async (req, res) 
         return res.status(400).send('User not found.');
     }
 
-    fs.unlinkSync(`./images/${user.profilePictureFileName}`);
+    if(user.profilePictureFileName !== null) {
+        fs.unlinkSync(`./images/${user.profilePictureFileName}`);
+    }
+
     user.profilePictureFileName = req.file.filename;
     user = await user.save();
 

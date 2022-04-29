@@ -11,8 +11,7 @@ const postSchema = new mongoose.Schema({
     },
     postPictureFileName: {
         type: String,
-        required: false,
-        default: null   // postPictureFileName is generated when post is created
+        required: true
     },
     pinId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -31,9 +30,17 @@ const Post = mongoose.model('Post', postSchema);
 function validate(post) {
     const schema = Joi.object({
         description: Joi.string().min(5).max(1024),
-        postPictureFileName: Joi.string(),
+        postPictureFileName: Joi.string().required(),
         pinId: Joi.objectId(),
         userId: Joi.objectId()
+    });
+
+    return schema.validate(post);
+}
+
+function validateForUpdate(post) {
+    const schema = Joi.object({
+        description: Joi.string().min(5).max(1024)
     });
 
     return schema.validate(post);
@@ -42,3 +49,4 @@ function validate(post) {
 module.exports.Post = Post;
 module.exports.postSchema = postSchema;
 module.exports.validate = validate;
+module.exports.validateForUpdate = validateForUpdate;

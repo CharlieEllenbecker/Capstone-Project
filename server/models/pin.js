@@ -1,10 +1,10 @@
-const { coordinateSchema } = require('./coordinate');
+const { locationSchema } = require('./location');
 const { tagSchema } = require('./tag');
 const mongoose = require('mongoose');
 const Joi = require('joi');
 
 const pinSchema = new mongoose.Schema({
-    coordinate: coordinateSchema,
+    location: locationSchema,
     title: {
         type: String,
         required: true,
@@ -29,16 +29,16 @@ const pinSchema = new mongoose.Schema({
         ref: 'User',
         required: false // userId is generated from token
     }
-}, { versionKey: false });
+}, { versionKey: false }).index({ location: '2dsphere' });
 
 const Pin = mongoose.model('Pin', pinSchema);
 
 function validate(pin) {
     const schema = Joi.object({
-        coordinate: Joi.object({
-            latitude: Joi.number().required(),
-            longitude: Joi.number().required()
-        }),
+        location: Joi.object({
+            type: Joi.string(),
+            coordinates: Joi.array().items(Joi.number()).required() // [longitude, latitude]
+        }).required(),
         title: Joi.string().min(5).max(256).required(),
         description: Joi.string().min(5).max(1024),
         rating: Joi.number(),

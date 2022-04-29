@@ -28,45 +28,45 @@ describe('/api/pins', () => {
 
             await Pin.insertMany([
                 {
-                    coordinate: {
-                        latitude: 43.03725,
-                        longitude: -87.91891,
+                    location: {
+                        type: 'Point',
+                        coordinates: [-87.91891, 43.03725]
                     },
                     title: 'Amazing Food Place',
                     description: 'This is the best food place',
                     userId: userId
                 },
                 {
-                    coordinate: {
-                        latitude: 43.04199,
-                        longitude: -87.92809,
+                    location: {
+                        type: 'Point',
+                        coordinates: [-87.92809, 43.04199]
                     },
                     title: 'Second Amazing Food Place',
                     description: 'This is the second best food place',
                     userId: userId
                 },
                 {
-                    coordinate: {
-                        latitude: 43.02452,
-                        longitude: -87.91511,
+                    location: {
+                        type: 'Point',
+                        coordinates: [-87.91511, 43.02452]
                     },
                     title: 'Third Amazing Food Place',
                     description: 'This is the third best food place',
                     userId: userId
                 },
                 {
-                    coordinate: {
-                        latitude: 43.04363,
-                        longitude: -87.90602,
+                    location: {
+                        type: 'Point',
+                        coordinates: [-87.90602, 43.04363]
                     },
                     title: 'Fourth Amazing Food Place',
                     description: 'This is the fourth best food place',
                     userId: userId
                 },
                 {
-                    coordinate: {
-                        latitude: 43.0352,
-                        longitude: -87.904921,
+                    location: {
+                        type: 'Point',
+                        coordinates: [-87.904921, 43.0352]
                     },
                     title: 'Fifth Amazing Food Place',
                     description: 'This is the fifth best food place',
@@ -99,6 +99,109 @@ describe('/api/pins', () => {
         });
     });
 
+    describe('GET /user-location/:latitude/:longitude', () => {
+        let token;
+        let userId;
+        let userLocation;
+
+        beforeEach(async () => {
+            userLocation = {    // start in range of the pins below
+                longitude: -87.91891,
+                latitude: 43.03725
+            };
+
+            const user = await new User({
+                username: 'johnSmith',
+                email: 'john.smith@gmail.com',
+                password: 'password123'
+            }).save();
+            token = new User(user).generateAuthToken();
+            userId = user._id;
+
+            await Pin.insertMany([
+                {
+                    location: {
+                        type: 'Point',
+                        coordinates: [-87.91891, 43.03725]
+                    },
+                    title: 'Amazing Food Place',
+                    description: 'This is the best food place',
+                    userId: userId
+                },
+                {
+                    location: {
+                        type: 'Point',
+                        coordinates: [-87.92809, 43.04199]
+                    },
+                    title: 'Second Amazing Food Place',
+                    description: 'This is the second best food place',
+                    userId: userId
+                },
+                {
+                    location: {
+                        type: 'Point',
+                        coordinates: [-87.91511, 43.02452]
+                    },
+                    title: 'Third Amazing Food Place',
+                    description: 'This is the third best food place',
+                    userId: userId
+                },
+                {
+                    location: {
+                        type: 'Point',
+                        coordinates: [-87.90602, 43.04363]
+                    },
+                    title: 'Fourth Amazing Food Place',
+                    description: 'This is the fourth best food place',
+                    userId: userId
+                },
+                {
+                    location: {
+                        type: 'Point',
+                        coordinates: [-87.904921, 43.0352]
+                    },
+                    title: 'Fifth Amazing Food Place',
+                    description: 'This is the fifth best food place',
+                    userId: userId
+                }
+            ]);
+        });
+
+        const exec = async () => {
+            return await request(server)
+                .get(`/api/pins/user-location/${userLocation.longitude}/${userLocation.latitude}`)
+                .set('x-auth-token', token)
+                .send();
+        }
+
+        it('should return 401 if client is not logged in', async () => {
+            token = '';
+
+            const res = await exec();
+
+            expect(res.status).toBe(401);
+        });
+
+        it('should return list of pins in range', async () => {
+            const res = await exec();
+
+            expect(res.status).toBe(200);
+            expect(res.body).toHaveLength(5);
+        });
+
+        it('should return list no pins in range', async () => {
+            userLocation = {    // tokyo
+                longitude: 139.6503,
+                latitude: 35.6762
+            };
+
+            const res = await exec();
+
+            expect(res.status).toBe(200);
+            expect(res.body).toHaveLength(0);
+        });
+    });
+
     describe('GET /my', () => {
         let tokenOne;
         let userIdOne;
@@ -125,9 +228,9 @@ describe('/api/pins', () => {
 
             await Pin.insertMany([
                 {
-                    coordinate: {
-                        latitude: 43.03725,
-                        longitude: -87.91891,
+                    location: {
+                        type: 'Point',
+                        coordinates: [-87.91891, 43.03725]
                     },
                     title: 'Amazing Food Place',
                     description: 'This is the best food place',
@@ -135,9 +238,9 @@ describe('/api/pins', () => {
                     userId: userIdOne
                 },
                 {
-                    coordinate: {
-                        latitude: 43.04199,
-                        longitude: -87.92809,
+                    location: {
+                        type: 'Point',
+                        coordinates: [-87.92809, 43.04199]
                     },
                     title: 'Second Amazing Food Place',
                     description: 'This is the second best food place',
@@ -145,9 +248,9 @@ describe('/api/pins', () => {
                     userId: userIdOne
                 },
                 {
-                    coordinate: {
-                        latitude: 43.02452,
-                        longitude: -87.91511,
+                    location: {
+                        type: 'Point',
+                        coordinates: [-87.91511, 43.02452]
                     },
                     title: 'Third Amazing Food Place',
                     description: 'This is the third best food place',
@@ -155,9 +258,9 @@ describe('/api/pins', () => {
                     userId: userIdOne
                 },
                 {
-                    coordinate: {
-                        latitude: 43.04363,
-                        longitude: -87.90602,
+                    location: {
+                        type: 'Point',
+                        coordinates: [-87.90602, 43.04363]
                     },
                     title: 'Fourth Amazing Food Place',
                     description: 'This is the fourth best food place',
@@ -165,9 +268,9 @@ describe('/api/pins', () => {
                     userId: userIdOne
                 },
                 {
-                    coordinate: {
-                        latitude: 43.0352,
-                        longitude: -87.904921,
+                    location: {
+                        type: 'Point',
+                        coordinates: [-87.904921, 43.0352]
                     },
                     title: 'Fifth Amazing Food Place',
                     description: 'This is the fifth best food place',
@@ -200,6 +303,124 @@ describe('/api/pins', () => {
         });
     });
 
+    describe('GET /my/user-location/:longitude/:latitude', () => {
+        let tokenOne;
+        let userIdOne;
+        let userIdTwo;
+        let userLocation;
+
+        beforeEach(async () => {
+            usernameOne = 'johnSmith';
+            usernameTwo = 'joeBuck';
+            userLocation = {    // start in range of the pins below
+                longitude: -87.91891,
+                latitude: 43.03725
+            };
+
+            const userOne = await new User({
+                username: usernameOne,
+                email: 'john.smith@gmail.com',
+                password: 'password123'
+            }).save();
+            tokenOne = new User(userOne).generateAuthToken();
+            userIdOne = userOne._id;
+
+            const userTwo = await new User({
+                username: usernameTwo,
+                email: 'joe.buck@gmail.com',
+                password: 'password123'
+            }).save();
+            userIdTwo = userTwo._id;
+
+            await Pin.insertMany([
+                {
+                    location: {
+                        type: 'Point',
+                        coordinates: [-87.91891, 43.03725]
+                    },
+                    title: 'Amazing Food Place',
+                    description: 'This is the best food place',
+                    rating: 4.5,
+                    userId: userIdOne
+                },
+                {
+                    location: {
+                        type: 'Point',
+                        coordinates: [-87.92809, 43.04199]
+                    },
+                    title: 'Second Amazing Food Place',
+                    description: 'This is the second best food place',
+                    rating: 0,
+                    userId: userIdOne
+                },
+                {
+                    location: {
+                        type: 'Point',
+                        coordinates: [-87.91511, 43.02452]
+                    },
+                    title: 'Third Amazing Food Place',
+                    description: 'This is the third best food place',
+                    rating: 0,
+                    userId: userIdOne
+                },
+                {
+                    location: {
+                        type: 'Point',
+                        coordinates: [-87.90602, 43.04363]
+                    },
+                    title: 'Fourth Amazing Food Place',
+                    description: 'This is the fourth best food place',
+                    rating: 0,
+                    userId: userIdOne
+                },
+                {
+                    location: {
+                        type: 'Point',
+                        coordinates: [-87.904921, 43.0352]
+                    },
+                    title: 'Fifth Amazing Food Place',
+                    description: 'This is the fifth best food place',
+                    rating: 0,
+                    userId: userIdTwo
+                }
+            ]);
+        });
+
+        const exec = async () => {
+            return await request(server)
+                .get(`/api/pins/my/user-location/${userLocation.longitude}/${userLocation.latitude}`)
+                .set('x-auth-token', tokenOne)
+                .send();
+        }
+
+        it('should return 401 if client is not logged in', async () => {
+            tokenOne = '';
+
+            const res = await exec();
+
+            expect(res.status).toBe(401);
+        });
+
+        it('should return list of pins', async () => {
+            const res = await exec();
+
+            expect(res.status).toBe(200);
+            expect(res.body).toHaveLength(4);
+        });
+
+        it('should return list no pins in range', async () => {
+            userLocation = {    // tokyo
+                longitude: 139.6503,
+                latitude: 35.6762
+            };
+
+            const res = await exec();
+
+            expect(res.status).toBe(200);
+            expect(res.body).toHaveLength(0);
+        });
+    });
+
     describe('GET /:pinId', () => {
         let token;
         let userId;
@@ -215,9 +436,9 @@ describe('/api/pins', () => {
             userId = user._id;
 
             const pin = await new Pin({
-                coordinate: {
-                    latitude: 43.03725,
-                    longitude: -87.91891,
+                location: {
+                    type: 'Point',
+                    coordinates: [-87.91891, 43.03725]
                 },
                 title: 'Amazing Food Place',
                 description: 'This is the best food place',
@@ -250,19 +471,37 @@ describe('/api/pins', () => {
 
     describe('POST /', () => {
         let token;
-        let title;
+        let userId;
+        let existingTitle;
+        let newTitle;
         let description;
+        let existingCoordinates;
+        let newCoordinates;
 
         beforeEach(async () => {
-            title = 'Second Amazing Food Place';
+            existingTitle = 'Amazing Food Place';
+            newTitle = 'New Amazing Food Place';
             description = 'This is the second best food place';
+            existingCoordinates = [-87.91891, 43.03725];
+            newCoordinates = [-87.92809, 43.04199];
 
             const user = await new User({
                 username: 'johnSmith',
                 email: 'john.smith@gmail.com',
                 password: 'password123'
             }).save();
+            userId = user._id;
             token = new User(user).generateAuthToken();
+
+            await new Pin({
+                location: {
+                    type: 'Point',
+                    coordinates: existingCoordinates
+                },
+                title: existingTitle,
+                description: 'This is the best food place',
+                userId: userId
+            }).save();
         });
 
         const exec = async () => {
@@ -270,11 +509,11 @@ describe('/api/pins', () => {
                 .post('/api/pins')
                 .set('x-auth-token', token)
                 .send({
-                    coordinate: {
-                        latitude: 43.04199,
-                        longitude: -87.92809,
+                    location: {
+                        type: 'Point',
+                        coordinates: newCoordinates
                     },
-                    title: title,
+                    title: newTitle,
                     description: description,
                     tags: [{ name: 'Food' }]
                 });
@@ -289,7 +528,7 @@ describe('/api/pins', () => {
         });
 
         it('should return 400 if title is less than 5 characters', async () => {
-            title = '1234';
+            newTitle = '1234';
 
             const res = await exec();
 
@@ -297,7 +536,7 @@ describe('/api/pins', () => {
         });
 
         it('should return 400 if title is more than 256 characters', async () => {
-            title = new Array(258).join('a');
+            newTitle = new Array(258).join('a');
 
             const res = await exec();
 
@@ -320,6 +559,138 @@ describe('/api/pins', () => {
             expect(res.status).toBe(400);
         });
 
+        it('should return 400 if the title is the same as another pins title', async () => {
+            newTitle = existingTitle;
+
+            const res = await exec();
+
+            expect(res.status).toBe(400);
+        });
+
+        it('should return 400 if the coordinates are the same as another pins coordinates', async () => {
+            newCoordinates = existingCoordinates;
+
+            const res = await exec();
+
+            expect(res.status).toBe(400);
+        });
+
+        it('should return the new pin', async () => {
+            const res = await exec();
+
+            expect(res.status).toBe(200);
+            expect(res.body).toHaveProperty('title');
+        });
+    });
+
+    describe('POST /location', () => {
+        let token;
+        let userId;
+        let existingTitle;
+        let newTitle;
+        let description;
+        let existingCoordinates;
+        let newCoordinatesIn200MeterRange;
+        let newCoordinatesOutOf200MeterRange;
+
+        beforeEach(async () => {
+            existingTitle = 'Amazing Food Place';
+            newTitle = 'New Amazing Food Place';
+            description = 'This is the second best food place';
+            existingCoordinates = [-87.91891, 43.03725];
+            newCoordinatesIn200MeterRange = [-87.91890569768844, 43.037218677874584];
+            newCoordinatesOutOf200MeterRange = [139.6503, 35.6762];
+
+            const user = await new User({
+                username: 'johnSmith',
+                email: 'john.smith@gmail.com',
+                password: 'password123'
+            }).save();
+            userId = user._id;
+            token = new User(user).generateAuthToken();
+
+            await new Pin({
+                location: {
+                    type: 'Point',
+                    coordinates: existingCoordinates
+                },
+                title: existingTitle,
+                description: 'This is the best food place',
+                userId: userId
+            }).save();
+        });
+
+        const exec = async () => {
+            return await request(server)
+                .post('/api/pins/location')
+                .set('x-auth-token', token)
+                .send({
+                    location: {
+                        type: 'Point',
+                        coordinates: newCoordinatesOutOf200MeterRange
+                    },
+                    title: newTitle,
+                    description: description,
+                    tags: [{ name: 'Food' }]
+                });
+        }
+
+        it('should return 401 if client is not logged in', async () => {
+            token = '';
+
+            const res = await exec();
+
+            expect(res.status).toBe(401);
+        });
+
+        it('should return 400 if title is less than 5 characters', async () => {
+            newTitle = '1234';
+
+            const res = await exec();
+
+            expect(res.status).toBe(400);
+        });
+
+        it('should return 400 if title is more than 256 characters', async () => {
+            newTitle = new Array(258).join('a');
+
+            const res = await exec();
+
+            expect(res.status).toBe(400);
+        });
+
+        it('should return 400 if description is less than 5 characters', async () => {
+            description = '1234';
+
+            const res = await exec();
+
+            expect(res.status).toBe(400);
+        });
+
+        it('should return 400 if description is more than 1024 characters', async () => {
+            description = new Array(1026).join('a');
+
+            const res = await exec();
+
+            expect(res.status).toBe(400);
+        });
+
+        it('should return 400 if the title is the same as another pins title', async () => {
+            newTitle = existingTitle;
+
+            const res = await exec();
+
+            expect(res.status).toBe(400);
+        });
+
+        it('should return 400 if the coordinates are within a 200 meter radius of another pins coordinates', async () => {
+            newCoordinatesOutOf200MeterRange = newCoordinatesIn200MeterRange;
+
+            const res = await exec();
+
+            expect(res.status).toBe(400);
+        });
+
         it('should return the new pin', async () => {
             const res = await exec();
 
@@ -334,19 +705,19 @@ describe('/api/pins', () => {
         let tokenOne;
         let tokenTwo;
         let userId;
-        let oldCoordinate;
-        let newCoordinate;
+        let oldLocation;
+        let newLocation;
         let newTitle;
 
         beforeEach(async () => {
             newTitle = 'New Title';
-            oldCoordinate = {
-                latitude: 43.04199,
-                longitude: -87.92809,
-            };
-            newCoordinate = {
-                latitude: 45.04199,
-                longitude: -90.92809,
+            oldLocation = {
+                type: 'Point',
+                coordinates: [-87.92809, 43.04199]
+            }
+            newLocation = {
+                type: 'Point',
+                coordinates: [-90.92809, 45.04199]
             };
 
             const userOne = await new User({
@@ -365,7 +736,7 @@ describe('/api/pins', () => {
             tokenTwo = new User(userTwo).generateAuthToken();
 
             const pin = await new Pin({
-                    coordinate: oldCoordinate,
+                    location: oldLocation,
                     title: 'Second Amazing Food Place',
                     description: 'This is the second best food place',
                     tags: [{ name: 'Food' }],
@@ -381,7 +752,7 @@ describe('/api/pins', () => {
                 .put(`/api/pins/${pinId}`)
                 .set('x-auth-token', token)
                 .send({
-                    coordinate: newCoordinate,
+                    location: newLocation,
                     title: newTitle,
                     description: 'This is the second best food place',
                     tags: [{ name: 'Food' }]
@@ -417,8 +788,7 @@ describe('/api/pins', () => {
 
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('title', newTitle);
-            expect(res.body.coordinate).toHaveProperty('latitude', oldCoordinate.latitude);   // can't change the location
-            expect(res.body.coordinate).toHaveProperty('longitude', oldCoordinate.longitude);
+            expect(res.body.location).toHaveProperty('coordinates', oldLocation.coordinates);   // can't change the location
         });
     });
 });

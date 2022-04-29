@@ -7,10 +7,29 @@ require('express-async-errors');
 const router = express.Router();
 
 /*
-    GET - Get all pins
+    GET - Get all pins everywhere
 */
 router.get('/', auth, async (req, res) => {
-    const pins = await Pin.find({});    // TODO: within a certain range?
+    const pins = await Pin.find({});
+
+    return res.status(200).send(pins);
+});
+
+/*
+    GET - Get all pins within a 10 mile range of the users location
+*/
+router.get('/user-location/:longitude/:latitude', auth, async (req, res) => {
+    const pins = await Pin.find({
+        location: {
+            $near: {
+                $maxDistance: 16000,    // roughly 10 miles in meters
+                $geometry: {
+                    type: 'Point',
+                    coordinates: [req.params.longitude, req.params.latitude]   // [longitude, latitude]
+                }
+            }
+        }
+    });
 
     return res.status(200).send(pins);
 });
@@ -20,7 +39,29 @@ router.get('/', auth, async (req, res) => {
 */
 router.get('/my', auth, async (req, res) => {
     const userId = decodeJwt(req.header('x-auth-token'))._id;
-    const pins = await Pin.find({ userId: userId }).sort('title');
+    const pins = await Pin.find({ userId: userId });
+
+    return res.status(200).send(pins);
+});
+
+/*
+    GET - Get all user specific pins within a 10 mile range of the users location
+*/
+router.get('/my/user-location/:longitude/:latitude', auth, async (req, res) => {
+    let pins = await Pin.find({
+        location: {
+            $near: {
+                $maxDistance: 16000,    // roughly 10 miles in meters
+                $geometry: {
+                    type: 'Point',
+                    coordinates: [req.params.longitude, req.params.latitude]   // [longitude, latitude]
+                }
+            }
+        }
+    });
+
+    const userId = decodeJwt(req.header('x-auth-token'))._id;
+    pins = pins.filter(pin => pin.userId.toString() === userId);
 
     return res.status(200).send(pins);
 });
@@ -48,13 +89,48 @@ router.post('/', auth, async (req, res) => {
         return res.status(400).send('Pin already exists using that title.');
     }
 
-    const pinByCoordinate = await Pin.findOne({ coordinate: req.body.coordinate });
+    const pinByCoordinate = await Pin.findOne({ 'location.coordinates': req.body.location.coordinates });
     if(pinByCoordinate) {
-        return res.status(400).send('Pin already exists using that location.'); // TODO: might want to make it within a certain range? => "A pin already exists near by."
+        return res.status(400).send('Pin already exists using that location.');
     }
 
     req.body.userId = decodeJwt(req.header('x-auth-token'))._id;
-    const pin = await new Pin(_.pick(req.body, ['coordinate', 'title', 'description', 'rating', 'tags', 'userId'])).save();
+    const pin = await new Pin(_.pick(req.body, ['location', 'title', 'description', 'rating', 'tags', 'userId'])).save();
+
+    return res.status(200).send(pin);
+});
+
+/*
+    POST - Add a new pin while checking for near-by existing pins in a 200 meter radius
+*/
+router.post('/location', auth, async (req, res) => {
+    const { error } = validate(req.body);
+    if(error) {
+        return res.status(400).send(error.details[0].message);
+    }
+
+    const pinByTitle = await Pin.findOne({ title: req.body.title });
+    if(pinByTitle) {
+        return res.status(400).send('Pin already exists using that title.');
+    }
+
+    const pinByCoordinate = await Pin.findOne({
+        location: {
+            $near: {
+                $maxDistance: 200,  // 200 meters
+                $geometry: {
+                    type: 'Point',
+                    coordinates: [req.body.location.coordinates[0], req.body.location.coordinates[1]]   // [longitude, latitude]
+                }
+            }
+        }
+    });
+    if(pinByCoordinate) {
+        return res.status(400).send('Pin already exists near that location.');
+    }
+
+    req.body.userId = decodeJwt(req.header('x-auth-token'))._id;
+    const pin = await new Pin(_.pick(req.body, ['location', 'title', 'description', 'rating', 'tags', 'userId'])).save();
 
     return res.status(200).send(pin);
 });

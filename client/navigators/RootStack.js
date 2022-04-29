@@ -14,6 +14,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import EditProfile from '../screens/EditProfile';
 import HomeScreen from '../screens/HomeScreen';
 import LocationScreen from '../screens/LocationScreen';
+import Post from '../screens/Post';
 import CameraView from '../screens/CameraView';
 
 const Stack = createNativeStackNavigator();
@@ -47,6 +48,8 @@ const RootStack = () => {
             headerBackVisible: true,
           }}
         />
+
+        <Stack.Screen name="Post" component={Post} options={{headerShown: true, headerTitle: '', headerStyle: { backgroundColor: 'transparent'}, headerLeftContainerStyle: { paddingLeft: 20 }, headerTransparent: true, headerBackVisible: true}}/>
 
         <Stack.Screen name="ProfileScreen" component={ProfileScreen} options={{ headerShown: false }} />
 

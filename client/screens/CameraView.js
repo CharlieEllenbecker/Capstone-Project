@@ -28,7 +28,7 @@ import { useTheme } from '@react-navigation/native';
 import { styles } from '../components/styles';
 const { width, height } = Dimensions.get('window');
 
-export default function CameraView({ route, navigation }) {
+export default function CameraView({ route, navigation, setTakenImage }) {
   const [capturedImage, setCapturedImage] = React.useState(null);
 
   const [startCamera, setStartCamera] = React.useState(false);
@@ -63,12 +63,8 @@ export default function CameraView({ route, navigation }) {
   // }
   const __savePhoto = () => {
     setPreviewVisible(false);
-
+    setTakenImage(capturedImage);
     console.log('Taken Picture after save: ' + capturedImage);
-    navigation.navigate('HomeScreen', {
-      image: capturedImage,
-      dummy: 'dummy',
-    });
   };
   const __retakePicture = () => {
     setCapturedImage(null);
@@ -122,8 +118,8 @@ export default function CameraView({ route, navigation }) {
               <View
                 style={{
                   position: 'absolute',
-                  left: '5%',
                   top: '9%',
+                  left: '7%',
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                 }}
@@ -132,7 +128,7 @@ export default function CameraView({ route, navigation }) {
                   <TouchableOpacity
                     onPress={__handleFlashMode}
                     style={{
-                      backgroundColor: flashMode === 'off' ? '#000' : '#fff',
+                      backgroundColor: '#000',
                       borderRadius: 50,
                       height: 35,
                       width: 35,
@@ -140,13 +136,14 @@ export default function CameraView({ route, navigation }) {
                       alignItems: 'center',
                     }}
                   >
-                    <Text
+                    <Ionicons name="ios-flash" size={30} color={flashMode === 'off' ? '#FFF' : '#fffb05'} />
+                    {/* <Text
                       style={{
                         fontSize: 20,
                       }}
                     >
                       ⚡️
-                    </Text>
+                    </Text> */}
                   </TouchableOpacity>
                 )}
                 <TouchableOpacity
