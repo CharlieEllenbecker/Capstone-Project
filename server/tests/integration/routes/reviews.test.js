@@ -45,7 +45,7 @@ describe('/api/reviews', () => {
             pin = await new Pin({
                 location: {
                     type: 'Point',
-                    coordinates: [43.03725, -87.91891]
+                    coordinates: [-87.91891, 43.03725]
                 },
                 title: 'Second Amazing Food Place',
                 description: 'This is the second best food place',
@@ -117,7 +117,7 @@ describe('/api/reviews', () => {
             pin = await new Pin({
                 location: {
                     type: 'Point',
-                    coordinates: [43.03725, -87.91891]
+                    coordinates: [-87.91891, 43.03725]
                 },
                 title: 'Second Amazing Food Place',
                 description: 'This is the second best food place',
@@ -182,7 +182,7 @@ describe('/api/reviews', () => {
             pin = await new Pin({
                 location: {
                     type: 'Point',
-                    coordinates: [43.03725, -87.91891]
+                    coordinates: [-87.91891, 43.03725]
                 },
                 title: 'Second Amazing Food Place',
                 description: 'This is the second best food place',
@@ -281,7 +281,7 @@ describe('/api/reviews', () => {
             pin = await new Pin({
                 location: {
                     type: 'Point',
-                    coordinates: [43.03725, -87.91891]
+                    coordinates: [-87.91891, 43.03725]
                 },
                 title: 'Second Amazing Food Place',
                 description: 'This is the second best food place',
@@ -373,7 +373,7 @@ describe('/api/reviews', () => {
             pin = await new Pin({
                 location: {
                     type: 'Point',
-                    coordinates: [43.03725, -87.91891]
+                    coordinates: [-87.91891, 43.03725]
                 },
                 title: 'Second Amazing Food Place',
                 description: 'This is the second best food place',

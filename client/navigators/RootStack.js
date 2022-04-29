@@ -2,7 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Ionicons from '@expo/vector-icons';
-import { View, TouchableOpacity, Button, Text} from 'react-native';
+import { View, TouchableOpacity, Button, Text } from 'react-native';
 import { Colors } from '../components/styles';
 const { primary, darkBrick, brick, lightBrick, secondary, tetriary } = Colors;
 
@@ -27,6 +27,7 @@ const RootStack = () => {
           headerShown: false,
         }}
         initialRouteName="Login"
+        //initialRouteName="HomeScreen"
       >
         <Stack.Screen name="Login" component={Login} />
 
@@ -52,10 +53,10 @@ const RootStack = () => {
 
         <Stack.Screen name="ProfileScreen" component={ProfileScreen} options={{ headerShown: false }} />
 
-        <Stack.Screen 
-          name="EditProfile" 
-          component={EditProfile} 
-          options={({navigation}) => ({
+        <Stack.Screen
+          name="EditProfile"
+          component={EditProfile}
+          options={({ navigation }) => ({
             headerShown: true,
             title: 'Edit Profile',
             headerTitleStyle: {

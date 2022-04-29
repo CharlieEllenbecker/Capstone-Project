@@ -416,7 +416,6 @@ describe('/api/users', () => {
         });
     });
 
-    // For some reason these tests fails and affects other tests below, so keep at bottom
     describe('POST /profile-picture', () => {
         let user;
         let token;

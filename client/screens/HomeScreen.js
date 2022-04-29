@@ -1,5 +1,7 @@
 import { useEffect, useState, createRef, useRef } from 'react';
 import { Camera } from 'expo-camera';
+import * as Permissions from 'expo-permissions';
+import * as Location from 'expo-location';
 import axios from 'axios';
 import getIp from '../ip';
 import { useSelector, useDispatch } from 'react-redux';
@@ -21,7 +23,7 @@ import {
 } from 'react-native';
 
 import ListView from '../components/ListView.js';
-import CameraView from './CameraView';
+//import CameraView from './CameraView';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import Animated from 'react-native-reanimated';
@@ -45,20 +47,29 @@ const SPACING_FOR_CARD_INSET = width * 0.1 - 10;
 const HomeScreen = ({ navigation, route }) => {
   //const { image, dummy } = route.params;
 
-  useEffect(() => {
-    if (route.params?.image) {
-      setSelectedImage(route.params.image);
+  const [locationGranted, setLocationGranted] = useState(true);
+
+  const askPermission = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      setLocationGranted(false);
+      setErrorMsg('Permission to access location was denied');
+    } else {
+      setLocationGranted(true);
+      console.log('Granted!');
+      const location = await Location.getCurrentPositionAsync({});
+      setRegion((region) => ({ ...region, latitude: location.coords.latitude, longitude: location.coords.longitude }));
     }
-  }, [route.params?.image]);
+  };
 
-  const theme = useTheme();
-
-  const region = {
-    latitude: 43.041,
-    longitude: -87.909,
+  const [region, setRegion] = useState({
+    latitude: 43.03725, // null
+    longitude: -87.91891, // null
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
-  };
+  });
+
+  const theme = useTheme();
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -70,6 +81,7 @@ const HomeScreen = ({ navigation, route }) => {
 
   const [filter, setFilter] = useState('All'); // TODO: Use filter to set the filtered pins when you get all pins periodically from user location
   const [selectedImage, setSelectedImage] = useState(null);
+  const [takenImage, setTakenImage] = useState(null);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [coordinate, setCoordinate] = useState({});
@@ -79,7 +91,7 @@ const HomeScreen = ({ navigation, route }) => {
   const { jwt } = useSelector((state) => state.jwtReducer);
   const { allPins } = useSelector((state) => state.pinReducer);
   const { userSpecificPins } = useSelector((state) => state.pinReducer);
-  const { filteredPins } = useSelector((state) =>  state.pinReducer);
+  const { filteredPins } = useSelector((state) => state.pinReducer);
   const { tags } = useSelector((state) => state.tagReducer);
 
   const setErrorMsg = (s) => {
@@ -123,6 +135,7 @@ const HomeScreen = ({ navigation, route }) => {
   let mapIndex = 0;
   let mapAnimation = new OldAnimated.Value(0);
   useEffect(() => {
+    // askPermission();
     getAllPins();
     getMyPins();
     getAllTags();
@@ -141,7 +154,7 @@ const HomeScreen = ({ navigation, route }) => {
           const { coordinate } = allPins[index];
           _map.current.animateToRegion(
             {
-              ...coordinate
+              ...coordinate,
             },
             350,
           );
@@ -163,15 +176,16 @@ const HomeScreen = ({ navigation, route }) => {
   const _map = useRef(null);
   const _scrollView = useRef(null);
   const onMarkerPress = (mapEventData) => {
-    
     const markerID = mapEventData._targetInst.return.key;
     let x = markerID * CARD_WIDTH + markerID * 20;
+    console.log(x);
+    console.log(markerID);
+    console.log(CARD_WIDTH);
     if (Platform.OS === 'ios') {
       x = x - SPACING_FOR_CARD_INSET;
     }
 
-    _scrollView.current.scrollTo({ x: x, y: 0, animated: true })
-    
+    _scrollView.current.scrollTo({ x: 288, y: 0, animated: true });
   };
 
   const handleLongPress = (e) => {
@@ -180,8 +194,13 @@ const HomeScreen = ({ navigation, route }) => {
   };
 
   const filterPins = (filterTag) => {
-    console.log('Current Filter: ', filterTag);
-    dispatch(setFilteredPins(allPins.filter(pin => pin.tags.some(tag => tag.name === filterTag))));
+    if (filterTag === 'All') {
+      dispatch(setFilteredPins(allPins));
+    } else if (filterTag === 'My') {
+      dispatch(setFilteredPins(userSpecificPins));
+    } else {
+      dispatch(setFilteredPins(allPins.filter((pin) => pin.tags.some((tag) => tag.name === filterTag))));
+    }
   };
 
   const addMarker = async () => {
@@ -218,7 +237,8 @@ const HomeScreen = ({ navigation, route }) => {
     //require('../assets/banners/food-banner1.jpg')
   };
 
-  const renderContent = () => ( // TODO: make a component for creating a new pin?
+  const renderContent = () => (
+    // TODO: make a component for creating a new pin?
     <View style={styles.panel}>
       <TextInput
         placeholder="Title"
@@ -256,7 +276,7 @@ const HomeScreen = ({ navigation, route }) => {
           contentContainerStyle={{
             paddingRight: Platform.OS === 'android' ? 20 : 0,
           }}
-      >
+        >
           {tags.map((tag, index) => (
             <TouchableOpacity onPress={()=>{setNewTag(tag)}} key={index} style={[styles.chipsItemHeader, {borderColor: 'rgba(0,0,0,0.5)', borderWidth: 0.9, height: 30}]}>
               <Text>{tag}</Text>
@@ -299,72 +319,85 @@ const HomeScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.container}>
-        <MapView
-          ref={_map}
-          initialRegion={region}
-          style={styles.container}
-          provider={PROVIDER_GOOGLE}
-          customMapStyle={theme.dark ? mapDarkStyle : mapStandardStyle}
-          onLongPress={handleLongPress}
-          //onLongPress={<addMarker state={state} />}
-        >
-          {filteredPins.map((pin, index) => {
-            const scaleStyle = {
-              transform: [
-                {
-                  scale: interpolations[index].scale,
-                }
-              ]
-            };
+      {locationGranted && region.latitude !== null && region.longitude !== null ? (
+        <View style={styles.container}>
+          <MapView
+            ref={_map}
+            initialRegion={region}
+            style={styles.container}
+            provider={PROVIDER_GOOGLE}
+            customMapStyle={theme.dark ? mapDarkStyle : mapStandardStyle}
+            onLongPress={handleLongPress}
+            //onRegionChangeComplete={(region) => setRegion(region)}
+            //onLongPress={<addMarker state={state} />}
+          >
+            {filteredPins.map((pin, index) => {
+              const scaleStyle = {
+                transform: [
+                  {
+                    scale: interpolations[index].scale,
+                  },
+                ],
+              };
 
-            return (
-              <MapPin key={index} pin={pin} scaleStyle={scaleStyle} onMarkerPress={onMarkerPress} />
-            );
-          })}
-        </MapView>
+              return <MapPin key={index} pin={pin} scaleStyle={scaleStyle} onMarkerPress={onMarkerPress} />;
+            })}
+          </MapView>
 
-        <ScrollView
-          horizontal
-          pagingEnabled
-          scrollEventThrottle={1}
-          showsHorizontalScrollIndicator={false}
-          snapToInterval={CARD_WIDTH + 20}
-          snapToAlignment="left"
-          style={styles.chipsScrollView}
-          contentInset={{
-            top: 0,
-            left: SPACING_FOR_CARD_INSET,
-            bottom: 0,
-            right: SPACING_FOR_CARD_INSET,
-          }}
-          contentContainerStyle={{
-            paddingHorizontal: Platform.OS === 'android' ? SPACING_FOR_CARD_INSET : 0,
-          }}
-        >
-          <TouchableOpacity style={styles.chipsItem} onPress={() => {
-            setFilter('All');
-            dispatch(setFilteredPins(allPins));
-            }}>
-            <Text>All</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.chipsItem} onPress={() => {
-            setFilter('My');
-            dispatch(setFilteredPins(userSpecificPins));
-            }}>
-            <Text>My</Text>
-          </TouchableOpacity>
-          
-          {tags.map((tag, index) => (
-            <TouchableOpacity key={index} style={styles.chipsItem} onPress={() => {
-              setFilter(tag);
-              filterPins(tag);
-              }}>
-              <Text>{tag}</Text>
+          <ScrollView
+            horizontal
+            pagingEnabled
+            scrollEventThrottle={1}
+            showsHorizontalScrollIndicator={false}
+            snapToInterval={CARD_WIDTH + 20}
+            snapToAlignment="left"
+            style={styles.chipsScrollView}
+            contentInset={{
+              top: 0,
+              left: SPACING_FOR_CARD_INSET,
+              bottom: 0,
+              right: SPACING_FOR_CARD_INSET,
+            }}
+            contentContainerStyle={{
+              paddingHorizontal: Platform.OS === 'android' ? SPACING_FOR_CARD_INSET : 0,
+            }}
+          >
+            <TouchableOpacity
+              style={styles.chipsItem}
+              onPress={() => {
+                setFilter('All');
+                filterPins('All');
+                _scrollView.current.scrollTo({ x: 0, y: 0, animated: true });
+              }}
+            >
+              <Text>All</Text>
             </TouchableOpacity>
-          ))}
-        </ScrollView>
-        
+            <TouchableOpacity
+              style={styles.chipsItem}
+              onPress={() => {
+                setFilter('My');
+                filterPins('My');
+                _scrollView.current.scrollTo({ x: 0, y: 0, animated: true });
+              }}
+            >
+              <Text>My</Text>
+            </TouchableOpacity>
+
+            {tags.map((tag, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.chipsItem}
+                onPress={() => {
+                  setFilter(tag);
+                  filterPins(tag);
+                  _scrollView.current.scrollTo({ x: 0, y: 0, animated: true });
+                }}
+              >
+                <Text>{tag}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+
           <OldAnimated.ScrollView
             ref={_scrollView}
             horizontal
@@ -397,11 +430,11 @@ const HomeScreen = ({ navigation, route }) => {
             )}
           >
             {filteredPins.map((pin, index) => (
-              <ListView pin={pin} key={index} navigation={navigation}/>
+              <ListView pin={pin} key={index} navigation={navigation} />
             ))}
           </OldAnimated.ScrollView>
-        
-        <BottomSheet
+
+          <BottomSheet
           ref={bs}
           snapPoints={[230, 0]}
           renderContent={renderContent}
@@ -409,8 +442,13 @@ const HomeScreen = ({ navigation, route }) => {
           initialSnap={1}
           callbackNode={fall}
           enabledGestureInteraction={true}
-        />
-      </View>
+          />
+        </View>
+      ) : (
+        <Text style={{ marginTop: '50%', justifyContent: 'center', alignItems: 'center' }}>
+          Please enable location services
+        </Text>
+      )}
     </View>
   );
 };
