@@ -1,12 +1,19 @@
 //import react/formik/icons/keyboardAvoidingView
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, createRef } from 'react';
 import {
   StyleSheet,
   Text,
+  TextInput,
+  TouchableOpacity,
   View,
   ScrollView,
   Platform
 } from 'react-native';
+import CameraView from './CameraView';
+import BottomSheet from 'reanimated-bottom-sheet';
+import { Camera } from 'expo-camera';
+import * as ImagePicker from 'expo-image-picker';
+import Animated from 'react-native-reanimated';
 import StarRating from '../components/StarRating';
 import getIp from '../ip';
 import { useSelector, useDispatch } from 'react-redux';
@@ -16,36 +23,13 @@ import GridView from '../components/GridView';
 import ReviewTop from '../components/ReviewTop';
 import UserDisplay from '../components/DisplayUser';
 import {
-  Colors,
+  styles,
   StyledReviewContainer,
   HorizontalContainer,
 } from './../components/styles';
-import colors from './../components/styles';
-//colors
-const { lightBrick } = Colors;
 //axios
 import axios from 'axios';
 
-// static
-// const images = [
-//   require('../assets/banners/food-banner1.jpg'),
-//   require('../assets/banners/food-banner4.jpg'),
-//   require('../assets/banners/food-banner3.jpg'),
-//   require('../assets/banners/food-banner2.jpg'),
-//   require('../assets/banners/food-banner5.jpg'),
-//   require('../assets/banners/food-banner4.jpg'),
-//   require('../assets/banners/food-banner3.jpg'),
-//   require('../assets/banners/food-banner2.jpg'),
-//   require('../assets/banners/food-banner4.jpg'),
-//   require('../assets/banners/food-banner3.jpg'),
-//   require('../assets/banners/food-banner2.jpg'),
-//   require('../assets/banners/food-banner4.jpg'),
-//   require('../assets/banners/food-banner3.jpg'),
-//   require('../assets/banners/food-banner2.jpg'),
-//   require('../assets/banners/food-banner4.jpg'),
-//   require('../assets/banners/food-banner3.jpg'),
-//   require('../assets/banners/food-banner2.jpg')
-// ]
 
 const LocationScreen = ({ route, navigation }) => {
   const { pinId } = route.params;
@@ -53,13 +37,18 @@ const LocationScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const { jwt } = useSelector((state) => state.jwtReducer);
   const { selectedPinReviews } = useSelector((state) => state.pinReducer);
-
+  const bs = createRef();
+  const fall = new Animated.Value(1);
   //  pin properties
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [rating, setRating] = useState('');
   const [reviews, setReviews] = useState([]);
   const [images, setImages] = useState([]);
+  const [takenImage, setTakenImage] = useState(null);
+  const [useCamera, setUseCamera] = useState(false);
+  const [type, setType] = useState(Camera.Constants.Type.back);
+  const [postDescription, setPostDescription] = useState('');
   //  get the pin data to display on the page
   const getPinData = async () => {
     await axios.get(`http://${ip}:3001/api/pins/${pinId}`, { headers: { 'x-auth-token': jwt } })
@@ -92,15 +81,122 @@ const LocationScreen = ({ route, navigation }) => {
       })
   }
   
+  const postPost = async (fileName, ext, result) => {
+    
+    var formData = new FormData();
+    formData.append('image', {
+      uri: result,
+      name: fileName,
+      type: `image/${ext}`
+    });
+    console.log(formData);
+    await axios.post(`http://${ip}:3001/api/pictures/`, formData, { headers: { 'x-auth-token' : jwt }})
+    .then((response) => {
+      console.log(response.data.pictureFileName);
+      postDesc(response.data.pictureFileName);
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+    
+  }
+
+  const postDesc = async (picture) => {
+    await axios.post(`http://${ip}:3001/api/posts/${pinId}`, { description: postDescription, postPictureFileName: picture }, { headers: { 'x-auth-token' : jwt }})
+    .then((response) => {
+      console.log(response.data);
+    })
+    .catch((error) => {
+      console.error(error);
+    })
+  } 
   useEffect(() => {
     getPinData();
     getReviews();
     getPosts();
   }, []);
 
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.cancelled) {
+      const ext = result.uri.substring(result.uri.lastIndexOf(".") + 1);
+      const uri = result.uri;
+      const fileName = result.uri.replace(/^.*[\\\/]/, "");
+      setTakenImage(result.uri);
+      postPost(fileName, ext, uri);
+    }
+  };
+
+  let openImagePickerAsync = async () => {
+    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert('Permission to access camera roll is required!');
+      return;
+    }
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    setTakenImage(result.uri);
+  };
+
+  const renderContent = () => ( // TODO: make a component for creating a new pin?
+  <View style={[styles.panel, { border: '3px solid rgba(0, 0, 0, 0.1)' }]}>
+    <TextInput
+      placeholder="Description"
+      placeholderTextColor="#808080"
+      autoCapitalize="none"
+      style={styles.pinDetails}
+      onChangeText={(newText) => {
+        setPostDescription(newText);
+      }}
+    />
+
+    <TouchableOpacity
+      style={styles.panelReviewButton}
+      onPress={() => {
+        navigation.navigate('CameraView', { setTakenImage: setTakenImage });
+      }}
+    >
+      {/* <Text style={styles.panelButtonTitle} onPress={__startCamera}> */}
+      <Text style={styles.panelButtonTitle}>Take Photo</Text>
+      {/* {capturedImage && <Image source={{ uri: image }} style={{ flex: 1 }} />} */}
+    </TouchableOpacity>
+    <TouchableOpacity style={styles.panelReviewButton} onPress={async () => {pickImage()}}>
+      <Text style={styles.panelButtonTitle}>Choose From Library</Text>
+    </TouchableOpacity>
+    
+    <View style={{ flexDirection: 'row' }}>
+      <TouchableOpacity style={[styles.panelReviewButton, { width: '49%', backgroundColor: '#ce3a39', borderWidth: 0, marginBottom: 13, marginRight: '2%'  }]} onPress={() => bs.current.snapTo(1)}>
+        <Text style={styles.panelButtonTitle}>Cancel</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.panelReviewButton, { width: '49%', backgroundColor: '#2fbf78', borderWidth: 0, marginBottom: 13 }]}
+        onPress={() => {
+          bs.current.snapTo(1);
+        }}
+      >
+        <Text style={styles.panelButtonTitle}>Accept</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+);
+
   return (
     <StyledReviewContainer>
-      <ReviewTop getPinData={getPinData} pinId={pinId}/>
+      <ReviewTop getPinData={getPinData} pinId={pinId} bs={bs}/>
       <ScrollView
         scrollEventThrottle={16}
       >
@@ -125,50 +221,17 @@ const LocationScreen = ({ route, navigation }) => {
         </View>
         <GridView navigation={navigation} images={images}/>
       </ScrollView>
+      <BottomSheet
+          ref={bs}
+          snapPoints={['30%', '-10%']}
+          renderContent={renderContent}
+          initialSnap={1}
+          callbackNode={fall}
+          enabledGestureInteraction={true}
+        />
     </StyledReviewContainer>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  viewWrapper: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.2)", 
-  },
-  modalView: {
-    alignItems: "center",
-    justifyContent: "center",
-    position: "absolute",
-    elevation: 5,
-    height: 400,
-    width: "80%",
-    backgroundColor: "#fff",
-    borderRadius: 7,
-  },
-  input: {
-    
-    width: "80%",
-    height: "30%",
-    borderRadius: 5,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderColor: "rgba(0, 0, 0, 0)",
-    borderWidth: 1,
-    marginTop: 1,
-    marginBottom: 8,
-    backgroundColor: '#D3D3D3',
-  },
-  reviewsScrollView: {
-    position: 'absolute',
-    backgroundColor: {lightBrick},
-    top: Platform.OS === 'ios' ? 90 : 80,
-    paddingHorizontal: 10,
-  },
-});
 
 export default LocationScreen;

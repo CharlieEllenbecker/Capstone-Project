@@ -32,6 +32,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import * as ImagePicker from 'expo-image-picker';
+import KeyboardAvoidingWrapper from '../components/keyboardAvoidingWrapper';
 import { mapDarkStyle, mapStandardStyle } from '../model/mapData';
 
 import MapPin from '../components/MapPin';
@@ -47,7 +48,6 @@ const SPACING_FOR_CARD_INSET = width * 0.1 - 10;
 const HomeScreen = ({ navigation, route }) => {
   //const { image, dummy } = route.params;
 
-  const [errorMsg, setErrorMsg] = useState(null);
   const [locationGranted, setLocationGranted] = useState(true);
 
   const askPermission = async () => {
@@ -74,7 +74,11 @@ const HomeScreen = ({ navigation, route }) => {
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [newTag, setNewTag] = useState('');
+  //const [errorMsg, setErrorMsg] = useState('');
+  let errorMsg = '';
   const [tag, setTag] = useState('');
+
 
   const [filter, setFilter] = useState('All'); // TODO: Use filter to set the filtered pins when you get all pins periodically from user location
   const [selectedImage, setSelectedImage] = useState(null);
@@ -91,6 +95,10 @@ const HomeScreen = ({ navigation, route }) => {
   const { filteredPins } = useSelector((state) => state.pinReducer);
   const { tags } = useSelector((state) => state.tagReducer);
 
+  const setErrorMsg = (s) => {
+    errorMsg = s;
+  }
+  // Get all the pins
   const getAllPins = async () => {
     await axios
       .get(`http://${ip}:3001/api/pins/`, { headers: { 'x-auth-token': jwt } })
@@ -154,7 +162,7 @@ const HomeScreen = ({ navigation, route }) => {
         }
       }, 10);
     });
-  }, []);
+  }, [errorMsg, allPins]);
 
   const interpolations = filteredPins.map((pin, index) => {
     const inputRange = [(index - 1) * CARD_WIDTH, index * CARD_WIDTH, (index + 1) * CARD_WIDTH];
@@ -196,8 +204,15 @@ const HomeScreen = ({ navigation, route }) => {
     }
   };
 
-  const addMarker = () => {
-    // TODO: utilize endpoint
+  const addMarker = async () => {
+    await axios.post(`http://${ip}:3001/api/pins/`, { title: title, description: description, tags: [{name: newTag}], location: {coordinates:[coordinate.longitude, coordinate.latitude]}}, { headers: { 'x-auth-token' : jwt }})
+    .then((response) => {
+      getAllPins();
+      setErrorMsg('');
+    })
+    .catch((error) => {
+      setErrorMsg(error.response.data);
+    })
   };
 
   let openImagePickerAsync = async () => {
@@ -264,28 +279,27 @@ const HomeScreen = ({ navigation, route }) => {
           }}
         >
           {tags.map((tag, index) => (
-            <TouchableOpacity
-              key={index}
-              style={[styles.chipsItemHeader, { borderColor: '#000000', borderWidth: 0.7, height: 30 }]}
-            >
+            <TouchableOpacity onPress={()=>{setNewTag(tag)}} key={index} style={[styles.chipsItemHeader, {borderColor: 'rgba(0,0,0,0.5)', borderWidth: 0.9, height: 30}]}>
               <Text>{tag}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
       </View>
 
+      
+      
       <View style={{ flexDirection: 'row' }}>
-        <TouchableOpacity
-          style={[styles.panelButton, { width: '50%', backgroundColor: '#ce3a39', borderWidth: 0, marginBottom: 30 }]}
-          onPress={() => bs.current.snapTo(1)}
-        >
+        <Text>{errorMsg}</Text>
+        <TouchableOpacity style={[styles.panelButton, { width: '50%', backgroundColor: '#ce3a39', borderWidth: 0  }]} onPress={() => bs.current.snapTo(1)}>
           <Text style={styles.panelButtonTitle}>Cancel</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.panelButton, { width: '50%', backgroundColor: '#2fbf78', borderWidth: 0, marginBottom: 30 }]}
+          style={[styles.panelButton, { width: '50%', backgroundColor: '#2fbf78', borderWidth: 0 }]}
           onPress={() => {
             addMarker();
-            bs.current.snapTo(1);
+            if (errorMsg === '') {
+              bs.current.snapTo(1);
+            }
           }}
         >
           <Text style={styles.panelButtonTitle}>Accept</Text>
@@ -297,7 +311,7 @@ const HomeScreen = ({ navigation, route }) => {
   const renderHeader = () => (
     <View style={styles.header}>
       <View style={styles.panelHeader}>
-        <View style={styles.panelHandle} />
+        
       </View>
     </View>
   );
@@ -305,6 +319,7 @@ const HomeScreen = ({ navigation, route }) => {
   const fall = new Animated.Value(1);
 
   return (
+    
     <View style={styles.container}>
       {locationGranted && region.latitude !== null && region.longitude !== null ? (
         <View style={styles.container}>
@@ -420,15 +435,14 @@ const HomeScreen = ({ navigation, route }) => {
               <ListView pin={pin} key={index} navigation={navigation} />
             ))}
           </OldAnimated.ScrollView>
-
           <BottomSheet
-            ref={bs}
-            snapPoints={[260, 0]}
-            renderContent={renderContent}
-            renderHeader={renderHeader}
-            initialSnap={1}
-            callbackNode={fall}
-            enabledGestureInteraction={true}
+          ref={bs}
+          snapPoints={[230, 0]}
+          renderContent={renderContent}
+          isScrollControlled = {true}
+          initialSnap={1}
+          callbackNode={fall}
+          enabledGestureInteraction={true}
           />
         </View>
       ) : (
@@ -436,7 +450,8 @@ const HomeScreen = ({ navigation, route }) => {
           Please enable location services
         </Text>
       )}
-    </View>
+      
+      </View>
   );
 };
 export default HomeScreen;
