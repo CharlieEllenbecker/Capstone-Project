@@ -28,13 +28,8 @@ import { useTheme } from '@react-navigation/native';
 import { styles } from '../components/styles';
 const { width, height } = Dimensions.get('window');
 
-<<<<<<< HEAD
-export default function CameraView({ route, navigation}) {
-=======
 export default function CameraView({ route, navigation, setTakenImage }) {
->>>>>>> f5bea9d600a6c0692f0f6cf4350739612aaec3c6
   const [capturedImage, setCapturedImage] = React.useState(null);
-  const setTakenImage = route.params;
   const [startCamera, setStartCamera] = React.useState(false);
   const [previewVisible, setPreviewVisible] = React.useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
@@ -140,18 +135,7 @@ export default function CameraView({ route, navigation, setTakenImage }) {
                       alignItems: 'center',
                     }}
                   >
-<<<<<<< HEAD
                     <Ionicons name="ios-flash" size={30} color={flashMode === 'off' ? '#FFF' : '#fffb05'}/>
-=======
-                    <Ionicons name="ios-flash" size={30} color={flashMode === 'off' ? '#FFF' : '#fffb05'} />
-                    {/* <Text
-                      style={{
-                        fontSize: 20,
-                      }}
-                    >
-                      ⚡️
-                    </Text> */}
->>>>>>> f5bea9d600a6c0692f0f6cf4350739612aaec3c6
                   </TouchableOpacity>
                 )}
                 <TouchableOpacity

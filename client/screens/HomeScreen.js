@@ -32,6 +32,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import * as ImagePicker from 'expo-image-picker';
+import KeyboardAvoidingWrapper from '../components/keyboardAvoidingWrapper';
 import { mapDarkStyle, mapStandardStyle } from '../model/mapData';
 
 import MapPin from '../components/MapPin';
@@ -318,6 +319,7 @@ const HomeScreen = ({ navigation, route }) => {
   const fall = new Animated.Value(1);
 
   return (
+    
     <View style={styles.container}>
       {locationGranted && region.latitude !== null && region.longitude !== null ? (
         <View style={styles.container}>
@@ -433,12 +435,11 @@ const HomeScreen = ({ navigation, route }) => {
               <ListView pin={pin} key={index} navigation={navigation} />
             ))}
           </OldAnimated.ScrollView>
-
           <BottomSheet
           ref={bs}
           snapPoints={[230, 0]}
           renderContent={renderContent}
-          // renderHeader={renderHeader}
+          isScrollControlled = {true}
           initialSnap={1}
           callbackNode={fall}
           enabledGestureInteraction={true}
@@ -449,7 +450,8 @@ const HomeScreen = ({ navigation, route }) => {
           Please enable location services
         </Text>
       )}
-    </View>
+      
+      </View>
   );
 };
 export default HomeScreen;
