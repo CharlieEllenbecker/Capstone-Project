@@ -4,7 +4,6 @@ const config = require('config');
 const storage = multer.diskStorage({
     destination: config.get('imageDestination'),
     filename: function (req, file, cb) {
-        console.log('storage');
         cb(null, `${Date.now()}-${file.originalname}`)
     }
 });

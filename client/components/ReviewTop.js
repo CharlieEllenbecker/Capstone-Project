@@ -72,7 +72,6 @@ const ReviewTop = ({bs, getPinData, pinId}) => {
           <Formik
             initialValues={{ description: description }}
             onSubmit={(values) => {
-              console.log('here');
               postReview(values);
               showModal(false);
             }}
@@ -111,7 +110,6 @@ const ReviewTop = ({bs, getPinData, pinId}) => {
       </HorizontalContainerTwo>
       {/* Displays fancy line :) */}
       <LocationLine />
-
     </View>
   );
   

@@ -46,9 +46,13 @@ const CARD_WIDTH = width * 0.8;
 const SPACING_FOR_CARD_INSET = width * 0.1 - 10;
 
 const HomeScreen = ({ navigation, route }) => {
-  //const { image, dummy } = route.params;
-
   const [locationGranted, setLocationGranted] = useState(true);
+  const [region, setRegion] = useState({
+    latitude: 43.03725, // null
+    longitude: -87.91891, // null
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  });
 
   const askPermission = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -63,13 +67,6 @@ const HomeScreen = ({ navigation, route }) => {
     }
   };
 
-  const [region, setRegion] = useState({
-    latitude: 43.03725, // null
-    longitude: -87.91891, // null
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  });
-
   const theme = useTheme();
 
   const [title, setTitle] = useState('');
@@ -80,7 +77,7 @@ const HomeScreen = ({ navigation, route }) => {
   const [tag, setTag] = useState('');
 
 
-  const [filter, setFilter] = useState('All'); // TODO: Use filter to set the filtered pins when you get all pins periodically from user location
+  const [filter, setFilter] = useState('All');
   const [selectedImage, setSelectedImage] = useState(null);
   const [takenImage, setTakenImage] = useState(null);
   const [previewVisible, setPreviewVisible] = useState(false);
@@ -98,13 +95,23 @@ const HomeScreen = ({ navigation, route }) => {
   const setErrorMsg = (s) => {
     errorMsg = s;
   }
-  // Get all the pins
+
+  const filterPins = (filterTag) => {
+    if (filterTag === 'All') {
+      dispatch(setFilteredPins(allPins));
+    } else if (filterTag === 'My') {
+      dispatch(setFilteredPins(userSpecificPins));
+    } else {
+      dispatch(setFilteredPins(allPins.filter((pin) => pin.tags.some((tag) => tag.name === filterTag))));
+    }
+  };
+
   const getAllPins = async () => {
     await axios
       .get(`http://${ip}:3001/api/pins/`, { headers: { 'x-auth-token': jwt } })
       .then((response) => {
         dispatch(setAllPins(response.data));
-        dispatch(setFilteredPins(response.data));
+        filterPins('All');
       })
       .catch((error) => {
         console.error(error);
@@ -116,6 +123,7 @@ const HomeScreen = ({ navigation, route }) => {
       .get(`http://${ip}:3001/api/pins/my`, { headers: { 'x-auth-token': jwt } })
       .then((response) => {
         dispatch(setUserSpecificPins(response.data));
+        filterPins(filter);
       })
       .catch((error) => {
         console.error(error);
@@ -133,13 +141,26 @@ const HomeScreen = ({ navigation, route }) => {
       });
   };
 
+  const addMarker = async () => {
+    await axios.post(`http://${ip}:3001/api/pins/`, { title: title, description: description, tags: [{name: newTag}], location: {coordinates:[coordinate.longitude, coordinate.latitude]}}, { headers: { 'x-auth-token' : jwt }})
+    .then((response) => {
+      getAllPins();
+      getMyPins();
+      setErrorMsg('');
+    })
+    .catch((error) => {
+      setErrorMsg(error.response.data);
+    })
+  };
+
   let mapIndex = 0;
   let mapAnimation = new OldAnimated.Value(0);
+
   useEffect(() => {
-    // askPermission();
-    getAllPins();
+    getAllPins(); // async operations are causing issue
     getMyPins();
     getAllTags();
+
     mapAnimation.addListener(({ value }) => {
       let index = Math.floor(value / CARD_WIDTH + 0.3); // animate 30% away from landing on the next item
       if (index >= allPins.length) {
@@ -162,7 +183,7 @@ const HomeScreen = ({ navigation, route }) => {
         }
       }, 10);
     });
-  }, [errorMsg, allPins]);
+  }, [errorMsg, filteredPins]);
 
   const interpolations = filteredPins.map((pin, index) => {
     const inputRange = [(index - 1) * CARD_WIDTH, index * CARD_WIDTH, (index + 1) * CARD_WIDTH];
@@ -192,27 +213,6 @@ const HomeScreen = ({ navigation, route }) => {
   const handleLongPress = (e) => {
     bs.current.snapTo(0);
     setCoordinate(e.nativeEvent.coordinate);
-  };
-
-  const filterPins = (filterTag) => {
-    if (filterTag === 'All') {
-      dispatch(setFilteredPins(allPins));
-    } else if (filterTag === 'My') {
-      dispatch(setFilteredPins(userSpecificPins));
-    } else {
-      dispatch(setFilteredPins(allPins.filter((pin) => pin.tags.some((tag) => tag.name === filterTag))));
-    }
-  };
-
-  const addMarker = async () => {
-    await axios.post(`http://${ip}:3001/api/pins/`, { title: title, description: description, tags: [{name: newTag}], location: {coordinates:[coordinate.longitude, coordinate.latitude]}}, { headers: { 'x-auth-token' : jwt }})
-    .then((response) => {
-      getAllPins();
-      setErrorMsg('');
-    })
-    .catch((error) => {
-      setErrorMsg(error.response.data);
-    })
   };
 
   let openImagePickerAsync = async () => {
@@ -285,9 +285,6 @@ const HomeScreen = ({ navigation, route }) => {
           ))}
         </ScrollView>
       </View>
-
-      
-      
       <View style={{ flexDirection: 'row' }}>
         <Text>{errorMsg}</Text>
         <TouchableOpacity style={[styles.panelButton, { width: '50%', backgroundColor: '#ce3a39', borderWidth: 0  }]} onPress={() => bs.current.snapTo(1)}>
@@ -302,7 +299,7 @@ const HomeScreen = ({ navigation, route }) => {
             }
           }}
         >
-          <Text style={styles.panelButtonTitle}>Accept</Text>
+          <Text style={styles.panelButtonTitle}>Create Pin</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -321,8 +318,8 @@ const HomeScreen = ({ navigation, route }) => {
   return (
     
     <View style={styles.container}>
-      {locationGranted && region.latitude !== null && region.longitude !== null ? (
-        <View style={styles.container}>
+      {locationGranted && region.latitude !== null && region.longitude !== null ?
+        (<View style={styles.container}>
           <MapView
             ref={_map}
             initialRegion={region}
@@ -399,7 +396,6 @@ const HomeScreen = ({ navigation, route }) => {
               </TouchableOpacity>
             ))}
           </ScrollView>
-
           <OldAnimated.ScrollView
             ref={_scrollView}
             horizontal
@@ -444,14 +440,11 @@ const HomeScreen = ({ navigation, route }) => {
           callbackNode={fall}
           enabledGestureInteraction={true}
           />
-        </View>
-      ) : (
-        <Text style={{ marginTop: '50%', justifyContent: 'center', alignItems: 'center' }}>
+        </View>) :
+        (<Text style={{ marginTop: '50%', justifyContent: 'center', alignItems: 'center' }}>
           Please enable location services
-        </Text>
-      )}
-      
-      </View>
+        </Text>)}
+    </View>
   );
 };
 export default HomeScreen;

@@ -39,7 +39,7 @@ const LocationScreen = ({ route, navigation }) => {
   const { selectedPinReviews } = useSelector((state) => state.pinReducer);
   const bs = createRef();
   const fall = new Animated.Value(1);
-  //  pin properties
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [rating, setRating] = useState('');
@@ -49,7 +49,7 @@ const LocationScreen = ({ route, navigation }) => {
   const [useCamera, setUseCamera] = useState(false);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [postDescription, setPostDescription] = useState('');
-  //  get the pin data to display on the page
+
   const getPinData = async () => {
     await axios.get(`http://${ip}:3001/api/pins/${pinId}`, { headers: { 'x-auth-token': jwt } })
     .then((response) => {
@@ -81,16 +81,19 @@ const LocationScreen = ({ route, navigation }) => {
       })
   }
   
-  const postPost = async (fileName, ext, result) => {
-    
-    var formData = new FormData();
+  const postPost = async (uri, fileName, ext) => {
+    const formData = new FormData();
+    console.log('Uri:', uri);
+    console.log('FileName:', fileName);
+    console.log('Ext:', ext);
     formData.append('image', {
-      uri: result,
+      uri: uri,
       name: fileName,
       type: `image/${ext}`
     });
+
     console.log(formData);
-    await axios.post(`http://${ip}:3001/api/pictures/`, formData, { headers: { 'x-auth-token' : jwt }})
+    await axios.post(`http://${ip}:3001/api/pictures`, formData, { headers: { 'x-auth-token' : jwt, 'Content-Type': 'multipart/form-data' }}, )
     .then((response) => {
       console.log(response.data.pictureFileName);
       postDesc(response.data.pictureFileName);
@@ -101,8 +104,8 @@ const LocationScreen = ({ route, navigation }) => {
     
   }
 
-  const postDesc = async (picture) => {
-    await axios.post(`http://${ip}:3001/api/posts/${pinId}`, { description: postDescription, postPictureFileName: picture }, { headers: { 'x-auth-token' : jwt }})
+  const postDesc = async (pictureFileName) => {
+    await axios.post(`http://${ip}:3001/api/posts/${pinId}`, { description: postDescription, postPictureFileName: pictureFileName }, { headers: { 'x-auth-token' : jwt }})
     .then((response) => {
       console.log(response.data);
     })
@@ -118,19 +121,25 @@ const LocationScreen = ({ route, navigation }) => {
 
 
   const pickImage = async () => {
+    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert('Permission to access camera roll is required!');
+      return;
+    }
+
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 1,
+      quality: 1
     });
 
     if (!result.cancelled) {
-      const ext = result.uri.substring(result.uri.lastIndexOf(".") + 1);
       const uri = result.uri;
       const fileName = result.uri.replace(/^.*[\\\/]/, "");
-      setTakenImage(result.uri);
-      postPost(fileName, ext, uri);
+      const ext = result.uri.substring(result.uri.lastIndexOf(".") + 1);
+      postPost(uri, fileName, ext);
     }
   };
 
