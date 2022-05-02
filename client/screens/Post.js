@@ -26,7 +26,6 @@ const Post = ({route, navigation}) => {
     const getPostInfo= async () => {
         await axios.get(`http://${ip}:3001/api/posts/${postId}`, { headers: { 'x-auth-token': jwt } })
         .then((response) => {
-            console.log(response);
             setUserId(response.data.userId);
             setImage(`http://${ip}:3001/${response.data.postPictureFileName}`);
             setDesc(response.data.description);

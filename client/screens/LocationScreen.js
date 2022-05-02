@@ -44,7 +44,7 @@ const LocationScreen = ({ route, navigation }) => {
   const [description, setDescription] = useState('');
   const [rating, setRating] = useState('');
   const [reviews, setReviews] = useState([]);
-  const [images, setImages] = useState([]);
+  const [posts, setPosts] = useState([]);
   const [takenImage, setTakenImage] = useState(null);
   const [useCamera, setUseCamera] = useState(false);
   const [type, setType] = useState(Camera.Constants.Type.back);
@@ -63,8 +63,7 @@ const LocationScreen = ({ route, navigation }) => {
   const getPosts = async () => {
     await axios.get(`http://${ip}:3001/api/posts/all/${pinId}`, { headers: { 'x-auth-token' : jwt }})
     .then((response) => {
-      setImages(response.data);
-      console.log(response.data);
+      setPosts(response.data);
     })
     .catch((error) => {
       console.error(error);
@@ -81,21 +80,9 @@ const LocationScreen = ({ route, navigation }) => {
       })
   }
   
-  const postPost = async (uri, fileName, ext) => {
-    const formData = new FormData();
-    console.log('Uri:', uri);
-    console.log('FileName:', fileName);
-    console.log('Ext:', ext);
-    formData.append('image', {
-      uri: uri,
-      name: fileName,
-      type: `image/${ext}`
-    });
-
-    console.log(formData);
-    await axios.post(`http://${ip}:3001/api/pictures`, formData, { headers: { 'x-auth-token' : jwt, 'Content-Type': 'multipart/form-data' }}, )
+  const postPost = async (base64, fileName) => {
+    await axios.post(`http://${ip}:3001/api/pictures`, { base64: base64, fileName: fileName }, { headers: { 'x-auth-token' : jwt }})
     .then((response) => {
-      console.log(response.data.pictureFileName);
       postDesc(response.data.pictureFileName);
     })
     .catch((error) => {
@@ -104,10 +91,15 @@ const LocationScreen = ({ route, navigation }) => {
     
   }
 
-  const postDesc = async (pictureFileName) => {
-    await axios.post(`http://${ip}:3001/api/posts/${pinId}`, { description: postDescription, postPictureFileName: pictureFileName }, { headers: { 'x-auth-token' : jwt }})
+  const postDesc = async (postPictureFileName) => {
+    const body = { postPictureFileName: postPictureFileName };
+    if(description !== '') {
+      body.description = description;
+    }
+
+    await axios.post(`http://${ip}:3001/api/posts/${pinId}`, body, { headers: { 'x-auth-token' : jwt }})
     .then((response) => {
-      console.log(response.data);
+      getPosts();
     })
     .catch((error) => {
       console.error(error);
@@ -117,7 +109,7 @@ const LocationScreen = ({ route, navigation }) => {
     getPinData();
     getReviews();
     getPosts();
-  }, []);
+  }, [posts]);
 
 
   const pickImage = async () => {
@@ -130,38 +122,22 @@ const LocationScreen = ({ route, navigation }) => {
 
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
+      base64: true,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1
     });
 
     if (!result.cancelled) {
-      const uri = result.uri;
+      // const uri = result.uri;
+      const base64 = result.base64;
       const fileName = result.uri.replace(/^.*[\\\/]/, "");
-      const ext = result.uri.substring(result.uri.lastIndexOf(".") + 1);
-      postPost(uri, fileName, ext);
+      // const ext = result.uri.substring(result.uri.lastIndexOf(".") + 1);
+      postPost(base64, fileName);
     }
   };
 
-  let openImagePickerAsync = async () => {
-    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (permissionResult.granted === false) {
-      alert('Permission to access camera roll is required!');
-      return;
-    }
-
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    setTakenImage(result.uri);
-  };
-
-  const renderContent = () => ( // TODO: make a component for creating a new pin?
+  const renderContent = () => (
   <View style={[styles.panel, { border: '3px solid rgba(0, 0, 0, 0.1)' }]}>
     <TextInput
       placeholder="Description"
@@ -228,7 +204,7 @@ const LocationScreen = ({ route, navigation }) => {
             })}
           </ScrollView>
         </View>
-        <GridView navigation={navigation} images={images}/>
+        <GridView navigation={navigation} posts={posts}/>
       </ScrollView>
       <BottomSheet
           ref={bs}

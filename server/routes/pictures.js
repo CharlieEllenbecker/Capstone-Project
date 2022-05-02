@@ -1,41 +1,24 @@
-// const { upload } = require('../middleware/imageHelper');
-// const auth = require('../middleware/auth');
-// const express = require('express');
-// require('express-async-errors');
-// const router = express.Router();
-
-// /*
-//     POST - Store post picture on the server
-// */
-// router.post('/', [auth, upload.single('image')], async (req, res) => {
-//     return res.status(200).send({ pictureFileName: req.file.filename })
-// });
-
-// module.exports = router;
-
+const fs = require('fs');
 const auth = require('../middleware/auth');
 const express = require('express');
 require('express-async-errors');
 const router = express.Router();
 
-const multer = require('multer')
-const upload = multer().single('image')
 
 /*
     POST - Store post picture on the server
 */
-router.post('/', [auth], async (req, res) => {
-    upload(req, res, function (err) {
-        if (err instanceof multer.MulterError) {
-            console.log('1', err);
-        } else if (err) {
-            console.log('2', err);
+router.post('/', auth, (req, res) => {
+    const buff = Buffer.from(req.body.base64, 'base64');
+    const pictureFileName = `${Date.now()}-${req.body.fileName}`;
+
+    fs.writeFile(`./images/${pictureFileName}`, buff, function(err) {
+        if(err) {
+            console.log('Write File Error:', err);
         }
-    
-        // Everything went fine.
     });
 
-    return res.status(200).send({ pictureFileName: req.file.filename });
+    return res.status(200).send({ pictureFileName: pictureFileName });
 });
 
 module.exports = router;

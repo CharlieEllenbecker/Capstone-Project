@@ -12,7 +12,9 @@ module.exports = function(app) {
     app.use(cors({
         origin: "*"
     }));
-    app.use(express.json());
+    app.use(express.json({
+        limit: '50mb'
+    }));
     app.use(express.static('images'));
     app.use('/api/users', users);
     app.use('/api/tags', tags);
