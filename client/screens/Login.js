@@ -1,4 +1,4 @@
-import React, { useState, ImageBackground } from 'react';
+import React, { useState } from 'react';
 import { Formik } from 'formik';
 import { View } from 'react-native';
 import { Octicons, Ionicons } from '@expo/vector-icons';
@@ -68,15 +68,16 @@ const Login = ({ navigation }) => {
 
           <Formik
             initialValues={{ password: '', email: '' }}
-            onSubmit={(values) => {
+            onSubmit={(values, actions) => {
               if (values.password == '' || values.email == '') {
                 handleMessage('Please fill out all fields.');
               } else {
                 handleLogin(values);
+                actions.resetForm();
               }
             }}
           >
-            {({ handleChange, handleBlur, handleSubmit, values }) => {
+            {({ handleChange, handleBlur, handleSubmit, handleReset, values }) => {
               return (
                 <StyledFormArea>
                   <MyTextInput
@@ -87,7 +88,6 @@ const Login = ({ navigation }) => {
                     value={values.email}
                     keyboardType="email-address"
                   />
-
                   <MyTextInput
                     label="Password"
                     icon="lock"
@@ -99,16 +99,15 @@ const Login = ({ navigation }) => {
                     hidePassword={hidePassword}
                     setHidePassword={setHidePassword}
                   />
-
                   <ErrorMsg type={messageType}>{message}</ErrorMsg>
-
                   <LoginButton onPress={handleSubmit}>
                     <ButtonText>Login</ButtonText>
                   </LoginButton>
-
                   <Line />
-
-                  <SignupButton onPress={() => navigation.navigate('Signup')}>
+                  <SignupButton onPress={() => {
+                    navigation.navigate('Signup');
+                    handleReset();
+                  }}>
                     <ButtonText>Create new account</ButtonText>
                   </SignupButton>
                 </StyledFormArea>

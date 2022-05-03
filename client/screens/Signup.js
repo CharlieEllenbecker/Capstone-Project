@@ -1,4 +1,4 @@
-import React, { useState, ImageBackground } from 'react';
+import React, { useState } from 'react';
 import { Formik } from 'formik';
 import { View } from 'react-native';
 import { Octicons, Ionicons } from '@expo/vector-icons';
@@ -73,21 +73,18 @@ const Signup = ({ navigation }) => {
 
           <Formik
             initialValues={{ username: '', email: '', password: '', confirmPassword: '' }}
-            onSubmit={(values) => {
-              if (
-                (values.email == '' && values.password == '') ||
-                values.username == '' ||
-                values.confirmPassword == ''
-              ) {
+            onSubmit={(values, actions) => {
+              if ((values.email == '' && values.password == '') || values.username == '' || values.confirmPassword == '') {
                 handleMessage('Please fill out all fields.');
               } else if (values.password !== values.confirmPassword) {
                 handleMessage('Passwords do not match.');
               } else {
                 handleSignup(values);
+                actions.resetForm();
               }
             }}
           >
-            {({ handleChange, handleBlur, handleSubmit, values }) => (
+            {({ handleChange, handleBlur, handleSubmit, handleReset, values }) => (
               <StyledFormArea>
                 <MyTextInput
                   label="Username"
@@ -104,7 +101,6 @@ const Signup = ({ navigation }) => {
                   value={values.email}
                   keyboardType="email-address"
                 />
-
                 <MyTextInput
                   label="Password"
                   icon="lock"
@@ -127,16 +123,15 @@ const Signup = ({ navigation }) => {
                   hidePassword={hidePassword}
                   setHidePassword={setHidePassword}
                 />
-
                 <ErrorMsg type={messageType}>{message}</ErrorMsg>
-
                 <LoginButton onPress={handleSubmit}>
                   <ButtonText>Create new account</ButtonText>
                 </LoginButton>
-
                 <Line />
-
-                <SignupButton onPress={() => navigation.navigate('Login')}>
+                <SignupButton onPress={() => {
+                  navigation.navigate('Login');
+                  handleReset();
+                }}>
                   <ButtonText>Already have an account?</ButtonText>
                 </SignupButton>
               </StyledFormArea>

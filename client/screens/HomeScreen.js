@@ -32,6 +32,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import * as ImagePicker from 'expo-image-picker';
+import KeyboardAvoidingWrapper from '../components/keyboardAvoidingWrapper';
 import { mapDarkStyle, mapStandardStyle } from '../model/mapData';
 
 import MapPin from '../components/MapPin';
@@ -45,10 +46,13 @@ const CARD_WIDTH = width * 0.8;
 const SPACING_FOR_CARD_INSET = width * 0.1 - 10;
 
 const HomeScreen = ({ navigation, route }) => {
-  //const { image, dummy } = route.params;
-
-  const [errorMsg, setErrorMsg] = useState(null);
-  const [locationGranted, setLocationGranted] = useState(false);
+  const [locationGranted, setLocationGranted] = useState(true);
+  const [region, setRegion] = useState({
+    latitude: 43.03725, // null
+    longitude: -87.91891, // null
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  });
 
   const askPermission = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -56,33 +60,24 @@ const HomeScreen = ({ navigation, route }) => {
       setLocationGranted(false);
       setErrorMsg('Permission to access location was denied');
     } else {
-      //status === 'granted'
       setLocationGranted(true);
       console.log('Granted!');
       const location = await Location.getCurrentPositionAsync({});
       setRegion((region) => ({ ...region, latitude: location.coords.latitude, longitude: location.coords.longitude }));
-      console.log('lat: ', region.latitude);
     }
   };
-
-  const [region, setRegion] = useState({
-    latitude: null,
-    longitude: null,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  });
 
   const theme = useTheme();
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [newTag, setNewTag] = useState('');
+  //const [errorMsg, setErrorMsg] = useState('');
+  let errorMsg = '';
   const [tag, setTag] = useState('');
 
-  const [filter, setFilter] = useState('All'); // TODO: Use filter to set the filtered pins when you get all pins periodically from user location
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [takenImage, setTakenImage] = useState(null);
-  const [previewVisible, setPreviewVisible] = useState(false);
-  const [hasCameraPermission, setHasCameraPermission] = useState(null);
+
+  const [filter, setFilter] = useState('All');
   const [coordinate, setCoordinate] = useState({});
 
   const ip = getIp();
@@ -93,13 +88,31 @@ const HomeScreen = ({ navigation, route }) => {
   const { filteredPins } = useSelector((state) => state.pinReducer);
   const { tags } = useSelector((state) => state.tagReducer);
 
-  const getAllPins = async (longitude, latitude) => {
+  const setErrorMsg = (s) => {
+    errorMsg = s;
+  }
+
+  const filterPins = (filterTag) => {
+    if (filterTag === 'All') {
+      dispatch(setFilteredPins(allPins));
+    } else if (filterTag === 'My') {
+      dispatch(setFilteredPins(userSpecificPins));
+    } else {
+      dispatch(setFilteredPins(allPins.filter((pin) => pin.tags.some((tag) => tag.name === filterTag))));
+    }
+  };
+
+  const getAllPins = async () => {
     await axios
-      .get(`http://${ip}:3001/api/pins/user-location/${longitude}/${latitude}`, { headers: { 'x-auth-token': jwt } })
+      .get(`http://${ip}:3001/api/pins/`, { headers: { 'x-auth-token': jwt } })
       .then((response) => {
         dispatch(setAllPins(response.data));
+<<<<<<< HEAD
         filterPins('ALL');
         console.log(response.data);
+=======
+        filterPins('All');
+>>>>>>> b4fead3d8f6fa1fef471f8c8f2b555f0633137a8
       })
 
       .catch((error) => {
@@ -107,12 +120,16 @@ const HomeScreen = ({ navigation, route }) => {
       });
   };
 
-  const getMyPins = async (longitude, latitude) => {
+  const getMyPins = async () => {
     await axios
-      .get(`http://${ip}:3001/api/pins/my/user-location/${longitude}/${latitude}`, { headers: { 'x-auth-token': jwt } })
+      .get(`http://${ip}:3001/api/pins/my`, { headers: { 'x-auth-token': jwt } })
       .then((response) => {
         dispatch(setUserSpecificPins(response.data));
+<<<<<<< HEAD
         console.log(response.data);
+=======
+        filterPins(filter);
+>>>>>>> b4fead3d8f6fa1fef471f8c8f2b555f0633137a8
       })
       .catch((error) => {
         console.error(error);
@@ -130,15 +147,30 @@ const HomeScreen = ({ navigation, route }) => {
       });
   };
 
+<<<<<<< HEAD
   const getPinsBasedOnLocation = async () => {
     const location = await Location.getCurrentPositionAsync({});
     getAllPins(location.coords.longitude, location.coords.latitude);
     getMyPins(location.coords.longitude, location.coords.latitude);
+=======
+  const addMarker = async () => {
+    await axios.post(`http://${ip}:3001/api/pins/`, { title: title, description: description, tags: [{name: newTag}], location: {coordinates:[coordinate.longitude, coordinate.latitude]}}, { headers: { 'x-auth-token' : jwt }})
+    .then((response) => {
+      getAllPins();
+      getMyPins();
+      setErrorMsg('');
+    })
+    .catch((error) => {
+      setErrorMsg(error.response.data);
+    })
+>>>>>>> b4fead3d8f6fa1fef471f8c8f2b555f0633137a8
   };
 
   let mapIndex = 0;
   let mapAnimation = new OldAnimated.Value(0);
+
   useEffect(() => {
+<<<<<<< HEAD
     askPermission();
     setTimeout(() => {
       if (locationGranted) {
@@ -146,7 +178,12 @@ const HomeScreen = ({ navigation, route }) => {
         getPinsBasedOnLocation();
       }
     }, 5000);
+=======
+    getAllPins(); // async operations are causing issue
+    getMyPins();
+>>>>>>> b4fead3d8f6fa1fef471f8c8f2b555f0633137a8
     getAllTags();
+
     mapAnimation.addListener(({ value }) => {
       let index = Math.floor(value / CARD_WIDTH + 0.3); // animate 30% away from landing on the next item
       if (index >= allPins.length) {
@@ -169,7 +206,7 @@ const HomeScreen = ({ navigation, route }) => {
         }
       }, 10);
     });
-  }, []);
+  }, [errorMsg, filteredPins]);
 
   const interpolations = filteredPins.map((pin, index) => {
     const inputRange = [(index - 1) * CARD_WIDTH, index * CARD_WIDTH, (index + 1) * CARD_WIDTH];
@@ -201,45 +238,7 @@ const HomeScreen = ({ navigation, route }) => {
     setCoordinate(e.nativeEvent.coordinate);
   };
 
-  const filterPins = (filterTag) => {
-    if (filterTag === 'All') {
-      dispatch(setFilteredPins(allPins));
-    } else if (filterTag === 'My') {
-      dispatch(setFilteredPins(userSpecificPins));
-    } else {
-      dispatch(setFilteredPins(allPins.filter((pin) => pin.tags.some((tag) => tag.name === filterTag))));
-    }
-  };
-
-  const addMarker = () => {
-    // TODO: utilize endpoint
-  };
-
-  let openImagePickerAsync = async () => {
-    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (permissionResult.granted === false) {
-      alert('Permission to access camera roll is required!');
-      return;
-    }
-
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    setSelectedImage(result.uri);
-    // if (result.cancelled === true) {
-    //   startCamera ? setStartCamera(false) : null;
-    //   return;
-    // }
-    //require('../assets/banners/food-banner1.jpg')
-  };
-
   const renderContent = () => (
-    // TODO: make a component for creating a new pin?
     <View style={styles.panel}>
       <TextInput
         placeholder="Title"
@@ -279,50 +278,39 @@ const HomeScreen = ({ navigation, route }) => {
           }}
         >
           {tags.map((tag, index) => (
-            <TouchableOpacity
-              key={index}
-              style={[styles.chipsItemHeader, { borderColor: '#000000', borderWidth: 0.7, height: 30 }]}
-            >
+            <TouchableOpacity onPress={()=> setNewTag(tag)} key={index} style={[styles.chipsItemHeader, {borderColor: 'rgba(0,0,0,0.5)', borderWidth: 0.9, height: 30}]}>
               <Text>{tag}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
       </View>
-
       <View style={{ flexDirection: 'row' }}>
-        <TouchableOpacity
-          style={[styles.panelButton, { width: '50%', backgroundColor: '#ce3a39', borderWidth: 0, marginBottom: 30 }]}
-          onPress={() => bs.current.snapTo(1)}
-        >
+        <Text>{errorMsg}</Text>
+        <TouchableOpacity style={[styles.panelButton, { width: '50%', backgroundColor: '#ce3a39', borderWidth: 0  }]} onPress={() => bs.current.snapTo(1)}>
           <Text style={styles.panelButtonTitle}>Cancel</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.panelButton, { width: '50%', backgroundColor: '#2fbf78', borderWidth: 0, marginBottom: 30 }]}
+          style={[styles.panelButton, { width: '50%', backgroundColor: '#2fbf78', borderWidth: 0 }]}
           onPress={() => {
             addMarker();
-            bs.current.snapTo(1);
+            if (errorMsg === '') {
+              bs.current.snapTo(1);
+            }
           }}
         >
-          <Text style={styles.panelButtonTitle}>Accept</Text>
+          <Text style={styles.panelButtonTitle}>Create Pin</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 
-  const renderHeader = () => (
-    <View style={styles.header}>
-      <View style={styles.panelHeader}>
-        <View style={styles.panelHandle} />
-      </View>
-    </View>
-  );
   const bs = createRef();
   const fall = new Animated.Value(1);
 
   return (
     <View style={styles.container}>
-      {locationGranted && region.latitude !== null && region.longitude !== null ? (
-        <View style={styles.container}>
+      {locationGranted && region.latitude !== null && region.longitude !== null ?
+        (<View style={styles.container}>
           <MapView
             ref={_map}
             initialRegion={region}
@@ -330,8 +318,6 @@ const HomeScreen = ({ navigation, route }) => {
             provider={PROVIDER_GOOGLE}
             customMapStyle={theme.dark ? mapDarkStyle : mapStandardStyle}
             onLongPress={handleLongPress}
-            //onRegionChangeComplete={(region) => setRegion(region)}
-            //onLongPress={<addMarker state={state} />}
           >
             {filteredPins.map((pin, index) => {
               const scaleStyle = {
@@ -345,7 +331,6 @@ const HomeScreen = ({ navigation, route }) => {
               return <MapPin key={index} pin={pin} scaleStyle={scaleStyle} onMarkerPress={onMarkerPress} />;
             })}
           </MapView>
-
           <ScrollView
             horizontal
             pagingEnabled
@@ -399,7 +384,6 @@ const HomeScreen = ({ navigation, route }) => {
               </TouchableOpacity>
             ))}
           </ScrollView>
-
           <OldAnimated.ScrollView
             ref={_scrollView}
             horizontal
@@ -435,22 +419,19 @@ const HomeScreen = ({ navigation, route }) => {
               <ListView pin={pin} key={index} navigation={navigation} />
             ))}
           </OldAnimated.ScrollView>
-
           <BottomSheet
-            ref={bs}
-            snapPoints={[260, 0]}
-            renderContent={renderContent}
-            renderHeader={renderHeader}
-            initialSnap={1}
-            callbackNode={fall}
-            enabledGestureInteraction={true}
+          ref={bs}
+          snapPoints={[230, 0]}
+          renderContent={renderContent}
+          isScrollControlled = {true}
+          initialSnap={1}
+          callbackNode={fall}
+          enabledGestureInteraction={true}
           />
-        </View>
-      ) : (
-        <Text style={{ marginTop: '50%', justifyContent: 'center', alignItems: 'center' }}>
+        </View>) :
+        (<Text style={{ marginTop: '50%', justifyContent: 'center', alignItems: 'center' }}>
           Please enable location services
-        </Text>
-      )}
+        </Text>)}
     </View>
   );
 };

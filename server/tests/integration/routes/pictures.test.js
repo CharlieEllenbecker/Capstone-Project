@@ -28,12 +28,17 @@ describe('/api/pictures', () => {
         });
 
         const exec = async () => {
-            const file = fs.createReadStream('./tests/testFormDataImages/default.jpg');
+            const fileName = 'default.jpg';
+            const base64 = fs.readFileSync(`./tests/testFormDataImages/${fileName}`, { encoding: 'base64' });
 
             return await request(server)
                 .post('/api/pictures')
-                .attach('image', file)
-                .set('x-auth-token', token);
+                .set('x-auth-token', token)
+                .send({
+                    base64: base64,
+                    fileName: fileName,
+                    isTest: true
+                });
         }
 
         // This test is not working because supertest does not like how the header is being set along with the file that is attached

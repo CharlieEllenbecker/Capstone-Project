@@ -17,16 +17,15 @@ const Post = ({route, navigation}) => {
     const { jwt } = useSelector((state) => state.jwtReducer);
     const [image, setImage] = useState('');
     const [username, setUsername] = useState('')
-    const [profilePicture, setProfilePicture] = useState('');
+    const [profilePicture, setProfilePicture] = useState('../assets/profilePics/profilepic1.png');
     const [desc, setDesc] = useState('');
     const [pinId, setPinId] = useState('');
-    const [pin, setPin] = useState('');
+    const [pin, setPin] = useState('../assets/loginBackground1.jpg');
     const [loading, setLoading] = useState(false);
     
     const getPostInfo= async () => {
         await axios.get(`http://${ip}:3001/api/posts/${postId}`, { headers: { 'x-auth-token': jwt } })
         .then((response) => {
-            console.log(response);
             setUserId(response.data.userId);
             setImage(`http://${ip}:3001/${response.data.postPictureFileName}`);
             setDesc(response.data.description);

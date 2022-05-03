@@ -30,7 +30,6 @@ const { width, height } = Dimensions.get('window');
 
 export default function CameraView({ route, navigation, setTakenImage }) {
   const [capturedImage, setCapturedImage] = React.useState(null);
-
   const [startCamera, setStartCamera] = React.useState(false);
   const [previewVisible, setPreviewVisible] = React.useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
@@ -136,14 +135,7 @@ export default function CameraView({ route, navigation, setTakenImage }) {
                       alignItems: 'center',
                     }}
                   >
-                    <Ionicons name="ios-flash" size={30} color={flashMode === 'off' ? '#FFF' : '#fffb05'} />
-                    {/* <Text
-                      style={{
-                        fontSize: 20,
-                      }}
-                    >
-                      ⚡️
-                    </Text> */}
+                    <Ionicons name="ios-flash" size={30} color={flashMode === 'off' ? '#FFF' : '#fffb05'}/>
                   </TouchableOpacity>
                 )}
                 <TouchableOpacity

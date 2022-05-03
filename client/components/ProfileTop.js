@@ -30,12 +30,12 @@ const ProfileTop = ({ navigation, length }) => {
     const ip = getIp();
     const dispatch = useDispatch();
     const { jwt } = useSelector((state) => state.jwtReducer);
+
     const handleLogout = () => {
         dispatch(deleteJWT());
         dispatch(deleteUserData());
         navigation.navigate('Login');
-      };
-    
+    }
 
     const getPins = async () => {
         await axios.get(`http://${ip}:3001/api/pins/my`, { headers: { 'x-auth-token' : jwt }})
@@ -46,13 +46,13 @@ const ProfileTop = ({ navigation, length }) => {
             console.error(error);
         })
     }
+    
     const getUserData = async () => {
         await axios.get(`http://${ip}:3001/api/users/me`, { headers: { 'x-auth-token': jwt } })
         .then((response) => {
             setUsername(response.data.username);
             const url = `http://${ip}:3001/${response.data.profilePictureFileName}`
             setProfilePicture(url);
-            console.log(profilePicture, username);
         })
         .catch((error) => {
             console.error(error);
