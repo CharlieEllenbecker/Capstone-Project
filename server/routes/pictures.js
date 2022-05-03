@@ -11,10 +11,11 @@ const router = express.Router();
 router.post('/', auth, (req, res) => {
     const buff = Buffer.from(req.body.base64, 'base64');
     const pictureFileName = `${Date.now()}-${req.body.fileName}`;
+    const directoryPath = (req.body.isTest) ? './tests/testUploadedImages/' : './images/';
 
-    fs.writeFile(`./images/${pictureFileName}`, buff, function(err) {
+    fs.writeFile(`${directoryPath}${pictureFileName}`, buff, function(err) {
         if(err) {
-            console.log('Write File Error:', err);
+            console.log('Pictures route writeFile Error:', err);
         }
     });
 

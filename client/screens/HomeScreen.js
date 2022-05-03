@@ -78,10 +78,6 @@ const HomeScreen = ({ navigation, route }) => {
 
 
   const [filter, setFilter] = useState('All');
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [takenImage, setTakenImage] = useState(null);
-  const [previewVisible, setPreviewVisible] = useState(false);
-  const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [coordinate, setCoordinate] = useState({});
 
   const ip = getIp();
@@ -255,7 +251,7 @@ const HomeScreen = ({ navigation, route }) => {
           }}
         >
           {tags.map((tag, index) => (
-            <TouchableOpacity onPress={()=>{setNewTag(tag)}} key={index} style={[styles.chipsItemHeader, {borderColor: 'rgba(0,0,0,0.5)', borderWidth: 0.9, height: 30}]}>
+            <TouchableOpacity onPress={()=> setNewTag(tag)} key={index} style={[styles.chipsItemHeader, {borderColor: 'rgba(0,0,0,0.5)', borderWidth: 0.9, height: 30}]}>
               <Text>{tag}</Text>
             </TouchableOpacity>
           ))}
@@ -285,7 +281,6 @@ const HomeScreen = ({ navigation, route }) => {
   const fall = new Animated.Value(1);
 
   return (
-    
     <View style={styles.container}>
       {locationGranted && region.latitude !== null && region.longitude !== null ?
         (<View style={styles.container}>

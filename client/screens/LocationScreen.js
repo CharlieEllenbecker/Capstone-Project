@@ -81,7 +81,7 @@ const LocationScreen = ({ route, navigation }) => {
   }
   
   const postPost = async (base64, fileName) => {
-    await axios.post(`http://${ip}:3001/api/pictures`, { base64: base64, fileName: fileName }, { headers: { 'x-auth-token' : jwt }})
+    await axios.post(`http://${ip}:3001/api/pictures`, { base64: base64, fileName: fileName, isTest: false }, { headers: { 'x-auth-token' : jwt }})
     .then((response) => {
       postDesc(response.data.pictureFileName);
     })

@@ -1,5 +1,4 @@
 const { User, validate, validateEmailPassword, validateForUpdate } = require('../models/user');
-const { upload } = require('../middleware/imageHelper');
 const auth = require('../middleware/auth');
 var fs = require('fs');
 const decodeJwt = require('jwt-decode');
@@ -94,18 +93,32 @@ router.post('/login', async (req, res) => { // TODO: Do we want to allow the use
 });
 
 /*
-    POST - Upload/Update Profile Picture
+    POST - Upload Profile Picture
+    req.body = {
+        base64: base64 encoded image,
+        fileName: name of the base64 encoded image,
+        isTest: boolean (only true for tests!)
+    }
 */
-router.post('/profile-picture', [auth, upload.single('image')], async (req, res) => {
+router.post('/profile-picture', auth, async (req, res) => {
     const userId = decodeJwt(req.header('x-auth-token'))._id;
 
     let user = await User.findById(userId);
     if(!user) {
-        fs.unlinkSync(`./images/${req.file.filename}`);
         return res.status(400).send('User not found.');
     }
 
-    user.profilePictureFileName = req.file.filename;
+    const buff = Buffer.from(req.body.base64, 'base64');
+    const profilePictureFileName = `${Date.now()}-${req.body.fileName}`;
+    const directoryPath = (req.body.isTest) ? './tests/testUploadedImages/' : './images/';
+
+    fs.writeFile(`${directoryPath}${profilePictureFileName}`, buff, function(err) {
+        if(err) {
+            console.log('Users upload profile picture route writeFile Error:', err);
+        }
+    });
+
+    user.profilePictureFileName = profilePictureFileName;
     user = await user.save();
 
     return res.status(200).send(_.pick(user, ['username', 'email', 'profilePictureFileName']));
@@ -113,13 +126,17 @@ router.post('/profile-picture', [auth, upload.single('image')], async (req, res)
 
 /*
     PUT - Update Profile Picture
+    req.body = {
+        base64: base64 encoded image,
+        fileName: name of the base64 encoded image,
+        isTest: boolean (only true for tests!)
+    }
 */
-router.put('/profile-picture', [auth, upload.single('image')], async (req, res) => {
+router.put('/profile-picture', auth, async (req, res) => {
     const userId = decodeJwt(req.header('x-auth-token'))._id;
 
     let user = await User.findById(userId);
     if(!user) {
-        fs.unlinkSync(`./images/${req.file.filename}`);
         return res.status(400).send('User not found.');
     }
 
@@ -127,7 +144,17 @@ router.put('/profile-picture', [auth, upload.single('image')], async (req, res) 
         fs.unlinkSync(`./images/${user.profilePictureFileName}`);
     }
 
-    user.profilePictureFileName = req.file.filename;
+    const buff = Buffer.from(req.body.base64, 'base64');
+    const profilePictureFileName = `${Date.now()}-${req.body.fileName}`;
+    const directoryPath = (req.body.isTest) ? './tests/testUploadedImages/' : './images/';
+
+    fs.writeFile(`${directoryPath}${profilePictureFileName}`, buff, function(err) {
+        if(err) {
+            console.log('Users update profile picture route writeFile Error:', err);
+        }
+    });
+
+    user.profilePictureFileName = profilePictureFileName;
     user = await user.save();
 
     return res.status(200).send(_.pick(user, ['username', 'email', 'profilePictureFileName']));

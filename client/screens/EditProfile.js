@@ -27,9 +27,6 @@ import {
   } from '../components/styles';
 import axios from 'axios';
 
-
-
-
 const EditProfile = ({ route, navigation }) => {
     const [username, setUsername] = useState('');
     const [profilePicture, setProfilePicture] = useState(null);
@@ -96,19 +93,17 @@ const EditProfile = ({ route, navigation }) => {
         }
     }
 
-    //Handling messages
     const handleMessage = (message, type = 'Failed') => {
         setMessage(message);
         setMessageType(type);
     };
 
-
     useEffect(() => {
         getUserData();
     }, [username, profilePicture]);
 
-return(
-    <Formik
+    return(
+        <Formik
             enableReinitialize
             initialValues={{ username: username, email: email, password: password, confirmPassword: password }}
             onSubmit={(values) => {
@@ -119,67 +114,67 @@ return(
                     setUserData(values);
                 }
             }}
-          >
+        >
             {({ handleChange, handleBlur, handleSubmit, values }) => (
-    <View style={{flex: 2, width: '100%', justifyContent: 'center'}}>
-        <ScrollView scrollEventThrottle={16}>
-            <VerticalContainer style={{alignItems: 'center'}}>
-                <ProfilePictureContainer style={{marginTop: 100, alignItems: 'center', justifyContent: 'center'}}><ImageBackground imageStyle={{borderRadius: 80}} style={{height: 160, width: 160, alignItems: 'center'}} source={{ uri: profilePicture }}><Ionicons name="ios-add-circle" size={40} color='rgba(0,0,0,0.7)' style={{top: 110, left: 60}}/></ImageBackground></ProfilePictureContainer>
-                <UsernameText>{username}</UsernameText>
-            </VerticalContainer>
-            <LocationLine/>
-            <VerticalContainer style={{paddingLeft: 50, paddingRight: 50}}>
-                <MyTextInput 
-                    placeholder={username}
-                    label="Username"
-                    icon="person"
-                    onChangeText={handleChange('username')}
-                    onBlur={handleBlur('username')} 
-                    value={values.username}
-                />
-                <MyTextInput 
-                    placeholder={email}
-                    label='Email'
-                    icon="mail"
-                    onChangeText={handleChange('email')}
-                    onBlur={handleBlur('email')}
-                    value={values.email}
-                    keyboardType="email-address"
-                />
-                <MyTextInput 
-                    placeholder={'**********'}  
-                    label='New Password'
-                    icon="lock"
-                    onChangeText={handleChange('password')}
-                    onBlur={handleBlur('password')}
-                    value={values.password}
-                    secureTextEntry={hidePassword}
-                    isPassword={true}
-                    hidePassword={hidePassword}
-                    setHidePassword={setHidePassword}
-                />
-                <MyTextInput 
-                    placeholder={'**********'}
-                    label='Confirm New Password'
-                    icon="lock"
-                    onChangeText={handleChange('confirmPassword')}
-                    onBlur={handleBlur('confirmPassword')}
-                    value={values.confirmPassword}
-                    secureTextEntry={hidePassword}
-                    isPassword={true}
-                    hidePassword={hidePassword}
-                    setHidePassword={setHidePassword}
-                />
-                <ErrorMsg>{message}</ErrorMsg>
-                <Line style={{backgroundColor: '#000000'}}/>
+                <View style={{flex: 2, width: '100%', justifyContent: 'center'}}>
+                    <ScrollView scrollEventThrottle={16}>
+                        <VerticalContainer style={{alignItems: 'center'}}>
+                            <ProfilePictureContainer style={{marginTop: 100, alignItems: 'center', justifyContent: 'center'}}><ImageBackground imageStyle={{borderRadius: 80}} style={{height: 160, width: 160, alignItems: 'center'}} source={{ uri: profilePicture }}><Ionicons name="ios-add-circle" size={40} color='rgba(0,0,0,0.7)' style={{top: 110, left: 60}}/></ImageBackground></ProfilePictureContainer>
+                            <UsernameText>{username}</UsernameText>
+                        </VerticalContainer>
+                        <LocationLine/>
+                        <VerticalContainer style={{paddingLeft: 50, paddingRight: 50}}>
+                            <MyTextInput 
+                                placeholder={username}
+                                label="Username"
+                                icon="person"
+                                onChangeText={handleChange('username')}
+                                onBlur={handleBlur('username')} 
+                                value={values.username}
+                            />
+                            <MyTextInput 
+                                placeholder={email}
+                                label='Email'
+                                icon="mail"
+                                onChangeText={handleChange('email')}
+                                onBlur={handleBlur('email')}
+                                value={values.email}
+                                keyboardType="email-address"
+                            />
+                            <MyTextInput 
+                                placeholder={'**********'}  
+                                label='New Password'
+                                icon="lock"
+                                onChangeText={handleChange('password')}
+                                onBlur={handleBlur('password')}
+                                value={values.password}
+                                secureTextEntry={hidePassword}
+                                isPassword={true}
+                                hidePassword={hidePassword}
+                                setHidePassword={setHidePassword}
+                            />
+                            <MyTextInput 
+                                placeholder={'**********'}
+                                label='Confirm New Password'
+                                icon="lock"
+                                onChangeText={handleChange('confirmPassword')}
+                                onBlur={handleBlur('confirmPassword')}
+                                value={values.confirmPassword}
+                                secureTextEntry={hidePassword}
+                                isPassword={true}
+                                hidePassword={hidePassword}
+                                setHidePassword={setHidePassword}
+                            />
+                            <ErrorMsg>{message}</ErrorMsg>
+                            <Line style={{backgroundColor: '#000000'}}/>
 
-                <DeleteButton onPress={handleSubmit} style={{backgroundColor: '#2fbf78'}}><ButtonText style={{color: '#FFFFFF'}}>Save Changes</ButtonText></DeleteButton>
-                <DeleteButton><ButtonText>Delete Account</ButtonText></DeleteButton>
-            </VerticalContainer>
-        </ScrollView>
-    </View>
+                            <DeleteButton onPress={handleSubmit} style={{backgroundColor: '#2fbf78'}}><ButtonText style={{color: '#FFFFFF'}}>Save Changes</ButtonText></DeleteButton>
+                            <DeleteButton><ButtonText>Delete Account</ButtonText></DeleteButton>
+                        </VerticalContainer>
+                    </ScrollView>
+                </View>
             )}
-    </Formik>
+        </Formik>
 );
 }
 

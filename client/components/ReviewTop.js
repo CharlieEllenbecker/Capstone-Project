@@ -1,12 +1,11 @@
 import StarRating from './StarRating';
 import InputStarRating from './InputStarRating';
-import { Field, Formik } from 'formik';
-import { Ionicons } from '@expo/vector-icons';
+import { Formik } from 'formik';
 import axios from 'axios';
 import getIp from '../ip.js';
 import { useSelector, useDispatch } from 'react-redux';
 import { setSelectedPinReviews } from '../state/actions/pinActions';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Modal,
@@ -39,7 +38,6 @@ const ReviewTop = ({bs, getPinData, pinId}) => {
   //modalVisible and setModalVisible for writing a review
   const [modalVisible, setModalVisible] = useState(modalVis ? true : false);
   const [rating, setRating] = useState(0);
-  const [description, setDescription] = useState('');
   const showModal = (set) => {
     set ? setModalVisible(true) : setModalVisible(false);
   };
@@ -59,18 +57,16 @@ const ReviewTop = ({bs, getPinData, pinId}) => {
   return (
     <View>
       <LocationReviewContainer></LocationReviewContainer>
-      {/* <LocationImage style={{paddingLeft: 20}} source= {{ uri: image }}></LocationImage> */}
       {selectedPin && <LocationTitle style={{ paddingLeft: 20 }}>{selectedPin.title}</LocationTitle>}
       <View style={{ paddingLeft: 20 }}>
         {selectedPin && <StarRating rating={selectedPin.rating} size={25} />}
         {selectedPin && <LocationDescription>{selectedPin.description}</LocationDescription>}
       </View>
 
-      {/* Modal popup review window */}
       <Modal visible={modalVisible} transparent={true} animationType="slide" presentationStyle="overFullScreen" onRequestClose={() => showModal(!modalVisible)}>
         <View style={stylesReview.viewWrapper}>
           <Formik
-            initialValues={{ description: description }}
+            initialValues={{ description: '' }}
             onSubmit={(values) => {
               postReview(values);
               showModal(false);
@@ -78,7 +74,6 @@ const ReviewTop = ({bs, getPinData, pinId}) => {
             validator={() => ({})}
           >{({ handleChange, handleBlur, handleSubmit, values }) => (
             <View style={stylesReview.modalView}>
-              <AddPictureContainer><Ionicons name='ios-camera-outline' size={25} /></AddPictureContainer>
               <InputStarRating setRating={setRating}/>
               <TextInput
                 multiline numberOfLines={4} 
@@ -99,7 +94,6 @@ const ReviewTop = ({bs, getPinData, pinId}) => {
           </Formik>
         </View>
       </Modal>
-      {/* Open review window */}
       <HorizontalContainerTwo style={{ paddingLeft: 20 }}>
         <LocationReviewButton onPress={() => showModal(true)}>
           <ReviewButtonText>Write a review</ReviewButtonText>
@@ -108,7 +102,6 @@ const ReviewTop = ({bs, getPinData, pinId}) => {
           <ReviewButtonText onPress={() => bs.current.snapTo(0)}>Post</ReviewButtonText>
         </LocationNavigateButton>
       </HorizontalContainerTwo>
-      {/* Displays fancy line :) */}
       <LocationLine />
     </View>
   );
@@ -137,7 +130,6 @@ const stylesReview = StyleSheet.create({
     borderRadius: 7,
   },
   input: {
-
     width: "80%",
     height: "30%",
     borderRadius: 5,

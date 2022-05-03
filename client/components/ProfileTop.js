@@ -46,6 +46,7 @@ const ProfileTop = ({ navigation, length }) => {
             console.error(error);
         })
     }
+    
     const getUserData = async () => {
         await axios.get(`http://${ip}:3001/api/users/me`, { headers: { 'x-auth-token': jwt } })
         .then((response) => {
