@@ -98,8 +98,10 @@ const HomeScreen = ({ navigation, route }) => {
       .get(`http://${ip}:3001/api/pins/user-location/${longitude}/${latitude}`, { headers: { 'x-auth-token': jwt } })
       .then((response) => {
         dispatch(setAllPins(response.data));
-        dispatch(setFilteredPins(response.data));
+        filterPins('ALL');
+        console.log(response.data);
       })
+
       .catch((error) => {
         console.error(error);
       });
@@ -110,6 +112,7 @@ const HomeScreen = ({ navigation, route }) => {
       .get(`http://${ip}:3001/api/pins/my/user-location/${longitude}/${latitude}`, { headers: { 'x-auth-token': jwt } })
       .then((response) => {
         dispatch(setUserSpecificPins(response.data));
+        console.log(response.data);
       })
       .catch((error) => {
         console.error(error);
@@ -131,14 +134,15 @@ const HomeScreen = ({ navigation, route }) => {
     const location = await Location.getCurrentPositionAsync({});
     getAllPins(location.coords.longitude, location.coords.latitude);
     getMyPins(location.coords.longitude, location.coords.latitude);
-  }
+  };
 
   let mapIndex = 0;
   let mapAnimation = new OldAnimated.Value(0);
   useEffect(() => {
     askPermission();
     setTimeout(() => {
-      if(locationGranted) {
+      if (locationGranted) {
+        console.log('Location granted Hereeee');
         getPinsBasedOnLocation();
       }
     }, 5000);

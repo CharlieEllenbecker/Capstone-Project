@@ -1,23 +1,25 @@
 import React, { useState } from 'react';
 
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
 
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, Text } from 'react-native';
 
 import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import CameraView from '../screens/CameraView'
+import CameraView from '../screens/CameraView';
 
 const Tab = createMaterialBottomTabNavigator();
 
 const MainTabScreen = ({ route, navigation }) => {
   return (
-    <Tab.Navigator         
+    <Tab.Navigator
       initialRouteName="Home"
       activeColor="#000000"
       inactiveColor="#000000"
-      barStyle={{ backgroundColor: '#ffffff' }}>
+      barStyle={{ backgroundColor: '#ffffff' }}
+    >
       <Tab.Screen
         name="Home"
         component={HomeScreen}
@@ -25,7 +27,7 @@ const MainTabScreen = ({ route, navigation }) => {
         options={{
           //tabBarLabel: "Home",
           tabBarLabel: <Text style={{ fontSize: 11, color: '#000000' }}>Home</Text>,
-          
+
           tabBarIcon: ({ color }) => <Ionicons name="ios-home" color="#000000" size={26} />,
         }}
       />
@@ -35,7 +37,7 @@ const MainTabScreen = ({ route, navigation }) => {
         options={{
           tabBarLabel: 'Explore',
           tabBarLabel: <Text style={{ fontSize: 11, color: '#000000' }}>Camera</Text>,
-          
+          tabBarStyle: { display: 'none' },
           tabBarIcon: ({ color }) => <Ionicons name="ios-camera" color="#000000" size={26} />,
         }}
       />
@@ -44,7 +46,7 @@ const MainTabScreen = ({ route, navigation }) => {
         component={ProfileScreen}
         options={{
           tabBarLabel: <Text style={{ fontSize: 11, color: '#000000' }}>Profile</Text>,
-          
+
           tabBarIcon: ({ color }) => <Ionicons name="ios-person" color="#000000" size={26} />,
         }}
       />
@@ -53,7 +55,6 @@ const MainTabScreen = ({ route, navigation }) => {
 };
 
 export default MainTabScreen;
-
 
 const styles = StyleSheet.create({
   names: {
