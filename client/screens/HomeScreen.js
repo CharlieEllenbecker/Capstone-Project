@@ -215,31 +215,7 @@ const HomeScreen = ({ navigation, route }) => {
     setCoordinate(e.nativeEvent.coordinate);
   };
 
-  let openImagePickerAsync = async () => {
-    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (permissionResult.granted === false) {
-      alert('Permission to access camera roll is required!');
-      return;
-    }
-
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    setSelectedImage(result.uri);
-    // if (result.cancelled === true) {
-    //   startCamera ? setStartCamera(false) : null;
-    //   return;
-    // }
-    //require('../assets/banners/food-banner1.jpg')
-  };
-
   const renderContent = () => (
-    // TODO: make a component for creating a new pin?
     <View style={styles.panel}>
       <TextInput
         placeholder="Title"
@@ -305,13 +281,6 @@ const HomeScreen = ({ navigation, route }) => {
     </View>
   );
 
-  const renderHeader = () => (
-    <View style={styles.header}>
-      <View style={styles.panelHeader}>
-        
-      </View>
-    </View>
-  );
   const bs = createRef();
   const fall = new Animated.Value(1);
 
@@ -327,8 +296,6 @@ const HomeScreen = ({ navigation, route }) => {
             provider={PROVIDER_GOOGLE}
             customMapStyle={theme.dark ? mapDarkStyle : mapStandardStyle}
             onLongPress={handleLongPress}
-            //onRegionChangeComplete={(region) => setRegion(region)}
-            //onLongPress={<addMarker state={state} />}
           >
             {filteredPins.map((pin, index) => {
               const scaleStyle = {
@@ -342,7 +309,6 @@ const HomeScreen = ({ navigation, route }) => {
               return <MapPin key={index} pin={pin} scaleStyle={scaleStyle} onMarkerPress={onMarkerPress} />;
             })}
           </MapView>
-
           <ScrollView
             horizontal
             pagingEnabled

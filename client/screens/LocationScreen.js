@@ -115,9 +115,8 @@ const LocationScreen = ({ route, navigation }) => {
   const pickImage = async () => {
     let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-    if (permissionResult.granted === false) {
-      alert('Permission to access camera roll is required!');
-      return;
+    if (!permissionResult.granted) {
+      return alert('Permission to access camera roll is required!');
     }
 
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -129,13 +128,23 @@ const LocationScreen = ({ route, navigation }) => {
     });
 
     if (!result.cancelled) {
-      // const uri = result.uri;
       const base64 = result.base64;
       const fileName = result.uri.replace(/^.*[\\\/]/, "");
-      // const ext = result.uri.substring(result.uri.lastIndexOf(".") + 1);
       postPost(base64, fileName);
     }
   };
+
+  const openCamera = async () => {
+    let permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+
+    console.log('here', permissionResult.granted);
+
+    if (!permissionResult.granted) {
+      return alert('Permission to access camera is required!');
+    } else {
+      navigation.navigate('CameraView', { setTakenImage: setTakenImage });
+    }
+  }
 
   const renderContent = () => (
   <View style={[styles.panel, { border: '3px solid rgba(0, 0, 0, 0.1)' }]}>
@@ -151,13 +160,9 @@ const LocationScreen = ({ route, navigation }) => {
 
     <TouchableOpacity
       style={styles.panelReviewButton}
-      onPress={() => {
-        navigation.navigate('CameraView', { setTakenImage: setTakenImage });
-      }}
+      onPress={() => openCamera()}
     >
-      {/* <Text style={styles.panelButtonTitle} onPress={__startCamera}> */}
       <Text style={styles.panelButtonTitle}>Take Photo</Text>
-      {/* {capturedImage && <Image source={{ uri: image }} style={{ flex: 1 }} />} */}
     </TouchableOpacity>
     <TouchableOpacity style={styles.panelReviewButton} onPress={async () => {pickImage()}}>
       <Text style={styles.panelButtonTitle}>Choose From Library</Text>

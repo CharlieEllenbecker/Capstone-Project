@@ -8,14 +8,14 @@ import { ProfileContainer } from '../components/styles';
 import axios from 'axios';
 
 const ProfileScreen = ({ route, navigation }) => {
-  const [images, setImages] = useState([]);
+  const [posts, setPosts] = useState([]);
   const ip = getIp();
   const { jwt } = useSelector((state) => state.jwtReducer);
 
   const getPosts = async () => {
     await axios.get(`http://${ip}:3001/api/posts/my`, { headers: { 'x-auth-token' : jwt }})
     .then((response) => {
-      setImages(response.data);
+      setPosts(response.data);
     })
     .catch((error) => {
       console.error(error);
@@ -28,9 +28,9 @@ const ProfileScreen = ({ route, navigation }) => {
 
   return (
     <ProfileContainer>
-      <ProfileTop navigation={navigation} length={images.length}/>
+      <ProfileTop navigation={navigation} length={posts.length}/>
       <ScrollView scrollEventThrottle={16}>
-        <GridView navigation={navigation} images={images} />
+        <GridView navigation={navigation} posts={posts} />
       </ScrollView>
     </ProfileContainer>
   );
