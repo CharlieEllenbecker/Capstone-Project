@@ -28,8 +28,9 @@ import { useTheme } from '@react-navigation/native';
 import { styles } from '../components/styles';
 const { width, height } = Dimensions.get('window');
 
-export default function CameraView({ route, navigation, setTakenImage }) {
+export default function CameraView({ route, navigation }) {
   const [capturedImage, setCapturedImage] = React.useState(null);
+
   const [startCamera, setStartCamera] = React.useState(false);
   const [previewVisible, setPreviewVisible] = React.useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
@@ -37,6 +38,7 @@ export default function CameraView({ route, navigation, setTakenImage }) {
   //const [capturedImage, setCapturedImage] = React.useState(null);
   const [cameraType, setCameraType] = React.useState(Camera.Constants.Type.back);
   const [flashMode, setFlashMode] = React.useState('off');
+  const [base64, setBase64] = React.useState('');
 
   const __startCamera = async () => {
     const { status } = await Camera.requestCameraPermissionsAsync();
@@ -49,20 +51,21 @@ export default function CameraView({ route, navigation, setTakenImage }) {
   };
 
   const takePicture = async () => {
-    const data = await camera.takePictureAsync(null);
-    //console.log(data);
+    const data = await camera.takePictureAsync({
+      base64: true,
+    });
+    setBase64(data.base64);
+    console.log('base64: ' + base64);
     setCapturedImage(data.uri);
     setPreviewVisible(true);
     //setStartCamera(false)
 
     console.log('Taken Picture: ' + capturedImage);
   };
-  // if (hasCameraPermission === false) {
-  //   return <Text>No access to camera</Text>;
-  // }
   const __savePhoto = () => {
     setPreviewVisible(false);
-    setTakenImage(capturedImage);
+    //setTakenImage(capturedImage);
+    navigation.navigate('LocationScreen', { capturedImage: capturedImage, base64: base64 });
     console.log('Taken Picture after save: ' + capturedImage);
   };
   const __retakePicture = () => {
@@ -135,12 +138,19 @@ export default function CameraView({ route, navigation, setTakenImage }) {
                       alignItems: 'center',
                     }}
                   >
-                    <Ionicons name="ios-flash" size={30} color={flashMode === 'off' ? '#FFF' : '#fffb05'}/>
+                    <Ionicons name="ios-flash" size={30} color={flashMode === 'off' ? '#FFF' : '#fffb05'} />
+                    {/* <Text
+                      style={{
+                        fontSize: 20,
+                      }}
+                    >
+                      ⚡️
+                    </Text> */}
                   </TouchableOpacity>
                 )}
                 <TouchableOpacity
                   onPress={() => {
-                    navigation.navigate('HomeScreen');
+                    navigation.goBack();
                   }}
                   style={{
                     backgroundColor: 'transparent',
@@ -175,20 +185,6 @@ export default function CameraView({ route, navigation, setTakenImage }) {
                     justifyContent: 'space-between',
                   }}
                 >
-                  {/* <TouchableOpacity
-                      onPress={openImagePickerAsync}
-                      style={{
-                        bottom: 0,
-                        borderRadius: 50,
-                        backgroundColor: 'transparent',
-                        height: 35,
-                        width: 35,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <MaterialCommunityIcons name="google-photos" size={24} color="white" />
-                    </TouchableOpacity> */}
                   <TouchableOpacity
                     onPress={takePicture}
                     style={{

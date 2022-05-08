@@ -1,14 +1,6 @@
 //import react/formik/icons/keyboardAvoidingView
 import React, { useEffect, useState, createRef } from 'react';
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-  ScrollView,
-  Platform
-} from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView, Platform } from 'react-native';
 import CameraView from './CameraView';
 import BottomSheet from 'reanimated-bottom-sheet';
 import { Camera } from 'expo-camera';
@@ -22,17 +14,14 @@ import { setSelectedPin, setSelectedPinReviews, setSelectedPinPosts } from '../s
 import GridView from '../components/GridView';
 import ReviewTop from '../components/ReviewTop';
 import UserDisplay from '../components/DisplayUser';
-import {
-  styles,
-  StyledReviewContainer,
-  HorizontalContainer,
-} from './../components/styles';
+import { styles, StyledReviewContainer, HorizontalContainer } from './../components/styles';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 //axios
 import axios from 'axios';
 
-
 const LocationScreen = ({ route, navigation }) => {
-  const { pinId } = route.params;
+  const { pinId, capturedImage } = route.params;
   const ip = getIp();
   const dispatch = useDispatch();
   const { jwt } = useSelector((state) => state.jwtReducer);
@@ -46,71 +35,92 @@ const LocationScreen = ({ route, navigation }) => {
   const [reviews, setReviews] = useState([]);
   const [posts, setPosts] = useState([]);
   const [takenImage, setTakenImage] = useState(null);
+  const [base64, setBase64] = useState(null);
   const [useCamera, setUseCamera] = useState(false);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [postDescription, setPostDescription] = useState('');
 
   const getPinData = async () => {
-    await axios.get(`http://${ip}:3001/api/pins/${pinId}`, { headers: { 'x-auth-token': jwt } })
-    .then((response) => {
-      dispatch(setSelectedPin(response.data));
-    })
-    .catch(error => {
-      console.log(error);
-    });
+    await axios
+      .get(`http://${ip}:3001/api/pins/${pinId}`, { headers: { 'x-auth-token': jwt } })
+      .then((response) => {
+        dispatch(setSelectedPin(response.data));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
-  
+
   const getPosts = async () => {
-    await axios.get(`http://${ip}:3001/api/posts/all/${pinId}`, { headers: { 'x-auth-token' : jwt }})
-    .then((response) => {
-      setPosts(response.data);
-    })
-    .catch((error) => {
-      console.error(error);
-    })
-  }
+    await axios
+      .get(`http://${ip}:3001/api/posts/all/${pinId}`, { headers: { 'x-auth-token': jwt } })
+      .then((response) => {
+        setPosts(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   const getReviews = async () => {
-    await axios.get(`http://${ip}:3001/api/reviews/all/${pinId}`, { headers: { 'x-auth-token': jwt } })
+    await axios
+      .get(`http://${ip}:3001/api/reviews/all/${pinId}`, { headers: { 'x-auth-token': jwt } })
       .then((response) => {
         dispatch(setSelectedPinReviews(response.data));
       })
       .catch((error) => {
         console.error(error);
-      })
-  }
-  
+      });
+  };
+
   const postPost = async (base64, fileName) => {
-    await axios.post(`http://${ip}:3001/api/pictures`, { base64: base64, fileName: fileName, isTest: false }, { headers: { 'x-auth-token' : jwt }})
-    .then((response) => {
-      postDesc(response.data.pictureFileName);
-    })
-    .catch((error) => {
-      console.log(error);
-    })
-    
-  }
+    await axios
+      .post(
+        `http://${ip}:3001/api/pictures`,
+        { base64: base64, fileName: fileName, isTest: false },
+        { headers: { 'x-auth-token': jwt } },
+      )
+      .then((response) => {
+        postDesc(response.data.pictureFileName);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const postDesc = async (postPictureFileName) => {
     const body = { postPictureFileName: postPictureFileName };
-    if(description !== '') {
+    if (description !== '') {
       body.description = description;
     }
 
-    await axios.post(`http://${ip}:3001/api/posts/${pinId}`, body, { headers: { 'x-auth-token' : jwt }})
-    .then((response) => {
-      getPosts();
-    })
-    .catch((error) => {
-      console.error(error);
-    })
-  } 
-  useEffect(() => {
-    getPinData();
-    getReviews();
-    getPosts();
-  }, [posts]);
+    await axios
+      .post(`http://${ip}:3001/api/posts/${pinId}`, body, { headers: { 'x-auth-token': jwt } })
+      .then((response) => {
+        getPosts();
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
+  useEffect(() => {
+    if (route.params?.capturedImage) {
+      setTakenImage(route.params.capturedImage);
+      setBase64(route.params.base64);
+
+      // console.log('taken image in LocationScreen', takenImage);
+      // console.log('base64 in LocationScreen', base64);
+      // console.log('TakenImage no .uri at the end, in Locationscreen.js: ' + takenImage);
+      const fileName = JSON.stringify(takenImage).replace(/^.*[\\\/]/, '');
+      //console.log('fileName in after Stringify and replace', fileName);
+      postPost(base64, fileName);
+    } else {
+      getPinData();
+      getReviews();
+      getPosts();
+    }
+  }, [posts, route.params?.capturedImage, route.params?.base64]);
 
   const pickImage = async () => {
     let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -124,12 +134,12 @@ const LocationScreen = ({ route, navigation }) => {
       base64: true,
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 1
+      quality: 1,
     });
 
     if (!result.cancelled) {
       const base64 = result.base64;
-      const fileName = result.uri.replace(/^.*[\\\/]/, "");
+      const fileName = result.uri.replace(/^.*[\\\/]/, '');
       postPost(base64, fileName);
     }
   };
@@ -142,66 +152,89 @@ const LocationScreen = ({ route, navigation }) => {
     if (!permissionResult.granted) {
       return alert('Permission to access camera is required!');
     } else {
-      navigation.navigate('CameraView', { setTakenImage: setTakenImage });
+      navigation.navigate('CameraView');
     }
-  }
+  };
 
   const renderContent = () => (
-  <View style={[styles.panel, { border: '3px solid rgba(0, 0, 0, 0.1)' }]}>
-    <TextInput
-      placeholder="Description"
-      placeholderTextColor="#808080"
-      autoCapitalize="none"
-      style={styles.pinDetails}
-      onChangeText={(newText) => {
-        setPostDescription(newText);
-      }}
-    />
+    <View style={[styles.panel, { border: '3px solid rgba(0, 0, 0, 0.1)' }]}>
+      <TextInput
+        placeholder="Description"
+        placeholderTextColor="#808080"
+        autoCapitalize="none"
+        style={styles.pinDetails}
+        onChangeText={(newText) => {
+          setPostDescription(newText);
+        }}
+      />
 
-    <TouchableOpacity
-      style={styles.panelReviewButton}
-      onPress={() => openCamera()}
-    >
-      <Text style={styles.panelButtonTitle}>Take Photo</Text>
-    </TouchableOpacity>
-    <TouchableOpacity style={styles.panelReviewButton} onPress={async () => {pickImage()}}>
-      <Text style={styles.panelButtonTitle}>Choose From Library</Text>
-    </TouchableOpacity>
-    
-    <View style={{ flexDirection: 'row' }}>
-      <TouchableOpacity style={[styles.panelReviewButton, { width: '49%', backgroundColor: '#ce3a39', borderWidth: 0, marginBottom: 13, marginRight: '2%'  }]} onPress={() => bs.current.snapTo(1)}>
-        <Text style={styles.panelButtonTitle}>Cancel</Text>
+      <TouchableOpacity
+        style={
+          route.params?.capturedImage
+            ? [styles.panelReviewButton, { borderColor: 'green', borderWidth: 2 }]
+            : styles.panelReviewButton
+        }
+        onPress={() => openCamera()}
+      >
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Text style={[styles.panelButtonTitle, { marginRight: 10 }]}>Take Photo</Text>
+          <Text>
+            {route.params?.capturedImage ? (
+              <Ionicons name={'ios-checkmark-circle-outline'} size={25} color="green" />
+            ) : null}
+          </Text>
+        </View>
       </TouchableOpacity>
       <TouchableOpacity
-        style={[styles.panelReviewButton, { width: '49%', backgroundColor: '#2fbf78', borderWidth: 0, marginBottom: 13 }]}
-        onPress={() => {
-          bs.current.snapTo(1);
+        style={styles.panelReviewButton}
+        onPress={async () => {
+          pickImage();
         }}
       >
-        <Text style={styles.panelButtonTitle}>Accept</Text>
+        <Text style={styles.panelButtonTitle}>Choose From Library</Text>
       </TouchableOpacity>
+
+      <View style={{ flexDirection: 'row' }}>
+        <TouchableOpacity
+          style={[
+            styles.panelReviewButton,
+            { width: '49%', backgroundColor: '#ce3a39', borderWidth: 0, marginBottom: 13, marginRight: '2%' },
+          ]}
+          onPress={() => bs.current.snapTo(1)}
+        >
+          <Text style={styles.panelButtonTitle}>Cancel</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.panelReviewButton,
+            { width: '49%', backgroundColor: '#2fbf78', borderWidth: 0, marginBottom: 13 },
+          ]}
+          onPress={() => {
+            bs.current.snapTo(1);
+          }}
+        >
+          <Text style={styles.panelButtonTitle}>Accept</Text>
+        </TouchableOpacity>
+      </View>
     </View>
-  </View>
-);
+  );
 
   return (
     <StyledReviewContainer>
-      <ReviewTop getPinData={getPinData} pinId={pinId} bs={bs}/>
-      <ScrollView
-        scrollEventThrottle={16}
-      >
-        <View style={{ height: 160, marginTop:5, marginBottom: 5}}>
-          <ScrollView
-            horizontal={true}
-          >
-            {selectedPinReviews .map((review, index) => {
+      <ReviewTop getPinData={getPinData} pinId={pinId} bs={bs} />
+      <ScrollView scrollEventThrottle={16}>
+        <View style={{ height: 160, marginTop: 5, marginBottom: 5 }}>
+          <ScrollView horizontal={true}>
+            {selectedPinReviews.map((review, index) => {
               return (
-                <View key={index} style={{ width: 200, marginLeft: 20, borderWidth: 0.7, borderRadius: 5, borderColor: '#dddddd' }}>
-                  <View style={{flex: 1, paddingLeft: 15, paddingTop: 15 }}>
-                    <HorizontalContainer>
-                    </HorizontalContainer>
+                <View
+                  key={index}
+                  style={{ width: 200, marginLeft: 20, borderWidth: 0.7, borderRadius: 5, borderColor: '#dddddd' }}
+                >
+                  <View style={{ flex: 1, paddingLeft: 15, paddingTop: 15 }}>
+                    <HorizontalContainer></HorizontalContainer>
                     <UserDisplay userId={review.userId} />
-                    <StarRating size={15} rating={review.rating} style={{ paddingLeft: 5 }}/>
+                    <StarRating size={15} rating={review.rating} style={{ paddingLeft: 5 }} />
                     {review.description && <Text style={{ paddingLeft: 5 }}>{review.description}</Text>}
                   </View>
                 </View>
@@ -209,19 +242,18 @@ const LocationScreen = ({ route, navigation }) => {
             })}
           </ScrollView>
         </View>
-        <GridView navigation={navigation} posts={posts}/>
+        <GridView navigation={navigation} posts={posts} />
       </ScrollView>
       <BottomSheet
-          ref={bs}
-          snapPoints={['30%', '-10%']}
-          renderContent={renderContent}
-          initialSnap={1}
-          callbackNode={fall}
-          enabledGestureInteraction={true}
-        />
+        ref={bs}
+        snapPoints={['30%', '-10%']}
+        renderContent={renderContent}
+        initialSnap={1}
+        callbackNode={fall}
+        enabledGestureInteraction={true}
+      />
     </StyledReviewContainer>
   );
 };
-
 
 export default LocationScreen;
