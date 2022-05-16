@@ -48,8 +48,8 @@ const SPACING_FOR_CARD_INSET = width * 0.1 - 10;
 const HomeScreen = ({ navigation, route }) => {
   const [locationGranted, setLocationGranted] = useState(true);
   const [region, setRegion] = useState({
-    latitude: 43.03725, // null
-    longitude: -87.91891, // null
+    latitude: 43.03725,
+    longitude: -87.91891,
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   });
@@ -72,8 +72,7 @@ const HomeScreen = ({ navigation, route }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [newTag, setNewTag] = useState('');
-  //const [errorMsg, setErrorMsg] = useState('');
-  let errorMsg = '';
+  const [errorMsg, setErrorMsg] = useState('');
   const [tag, setTag] = useState('');
 
   const [filter, setFilter] = useState('All');
@@ -86,10 +85,6 @@ const HomeScreen = ({ navigation, route }) => {
   const { userSpecificPins } = useSelector((state) => state.pinReducer);
   const { filteredPins } = useSelector((state) => state.pinReducer);
   const { tags } = useSelector((state) => state.tagReducer);
-
-  const setErrorMsg = (s) => {
-    errorMsg = s;
-  };
 
   const filterPins = (filterTag) => {
     if (filterTag === 'All') {
@@ -163,7 +158,7 @@ const HomeScreen = ({ navigation, route }) => {
   let mapAnimation = new OldAnimated.Value(0);
 
   useEffect(() => {
-    getAllPins(); // async operations are causing issue
+    getAllPins();
     getMyPins();
     getAllTags();
 
@@ -189,7 +184,7 @@ const HomeScreen = ({ navigation, route }) => {
         }
       }, 10);
     });
-  }, [errorMsg, filteredPins]);
+  }, []);
 
   const interpolations = filteredPins.map((pin, index) => {
     const inputRange = [(index - 1) * CARD_WIDTH, index * CARD_WIDTH, (index + 1) * CARD_WIDTH];
