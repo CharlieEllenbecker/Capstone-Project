@@ -5,7 +5,7 @@ import CameraView from './CameraView';
 import BottomSheet from 'reanimated-bottom-sheet';
 import { Camera } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
-import Animated from 'react-native-reanimated';
+import Animated, { set } from 'react-native-reanimated';
 import StarRating from '../components/StarRating';
 import getIp from '../ip';
 import { useSelector, useDispatch } from 'react-redux';
@@ -35,10 +35,14 @@ const LocationScreen = ({ route, navigation }) => {
   const [reviews, setReviews] = useState([]);
   const [posts, setPosts] = useState([]);
   const [takenImage, setTakenImage] = useState(null);
-  const [base64, setBase64] = useState(null);
   const [useCamera, setUseCamera] = useState(false);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [postDescription, setPostDescription] = useState('');
+
+  const [base64, setBase64] = useState(null);
+  const [fileName, setFileName] = useState(null);
+  const [fileNameCamera, setFileNameCamera] = useState(null);
+  const [fileNameLibrary, setFileNameLibrary] = useState(null);
 
   const getPinData = async () => {
     await axios
@@ -73,7 +77,13 @@ const LocationScreen = ({ route, navigation }) => {
       });
   };
 
-  const postPost = async (base64, fileName) => {
+  const postPost = async () => {
+    if(fileNameCamera) {
+      setFileName(fileNameCamera);
+    } else {
+      setFileName(fileNameLibrary);
+    }
+    
     await axios
       .post(
         `http://${ip}:3001/api/pictures`,
@@ -114,7 +124,7 @@ const LocationScreen = ({ route, navigation }) => {
       // console.log('TakenImage no .uri at the end, in Locationscreen.js: ' + takenImage);
       const fileName = JSON.stringify(takenImage).replace(/^.*[\\\/]/, '');
       //console.log('fileName in after Stringify and replace', fileName);
-      postPost(base64, fileName);
+      setFileNameCamera(fileName);
     } else {
       getPinData();
       getReviews();
@@ -138,9 +148,8 @@ const LocationScreen = ({ route, navigation }) => {
     });
 
     if (!result.cancelled) {
-      const base64 = result.base64;
-      const fileName = result.uri.replace(/^.*[\\\/]/, '');
-      postPost(base64, fileName);
+      setBase64(result.base64);
+      setFileNameLibrary(result.uri.replace(/^.*[\\\/]/, ''));
     }
   };
 
@@ -170,7 +179,7 @@ const LocationScreen = ({ route, navigation }) => {
 
       <TouchableOpacity
         style={
-          route.params?.capturedImage
+          fileNameCamera
             ? [styles.panelReviewButton, { borderColor: 'green', borderWidth: 2 }]
             : styles.panelReviewButton
         }
@@ -178,15 +187,14 @@ const LocationScreen = ({ route, navigation }) => {
       >
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Text style={[styles.panelButtonTitle, { marginRight: 10 }]}>Take Photo</Text>
-          <Text>
-            {route.params?.capturedImage ? (
-              <Ionicons name={'ios-checkmark-circle-outline'} size={25} color="green" />
-            ) : null}
-          </Text>
         </View>
       </TouchableOpacity>
       <TouchableOpacity
-        style={styles.panelReviewButton}
+        style={
+          fileNameLibrary
+            ? [styles.panelReviewButton, { borderColor: 'green', borderWidth: 2 }]
+            : styles.panelReviewButton
+        }
         onPress={async () => {
           pickImage();
         }}
@@ -211,6 +219,7 @@ const LocationScreen = ({ route, navigation }) => {
           ]}
           onPress={() => {
             bs.current.snapTo(1);
+            postPost();
           }}
         >
           <Text style={styles.panelButtonTitle}>Accept</Text>
