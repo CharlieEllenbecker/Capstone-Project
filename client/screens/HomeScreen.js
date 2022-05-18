@@ -74,6 +74,7 @@ const HomeScreen = ({ navigation, route }) => {
   const [newTag, setNewTag] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [tag, setTag] = useState('');
+  const [filterTags, setFilterTags] = useState([]);
 
   const [filter, setFilter] = useState('All');
   const [coordinate, setCoordinate] = useState({});
@@ -126,6 +127,7 @@ const HomeScreen = ({ navigation, route }) => {
       .get(`http://${ip}:3001/api/tags/`, { headers: { 'x-auth-token': jwt } })
       .then((response) => {
         dispatch(setTags(response.data));
+        setFilterTags(['All', 'My', ...response.data]);
       })
       .catch((error) => {
         console.error(error);
@@ -133,15 +135,18 @@ const HomeScreen = ({ navigation, route }) => {
   };
 
   const addMarker = async () => {
+    const body = {
+      title: title,
+      description: description,
+      location: { coordinates: [coordinate.longitude, coordinate.latitude] }
+    };
+
+    if(newTag) {
+      body.tags = [{ name: newTag }];
+    }
+
     await axios
-      .post(
-        `http://${ip}:3001/api/pins/`,
-        {
-          title: title,
-          description: description,
-          tags: [{ name: newTag }],
-          location: { coordinates: [coordinate.longitude, coordinate.latitude] },
-        },
+      .post(`http://${ip}:3001/api/pins/`, body,
         { headers: { 'x-auth-token': jwt } },
       )
       .then((response) => {
@@ -158,10 +163,18 @@ const HomeScreen = ({ navigation, route }) => {
   let mapAnimation = new OldAnimated.Value(0);
 
   useEffect(() => {
-    getAllPins();
     getMyPins();
-    getAllTags();
+  }, []);
 
+  useEffect(() => {
+    getAllPins();
+  }, []);
+
+  useEffect(() => {
+    getAllTags();
+  }, []);
+
+  useEffect(() => {
     mapAnimation.addListener(({ value }) => {
       let index = Math.floor(value / CARD_WIDTH + 0.3); // animate 30% away from landing on the next item
       if (index >= allPins.length) {
@@ -259,15 +272,22 @@ const HomeScreen = ({ navigation, route }) => {
             <TouchableOpacity
               onPress={() => setNewTag(tag)}
               key={index}
-              style={[styles.chipsItemHeader, { borderColor: 'rgba(0,0,0,0.5)', borderWidth: 0.9, height: 30 }]}
+              style={[
+                styles.chipsItemHeader,
+                tag === newTag
+                  ? { borderColor: 'green', borderWidth: 1.5, height: 30 }
+                  : { borderColor: 'rgba(0,0,0,0.5)', borderWidth: 0.9, height: 30 },
+              ]}
             >
               <Text>{tag}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
       </View>
-      <View style={{ flexDirection: 'row' }}>
+      <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
         <Text>{errorMsg}</Text>
+      </View>
+      <View style={{ flexDirection: 'row' }}>
         <TouchableOpacity
           style={[styles.panelButton, { width: '50%', backgroundColor: '#ce3a39', borderWidth: 0 }]}
           onPress={() => bs.current.snapTo(1)}
@@ -334,31 +354,15 @@ const HomeScreen = ({ navigation, route }) => {
               paddingHorizontal: Platform.OS === 'android' ? SPACING_FOR_CARD_INSET : 0,
             }}
           >
-            <TouchableOpacity
-              style={styles.chipsItem}
-              onPress={() => {
-                setFilter('All');
-                filterPins('All');
-                _scrollView.current.scrollTo({ x: 0, y: 0, animated: true });
-              }}
-            >
-              <Text>All</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.chipsItem}
-              onPress={() => {
-                setFilter('My');
-                filterPins('My');
-                _scrollView.current.scrollTo({ x: 0, y: 0, animated: true });
-              }}
-            >
-              <Text>My</Text>
-            </TouchableOpacity>
-
-            {tags.map((tag, index) => (
+            {filterTags.map((tag, index) => (
               <TouchableOpacity
                 key={index}
-                style={styles.chipsItem}
+                style={[
+                  styles.chipsItem, 
+                  tag === filter
+                    ? { borderColor: 'green', borderWidth: 1.5 }
+                    : { borderColor: 'rgba(0,0,0,0.5)', borderWidth: 0.9 },
+                ]}
                 onPress={() => {
                   setFilter(tag);
                   filterPins(tag);
